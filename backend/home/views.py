@@ -1,3 +1,10 @@
 from django.shortcuts import render
 
-# Create your views here.
+from rest_framework.generics import ListAPIView
+from .models import HeroBanner
+from .serializers import HeroBannerSerializer
+
+
+class HeroBannerListView(ListAPIView):
+    queryset = HeroBanner.objects.all()
+    serializer_class = HeroBannerSerializer

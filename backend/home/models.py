@@ -1,11 +1,22 @@
 from django.db import models
 
-# Create your models here.
+
 class HeroBanner(models.Model):
-    title = models.CharField(max_length=200)
+    badge = models.CharField(max_length=100, blank=True)
+
+    title = models.CharField(max_length=255)
     subtitle = models.TextField()
-    button_text = models.CharField(max_length=100)
-    button_link = models.CharField(max_length=255)
+
+    primary_button_text = models.CharField(max_length=100)
+    primary_button_link = models.CharField(max_length=255)
+
+    secondary_button_text = models.CharField(max_length=100, blank=True)
+    secondary_button_link = models.CharField(max_length=255, blank=True)
+
+    hero_image = models.URLField(blank=True)
+
+    is_active = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
