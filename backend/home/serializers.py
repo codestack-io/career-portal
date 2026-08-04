@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import HeroBanner, AboutSection, ServiceSection,WhyChooseUs
+from .models import HeroBanner, AboutSection, ServiceSection,WhyChooseUs, University
 
 
 class HeroBannerSerializer(serializers.ModelSerializer):
@@ -22,4 +22,9 @@ class ServiceSectionSerializer(serializers.ModelSerializer):
 class WhyChooseUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = WhyChooseUs
-        fields = "__all__"        
+        fields = "__all__"    
+
+class UniversitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = University
+        fields = "__all__"            

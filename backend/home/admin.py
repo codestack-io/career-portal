@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs
+from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University
 
 
 @admin.register(HeroBanner)
@@ -40,4 +40,27 @@ class WhyChooseUsAdmin(admin.ModelAdmin):
     list_display = ("title", "display_order", "is_active")
     list_filter = ("is_active",)
     search_fields = ("title",)
-    ordering = ("display_order",)   
+    ordering = ("display_order",)  
+
+@admin.register(University)
+class UniversityAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "country",
+        "is_featured",
+        "display_order",
+    )
+
+    list_filter = (
+        "country",
+        "is_featured",
+    )
+
+    search_fields = (
+        "name",
+        "country",
+    )
+
+    ordering = (
+        "display_order",
+    )     

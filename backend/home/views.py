@@ -1,6 +1,6 @@
 from rest_framework.generics import ListAPIView
-from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs
-from .serializers import HeroBannerSerializer, AboutSectionSerializer ,ServiceSectionSerializer,WhyChooseUsSerializer
+from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University
+from .serializers import HeroBannerSerializer, AboutSectionSerializer ,ServiceSectionSerializer,WhyChooseUsSerializer, UniversitySerializer
 
 
 class HeroBannerListView(ListAPIView):
@@ -19,3 +19,7 @@ class ServiceSectionListView(ListAPIView):
 class WhyChooseUsListView(ListAPIView):
     queryset = WhyChooseUs.objects.filter(is_active=True)
     serializer_class = WhyChooseUsSerializer
+
+class UniversityListView(ListAPIView):
+    queryset = University.objects.filter(is_featured=True)
+    serializer_class = UniversitySerializer    
