@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic
+from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic,StudyDestination
 
 
 @admin.register(HeroBanner)
@@ -97,4 +97,19 @@ class StatisticAdmin(admin.ModelAdmin):
 
     search_fields = ("title",)
 
-    ordering = ("display_order",)          
+    ordering = ("display_order",)  
+
+@admin.register(StudyDestination)
+class StudyDestinationAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "universities_count",
+        "display_order",
+        "is_active",
+    )
+
+    list_filter = ("is_active",)
+
+    search_fields = ("name",)
+
+    ordering = ("display_order",)            

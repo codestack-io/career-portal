@@ -7,6 +7,7 @@ from .views import (
     UniversityListView,
     TestimonialListView,
     StatisticListView,
+    StudyDestinationListView,
 )
 
 urlpatterns = [
@@ -17,4 +18,8 @@ urlpatterns = [
     path("universities/", UniversityListView.as_view()),
     path("testimonials/", TestimonialListView.as_view()),
     path("statistics/", StatisticListView.as_view()),
+    path(
+    "study-destinations/",
+    StudyDestinationListView.as_view(),
+),
 ]

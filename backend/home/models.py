@@ -221,4 +221,46 @@ class Statistic(models.Model):
         verbose_name_plural = "Statistics"
 
     def __str__(self):
-        return self.title        
+        return self.title   
+
+class StudyDestination(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name="Country Name"
+    )
+
+    short_description = models.TextField()
+
+    image = models.URLField(
+        verbose_name="Country Image URL"
+    )
+
+    flag = models.URLField(
+        blank=True,
+        verbose_name="Flag URL"
+    )
+
+    universities_count = models.PositiveIntegerField(default=0)
+
+    average_tuition = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    popular_courses = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Separate by commas"
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    display_order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ["display_order"]
+        verbose_name = "Study Destination"
+        verbose_name_plural = "Study Destinations"
+
+    def __str__(self):
+        return self.name             
