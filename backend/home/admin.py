@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroBanner, AboutSection, ServiceSection
+from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs
 
 
 @admin.register(HeroBanner)
@@ -34,3 +34,10 @@ class ServiceSectionAdmin(admin.ModelAdmin):
     list_filter = ("category", "is_active")
     search_fields = ("title",)
     ordering = ("display_order",)
+
+@admin.register(WhyChooseUs)
+class WhyChooseUsAdmin(admin.ModelAdmin):
+    list_display = ("title", "display_order", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("title",)
+    ordering = ("display_order",)   

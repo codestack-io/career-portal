@@ -97,4 +97,66 @@ class ServiceSection(models.Model):
         verbose_name_plural = "Services"
 
     def __str__(self):
-        return self.title       
+        return self.title 
+
+class WhyChooseUs(models.Model):
+    title = models.CharField(
+        max_length=255,
+        verbose_name="Title"
+    )
+
+    description = models.TextField(
+        verbose_name="Description"
+    )
+
+    icon = models.URLField(
+        blank=True,
+        verbose_name="Icon URL"
+    )
+
+    display_order = models.PositiveIntegerField(default=1)
+
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["display_order"]
+        verbose_name = "Why Choose Us"
+        verbose_name_plural = "Why Choose Us"
+
+    def __str__(self):
+        return self.title 
+
+class University(models.Model):
+    name = models.CharField(
+        max_length=255,
+        verbose_name="University Name"
+    )
+
+    country = models.CharField(
+        max_length=100
+    )
+
+    logo = models.URLField(
+        blank=True,
+        verbose_name="Logo URL"
+    )
+
+    website = models.URLField(
+        blank=True
+    )
+
+    short_description = models.TextField(
+        blank=True
+    )
+
+    is_featured = models.BooleanField(default=True)
+
+    display_order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ["display_order"]
+        verbose_name = "University"
+        verbose_name_plural = "Universities"
+
+    def __str__(self):
+        return self.name                     
