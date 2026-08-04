@@ -1,10 +1,17 @@
-from django.shortcuts import render
-
 from rest_framework.generics import ListAPIView
-from .models import HeroBanner
-from .serializers import HeroBannerSerializer
+from .models import HeroBanner, AboutSection, ServiceSection
+from .serializers import HeroBannerSerializer, AboutSectionSerializer ,ServiceSectionSerializer
 
 
 class HeroBannerListView(ListAPIView):
-    queryset = HeroBanner.objects.all()
+    queryset = HeroBanner.objects.filter(is_active=True)
     serializer_class = HeroBannerSerializer
+
+
+class AboutSectionListView(ListAPIView):
+    queryset = AboutSection.objects.filter(is_active=True)
+    serializer_class = AboutSectionSerializer
+
+class ServiceSectionListView(ListAPIView):
+    queryset = ServiceSection.objects.filter(is_active=True)
+    serializer_class = ServiceSectionSerializer   

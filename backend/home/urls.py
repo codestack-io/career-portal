@@ -1,6 +1,12 @@
 from django.urls import path
-from .views import HeroBannerListView
+from .views import (
+    HeroBannerListView,
+    AboutSectionListView,
+    ServiceSectionListView,
+)
 
 urlpatterns = [
-    path("hero/", HeroBannerListView.as_view(), name="hero-list"),
+    path("hero/", HeroBannerListView.as_view(), name="hero"),
+    path("about/", AboutSectionListView.as_view(), name="about"),
+    path("services/", ServiceSectionListView.as_view(), name="services"),
 ]
