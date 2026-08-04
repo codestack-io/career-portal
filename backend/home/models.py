@@ -159,4 +159,66 @@ class University(models.Model):
         verbose_name_plural = "Universities"
 
     def __str__(self):
-        return self.name                     
+        return self.name  
+
+class Testimonial(models.Model):
+    name = models.CharField(max_length=150)
+
+    designation = models.CharField(
+        max_length=150,
+        blank=True
+    )
+
+    university = models.CharField(
+        max_length=200,
+        blank=True
+    )
+
+    feedback = models.TextField()
+
+    image = models.URLField(
+        blank=True,
+        verbose_name="Student Image URL"
+    )
+
+    rating = models.PositiveSmallIntegerField(default=5)
+
+    is_active = models.BooleanField(default=True)
+
+    display_order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ["display_order"]
+        verbose_name = "Testimonial"
+        verbose_name_plural = "Testimonials"
+
+    def __str__(self):
+        return self.name
+
+class Statistic(models.Model):
+    title = models.CharField(
+        max_length=100,
+        verbose_name="Statistic Title"
+    )
+
+    value = models.CharField(
+        max_length=50,
+        verbose_name="Statistic Value"
+    )
+
+    icon = models.URLField(
+        blank=True,
+        verbose_name="Icon URL"
+    )
+
+    display_order = models.PositiveIntegerField(default=1)
+
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["display_order"]
+        verbose_name = "Statistic"
+        verbose_name_plural = "Statistics"
+
+    def __str__(self):
+        return self.title        
