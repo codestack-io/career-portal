@@ -32,7 +32,7 @@ export default function Hero({ hero }) {
   return (
     <section
       ref={ref}
-      className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-violet-50 to-indigo-100"
+      className="relative overflow-hidden bg-gradient-to-br from-[#F8FAFF] via-[#EEF4FF] to-[#E4E8FF]"
     >
       {/* Background Decorations */}
 
@@ -51,7 +51,7 @@ export default function Hero({ hero }) {
           className="flex justify-center"
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-6 py-3 text-sm font-semibold text-violet-700 shadow-lg backdrop-blur">
-            🚀 Trusted by{" "}
+            Trusted by{" "}
             {inView && (
               <CountUp
                 end={10000}
