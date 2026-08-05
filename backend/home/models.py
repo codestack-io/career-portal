@@ -13,6 +13,9 @@ class HeroBanner(models.Model):
     secondary_button_text = models.CharField(max_length=100, blank=True)
     secondary_button_link = models.URLField(blank=True)
 
+    badge_text = models.CharField(max_length=100, blank=True)
+    badge_count = models.PositiveIntegerField(default=10000)
+
     hero_image = models.URLField()
 
     is_active = models.BooleanField(default=True)

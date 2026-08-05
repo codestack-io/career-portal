@@ -1,12 +1,14 @@
-import Hero from "@/components/Hero/Hero";
 import { getHero } from "@/lib/api";
+import Navbar from "@/components/Navbar/Navbar";
+import Hero from "@/components/Hero/Hero";
 
 export default async function Home() {
-  const hero = await getHero();
+  const hero = (await getHero())[0];
 
   return (
     <>
-      <Hero hero={hero[0]} />
+      <Navbar />
+      <Hero hero={hero} />
     </>
   );
 }
