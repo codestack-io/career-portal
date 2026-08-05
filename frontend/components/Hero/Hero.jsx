@@ -40,7 +40,8 @@ export default function Hero({ hero }) {
       <div className="absolute top-20 -right-24 h-80 w-80 rounded-full bg-indigo-300/20 blur-3xl"></div>
 
       <div className="relative max-w-7xl mx-auto px-6 pt-28 pb-20">
-
+        
+         
         {/* Badge */}
 
         <motion.div
