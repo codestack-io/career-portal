@@ -8,6 +8,9 @@ from .views import (
     TestimonialListView,
     StatisticListView,
     StudyDestinationListView,
+    BlogListView,
+    FAQListAPIView,
+    ContactInformationListAPIView
 )
 
 urlpatterns = [
@@ -18,8 +21,12 @@ urlpatterns = [
     path("universities/", UniversityListView.as_view()),
     path("testimonials/", TestimonialListView.as_view()),
     path("statistics/", StatisticListView.as_view()),
+    path("study-destinations/",StudyDestinationListView.as_view()),
+    path("blogs/", BlogListView.as_view()),
+    path("faqs/", FAQListAPIView.as_view()),
     path(
-    "study-destinations/",
-    StudyDestinationListView.as_view(),
+    "contact/",
+    ContactInformationListAPIView.as_view(),
 ),
+
 ]

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic,StudyDestination
+from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic,StudyDestination, Blog, FAQ,ContactInformation
 
 
 @admin.register(HeroBanner)
@@ -112,4 +112,35 @@ class StudyDestinationAdmin(admin.ModelAdmin):
 
     search_fields = ("name",)
 
-    ordering = ("display_order",)            
+    ordering = ("display_order",)  
+
+@admin.register(Blog)
+class BlogAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "author",
+        "category",
+        "published_date",
+        "is_active",
+    )
+
+    list_filter = ("category", "is_active")
+
+    search_fields = ("title", "author") 
+
+@admin.register(FAQ)
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ("question", "display_order", "is_active")
+    list_editable = ("display_order", "is_active")
+    ordering = ("display_order",)
+
+@admin.register(ContactInformation)
+class ContactInformationAdmin(admin.ModelAdmin):
+    list_display = (
+        "company_name",
+        "phone",
+        "email",
+        "is_active",
+    )
+
+    list_editable = ("is_active",)
