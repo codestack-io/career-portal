@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic,StudyDestination, Blog, FAQ,ContactInformation
+from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic,StudyDestination, Blog, FAQ,ContactInformation,Footer
 
 
 @admin.register(HeroBanner)
@@ -144,3 +144,9 @@ class ContactInformationAdmin(admin.ModelAdmin):
     )
 
     list_editable = ("is_active",)
+
+@admin.register(Footer)
+class FooterAdmin(admin.ModelAdmin):
+    list_display = ("company_name", "phone", "email", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("company_name", "email")

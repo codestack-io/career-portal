@@ -345,3 +345,32 @@ class ContactInformation(models.Model):
     class Meta:
         verbose_name = "Contact Information"
         verbose_name_plural = "Contact Information"
+class Footer(models.Model):
+    company_name = models.CharField(max_length=200)
+
+    company_description = models.TextField()
+
+    address = models.CharField(max_length=255)
+
+    phone = models.CharField(max_length=50)
+
+    email = models.EmailField()
+
+    facebook = models.URLField(blank=True)
+
+    instagram = models.URLField(blank=True)
+
+    linkedin = models.URLField(blank=True)
+
+    youtube = models.URLField(blank=True)
+
+    copyright_text = models.CharField(max_length=255)
+
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Footer"
+        verbose_name_plural = "Footer"
+
+    def __str__(self):
+        return self.company_name        

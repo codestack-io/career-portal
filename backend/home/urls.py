@@ -10,7 +10,8 @@ from .views import (
     StudyDestinationListView,
     BlogListView,
     FAQListAPIView,
-    ContactInformationListAPIView
+    ContactInformationListAPIView,
+    FooterView,
 )
 
 urlpatterns = [
@@ -24,9 +25,7 @@ urlpatterns = [
     path("study-destinations/",StudyDestinationListView.as_view()),
     path("blogs/", BlogListView.as_view()),
     path("faqs/", FAQListAPIView.as_view()),
-    path(
-    "contact/",
-    ContactInformationListAPIView.as_view(),
-),
+    path("contact/",ContactInformationListAPIView.as_view()),
+    path("footer/",FooterView.as_view()),
 
 ]
