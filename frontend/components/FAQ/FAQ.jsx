@@ -18,6 +18,16 @@ export default function FAQ({ faqs = [] }) {
 
       <div className="relative mx-auto max-w-7xl px-6">
 
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+
+  <img
+    src="https://res.cloudinary.com/ciiop60x/image/upload/v1785944828/bg-2_rue33e.jpg"
+    alt=""
+    className="w-[700px] opacity-10 blur-[1px]"
+  />
+
+</div>
+
         {/* Heading */}
 
         <div className="mb-20 text-center">
