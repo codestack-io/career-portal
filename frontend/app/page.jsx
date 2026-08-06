@@ -9,6 +9,7 @@ import WhyChooseUs from "@/components/WhyChooseUs/WhyChooseUs";
 import Blogs from "@/components/Blogs/Blogs";
 import StudyDestinations from "@/components/StudyDestinations/StudyDestinations";
 import Statistics from "@/components/Statistics/Statistics";
+import Universities from "../components/Universities/Universities";
 import {
   getHero,
   getAbout,
@@ -20,6 +21,7 @@ import {
   getBlogs,
   getStudyDestinations,
   getStatistics,
+  getUniversities
 } from "@/lib/api";
 
 
@@ -34,14 +36,16 @@ export default async function Home() {
   const blogs = await getBlogs();
   const studyDestinations = await getStudyDestinations();
   const statistics = await getStatistics();
+  const universities = await getUniversities();
   return (
     <>
       <Navbar />
       <Hero hero={hero} />
       <About about={about} />
       <Services services={services} />
-      <StudyDestinations destinations={studyDestinations} />
       <WhyChooseUs features={whyChooseUs} />
+      <StudyDestinations destinations={studyDestinations} />
+      <Universities Universities={universities}/>
       <Statistics statistics={statistics} />
       <Testimonials testimonials={testimonials} />
       <Blogs blogs={blogs} />

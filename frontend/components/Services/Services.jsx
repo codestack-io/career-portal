@@ -1,92 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  GraduationCap,
-  FileText,
-  Award,
-  Plane,
-  BookOpen,
-  Users,
-  ArrowUpRight,
-  Sparkles,
-} from "lucide-react";
-
-/**
- * Maps icon names coming from the Django backend (service.icon)
- * to the actual lucide-react component. Add new entries here as
- * new services / icons are introduced in the CMS.
- */
-const ICON_MAP = {
-  GraduationCap,
-  FileText,
-  Award,
-  Plane,
-  BookOpen,
-  Users,
-};
-
-const FALLBACK_ICON = Sparkles;
-
-/**
- * Default services used when no `services` prop is supplied
- * (e.g. during local development before the Django API is wired up).
- * Shape mirrors exactly what the API returns.
- */
-const DEFAULT_SERVICES = [
-  {
-    id: 1,
-    title: "University Admission",
-    description:
-      "Help students choose the right university and complete applications successfully.",
-    icon: "GraduationCap",
-    order: 1,
-    is_active: true,
-  },
-  {
-    id: 2,
-    title: "Visa Processing",
-    description: "Complete visa documentation and application support.",
-    icon: "FileText",
-    order: 2,
-    is_active: true,
-  },
-  {
-    id: 3,
-    title: "Scholarship Assistance",
-    description: "Find scholarships and prepare scholarship applications.",
-    icon: "Award",
-    order: 3,
-    is_active: true,
-  },
-  {
-    id: 4,
-    title: "Pre Departure Guidance",
-    description:
-      "Accommodation, travel planning and orientation before departure.",
-    icon: "Plane",
-    order: 4,
-    is_active: true,
-  },
-  {
-    id: 5,
-    title: "IELTS & Language Preparation",
-    description:
-      "Training and guidance for IELTS and other English proficiency exams.",
-    icon: "BookOpen",
-    order: 5,
-    is_active: true,
-  },
-  {
-    id: 6,
-    title: "Career Counseling",
-    description:
-      "Personalized counseling based on academic background and career goals.",
-    icon: "Users",
-    order: 6,
-    is_active: true,
-  },
-];
+import { ArrowUpRight, Sparkles } from "lucide-react";
 
 const containerVariants = {
   hidden: {},
@@ -108,12 +23,15 @@ const cardVariants = {
 };
 
 function ServiceCard({ service }) {
-  const Icon = ICON_MAP[service.icon] || FALLBACK_ICON;
-
-  return (
+   return (
     <motion.div
       variants={cardVariants}
-      whileHover={{ y: -8, scale: 1.015 }}
+      whileHover={{
+        y: -14,
+        scale: 1.03,
+        rotateX: 4,
+        rotateY: -4,
+      }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
       className="group relative h-full"
     >
@@ -126,29 +44,51 @@ function ServiceCard({ service }) {
           bg-white/70 p-8 shadow-[0_2px_8px_rgba(15,23,42,0.04)]
           backdrop-blur-xl transition-all duration-500
           group-hover:border-violet-200 group-hover:bg-white/90
-          group-hover:shadow-[0_24px_48px_-12px_rgba(124,58,237,0.25)]
+          group-hover:shadow-[0_30px_70px_rgba(99,102,241,.22)]
         "
       >
         {/* Icon */}
         <div className="mb-7">
-          <motion.div
-            whileHover={{ rotate: 8 }}
-            transition={{ type: "spring", stiffness: 300, damping: 12 }}
-            className="
-              relative flex h-14 w-14 items-center justify-center rounded-2xl
-              bg-gradient-to-br from-violet-600 to-blue-600
-              shadow-[0_8px_20px_-4px_rgba(124,58,237,0.45)]
-            "
-          >
-            <Icon className="h-6 w-6 text-white" strokeWidth={2} />
-            <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-          </motion.div>
-        </div>
+
+  <motion.div
+    whileHover={{
+      rotate: [0, -12, 10, -6, 0],
+      scale: 1.12,
+      x: [-4, 6, -3, 0],
+    }}
+    transition={{
+      duration: .8,
+    }}
+    className="
+      flex h-20 w-20 items-center justify-center
+      rounded-3xl
+      bg-gradient-to-br
+      from-violet-100
+      via-white
+      to-blue-100
+      shadow-xl
+    "
+  >
+
+    <img
+      src={service.icon}
+      alt={service.title}
+      className="h-20 w-20 object-contain"
+    />
+
+  </motion.div>
+
+</div>
 
         {/* Title */}
         <h3 className="mb-3 text-xl font-semibold tracking-tight text-slate-900">
           {service.title}
         </h3>
+        <span className="mb-4 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
+
+         {service.category}
+
+        </span>
 
         {/* Description */}
         <p className="mb-8 flex-1 text-[15px] leading-relaxed text-slate-500">
@@ -173,11 +113,9 @@ function ServiceCard({ service }) {
 }
 
 export default function Services({ services }) {
-  const data = (
-    services && services.length ? services : DEFAULT_SERVICES
-  )
-    .filter((s) => s.is_active !== false)
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const data = services
+  ?.filter((s) => s.is_active)
+  ?.sort((a, b) => a.display_order - b.display_order) || [];
 
   return (
     <section className="relative overflow-hidden bg-[#F8FAFF] px-6 py-28 sm:px-10 lg:px-16">
