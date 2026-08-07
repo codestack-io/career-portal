@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-p1787bj#!)*^y_9)3^ety)&ip5)f5oi)za4^=xplo(l0nv++3_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# MODIFIED: Allow Render host domain and localhost
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,8 +44,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # MODIFIED: Placed at the top for reliable CORS handling
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND': 'django.template.backends.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -119,8 +120,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# ADDED: Required for production static file collection on Render
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Allow requests from the Next.js frontend
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
+# MODIFIED: Allow requests from all origins (including Vercel deployment)
+CORS_ALLOW_ALL_ORIGINS = True
