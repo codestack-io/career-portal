@@ -1,17 +1,24 @@
-const BASE_URL = "http://127.0.0.1:8000/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL 
+  ? `${process.env.NEXT_PUBLIC_API_URL}/api`
+  : "https://career-portal-backend-cw8a.onrender.com/api";
 
 export async function fetchAPI(endpoint) {
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+      next: { revalidate: 60 },
+    });
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch ${endpoint}`);
+    if (!res.ok) {
+      console.error(`Failed to fetch ${endpoint}: ${res.status}`);
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error(`Error fetching ${endpoint}:`, error);
+    return [];
   }
-
-  return res.json();
 }
-
 
 export const getHero = () => fetchAPI("/hero/");
 export const getAbout = () => fetchAPI("/about/");
