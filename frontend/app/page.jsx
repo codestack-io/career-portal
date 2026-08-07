@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+
 import Navbar from "@/components/Navbar/Navbar";
 import Hero from "@/components/Hero/Hero";
 import About from "@/components/About/About";
@@ -22,41 +23,65 @@ import {
   getBlogs,
   getStudyDestinations,
   getStatistics,
-  getUniversities
+  getUniversities,
 } from "@/lib/api";
 
-
 export default async function Home() {
-  const hero = (await getHero())[0];
-  const about = (await getAbout())[0];
-  const services = await getServices();
-  const footer = (await getFooter())[0];
-  const faqs = await getFAQs();
-  const testimonials = await getTestimonials();
-  const whyChooseUs = await getWhyChooseUs();
-  const blogs = await getBlogs();
-  const studyDestinations = await getStudyDestinations();
-  const statistics = await getStatistics();
-  const universities = await getUniversities();
+  // Fetch all endpoints in parallel to speed up load time
+  const [
+    heroRes,
+    aboutRes,
+    servicesRes,
+    footerRes,
+    faqsRes,
+    testimonialsRes,
+    whyChooseUsRes,
+    blogsRes,
+    studyDestinationsRes,
+    statisticsRes,
+    universitiesRes,
+  ] = await Promise.all([
+    getHero(),
+    getAbout(),
+    getServices(),
+    getFooter(),
+    getFAQs(),
+    getTestimonials(),
+    getWhyChooseUs(),
+    getBlogs(),
+    getStudyDestinations(),
+    getStatistics(),
+    getUniversities(),
+  ]);
+
+  // Safe extractions (returns null or empty array instead of crashing if DB is empty)
+  const hero = Array.isArray(heroRes) && heroRes.length > 0 ? heroRes[0] : null;
+  const about = Array.isArray(aboutRes) && aboutRes.length > 0 ? aboutRes[0] : null;
+  const footer = Array.isArray(footerRes) && footerRes.length > 0 ? footerRes[0] : null;
+
+  const services = Array.isArray(servicesRes) ? servicesRes : [];
+  const faqs = Array.isArray(faqsRes) ? faqsRes : [];
+  const testimonials = Array.isArray(testimonialsRes) ? testimonialsRes : [];
+  const whyChooseUs = Array.isArray(whyChooseUsRes) ? whyChooseUsRes : [];
+  const blogs = Array.isArray(blogsRes) ? blogsRes : [];
+  const studyDestinations = Array.isArray(studyDestinationsRes) ? studyDestinationsRes : [];
+  const statistics = Array.isArray(statisticsRes) ? statisticsRes : [];
+  const universities = Array.isArray(universitiesRes) ? universitiesRes : [];
+
   return (
-    <>
-      <main className="relative w-full overflow-hidden">
+    <main className="relative w-full overflow-hidden">
       <Navbar />
       <Hero hero={hero} />
       <About about={about} />
       <Services services={services} />
       <WhyChooseUs features={whyChooseUs} />
       <StudyDestinations destinations={studyDestinations} />
-      <Universities universities={universities}/>
+      <Universities universities={universities} />
       <Statistics statistics={statistics} />
       <Testimonials testimonials={testimonials} />
       <Blogs blogs={blogs} />
       <FAQ faqs={faqs} />
       <Footer footer={footer} />
-      </main>
-      
-      
-      
-    </>
+    </main>
   );
 }
