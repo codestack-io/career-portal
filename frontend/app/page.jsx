@@ -39,19 +39,20 @@ export default async function Home() {
   const universities = await getUniversities();
   return (
     <>
+      <main className="relative w-full overflow-hidden">
       <Navbar />
       <Hero hero={hero} />
       <About about={about} />
       <Services services={services} />
       <WhyChooseUs features={whyChooseUs} />
       <StudyDestinations destinations={studyDestinations} />
-      <Universities Universities={universities}/>
+      <Universities universities={universities}/>
       <Statistics statistics={statistics} />
       <Testimonials testimonials={testimonials} />
       <Blogs blogs={blogs} />
       <FAQ faqs={faqs} />
       <Footer footer={footer} />
-      
+      </main>
       
       
       

@@ -23,7 +23,7 @@ const cardVariants = {
 };
 
 function ServiceCard({ service }) {
-   return (
+  return (
     <motion.div
       variants={cardVariants}
       whileHover={{
@@ -49,45 +49,39 @@ function ServiceCard({ service }) {
       >
         {/* Icon */}
         <div className="mb-7">
-
-  <motion.div
-    whileHover={{
-      rotate: [0, -12, 10, -6, 0],
-      scale: 1.12,
-      x: [-4, 6, -3, 0],
-    }}
-    transition={{
-      duration: .8,
-    }}
-    className="
-      flex h-20 w-20 items-center justify-center
-      rounded-3xl
-      bg-gradient-to-br
-      from-violet-100
-      via-white
-      to-blue-100
-      shadow-xl
-    "
-  >
-
-    <img
-      src={service.icon}
-      alt={service.title}
-      className="h-20 w-20 object-contain"
-    />
-
-  </motion.div>
-
-</div>
+          <motion.div
+            whileHover={{
+              rotate: [0, -12, 10, -6, 0],
+              scale: 1.12,
+              x: [-4, 6, -3, 0],
+            }}
+            transition={{
+              duration: 0.8,
+            }}
+            className="
+              flex h-20 w-20 items-center justify-center
+              rounded-3xl
+              bg-gradient-to-br
+              from-violet-100
+              via-white
+              to-blue-100
+              shadow-xl
+            "
+          >
+            <img
+              src={service.icon}
+              alt={service.title}
+              className="h-20 w-20 object-contain"
+            />
+          </motion.div>
+        </div>
 
         {/* Title */}
         <h3 className="mb-3 text-xl font-semibold tracking-tight text-slate-900">
           {service.title}
         </h3>
         <span className="mb-4 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
-
-         {service.category}
-
+          {service.category}
         </span>
 
         {/* Description */}
@@ -113,9 +107,14 @@ function ServiceCard({ service }) {
 }
 
 export default function Services({ services }) {
-  const data = services
-  ?.filter((s) => s.is_active)
-  ?.sort((a, b) => a.display_order - b.display_order) || [];
+  const data =
+    services
+      ?.filter((s) => s.is_active)
+      ?.sort((a, b) => a.display_order - b.display_order) || [];
+
+  // PASTE YOUR CLOUDINARY IMAGE URL HERE
+  const cloudinaryBgUrl =
+    "https://res.cloudinary.com/ciiop60x/image/upload/v1785944828/bg-2_rue33e.jpg";
 
   return (
     <section className="relative overflow-hidden bg-[#F8FAFF] px-6 py-28 sm:px-10 lg:px-16">
@@ -125,7 +124,16 @@ export default function Services({ services }) {
         <div className="absolute -right-40 bottom-0 h-[420px] w-[420px] rounded-full bg-gradient-to-tr from-blue-200/40 to-transparent blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl">
+      {/* Centered Cloudinary Background Image */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-15">
+        <img
+          src={cloudinaryBgUrl}
+          alt="Services background image"
+          className="h-full w-full max-w-5xl object-contain opacity-30"
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}

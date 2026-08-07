@@ -23,7 +23,7 @@ export default function FAQ({ faqs = [] }) {
   <img
     src="https://res.cloudinary.com/ciiop60x/image/upload/v1785944828/bg-2_rue33e.jpg"
     alt=""
-    className="w-[700px] opacity-10 blur-[1px]"
+    className="w-[700px] opacity-6 blur-[1px] mix-blend-multiply"
   />
 
 </div>

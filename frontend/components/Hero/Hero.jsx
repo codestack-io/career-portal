@@ -29,21 +29,30 @@ export default function Hero({ hero }) {
 
   if (!hero) return null;
 
+  // PASTE YOUR CLOUDINARY IMAGE URL HERE
+  const cloudinaryBgUrl =
+    "https://res.cloudinary.com/ciiop60x/image/upload/v1785944827/bg-1_fpob5g.jpg";
+
   return (
     <section
       ref={ref}
       className="relative overflow-hidden bg-gradient-to-br from-[#F8FAFF] via-[#EEF4FF] to-[#E4E8FF]"
     >
       {/* Background Decorations */}
-
       <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-violet-300/20 blur-3xl"></div>
       <div className="absolute top-20 -right-24 h-80 w-80 rounded-full bg-indigo-300/20 blur-3xl"></div>
 
-      <div className="relative max-w-7xl mx-auto px-6 pt-28 pb-20">
-        
-         
-        {/* Badge */}
+      {/* Centered Cloudinary Background Image */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-15">
+        <img
+          src={cloudinaryBgUrl}
+          alt="Hero background graphic"
+          className="h-full w-full max-w-5xl object-contain mix-blend-multiply opacity-25"
+        />
+      </div>
 
+      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-28 pb-20">
+        {/* Badge */}
         <motion.div
           initial="hidden"
           animate="visible"
@@ -65,7 +74,6 @@ export default function Hero({ hero }) {
         </motion.div>
 
         {/* Title */}
-
         <motion.h1
           initial="hidden"
           animate="visible"
@@ -77,7 +85,6 @@ export default function Hero({ hero }) {
         </motion.h1>
 
         {/* Subtitle */}
-
         <motion.p
           initial="hidden"
           animate="visible"
@@ -89,7 +96,6 @@ export default function Hero({ hero }) {
         </motion.p>
 
         {/* Buttons */}
-
         <motion.div
           initial="hidden"
           animate="visible"
@@ -115,7 +121,6 @@ export default function Hero({ hero }) {
         </motion.div>
 
         {/* Hero Image */}
-
         <motion.div
           initial={{
             opacity: 0,
@@ -140,7 +145,6 @@ export default function Hero({ hero }) {
             className="w-full rounded-[40px] border border-white/40 object-cover shadow-2xl"
           />
         </motion.div>
-
       </div>
     </section>
   );

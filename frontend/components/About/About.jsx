@@ -16,10 +16,7 @@ export default function About({ about }) {
       {/* Background Image (decorative — globe/network graphic, top-left) */}
       <div
         className="pointer-events-none absolute -top-10 left-0 h-[550px] w-[550px] bg-no-repeat bg-contain bg-left-top opacity-15"
-        style={{
-          backgroundImage:
-            "url('https://res.cloudinary.com/ciiop60x/image/upload/v1785944828/bg-2_rue33e.jpg')",
-        }}
+        
         aria-hidden="true"
       />
       {/* Fades the image out toward the right/bottom so it blends into the
