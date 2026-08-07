@@ -22,7 +22,7 @@ import {
   getStudyDestinations,
   getStatistics,
   getUniversities
-} from "../lib/api";
+} from "@/lib/api";
 
 
 export default async function Home() {
