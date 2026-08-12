@@ -60,17 +60,19 @@ export default function Hero({ hero }) {
           custom={0}
           className="flex justify-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-6 py-3 text-sm font-semibold text-violet-700 shadow-lg backdrop-blur">
-            Trusted by{" "}
-            {inView && (
-              <CountUp
-                end={10000}
-                duration={3}
-                separator=","
-              />
-            )}
-            + Students
-          </span>
+         <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-6 py-3 text-sm font-semibold text-violet-700 shadow-lg backdrop-blur">
+  {hero.badge}
+
+  {inView && (
+    <CountUp
+      end={hero.badge_count}
+      duration={3}
+      separator=","
+    />
+  )}
+
+  
+</span>
         </motion.div>
 
         {/* Title */}

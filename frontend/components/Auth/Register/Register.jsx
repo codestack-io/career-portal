@@ -1,11 +1,59 @@
-import Link from "next/link";
+"use client";
 
-export default function RegisterPage() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { registerUser } from "../../../lib/auth";
+
+export default function Register() {
+  const router = useRouter();
+
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    re_password: "",
+  });
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function handleChange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    try {
+      await registerUser(formData);
+
+      setSuccess("Account created successfully!");
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 1000);
+
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-blue-50 flex items-center justify-center px-6 py-20">
 
       {/* Background decoration */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-violet-300/20 rounded-full blur-3xl" />
+
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-300/20 rounded-full blur-3xl" />
 
       {/* Register Card */}
@@ -33,56 +81,40 @@ export default function RegisterPage() {
             </p>
           </div>
 
+          {/* Error */}
+          {error && (
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+
+          {/* Success */}
+          {success && (
+            <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-600">
+              {success}
+            </div>
+          )}
+
           {/* Register Form */}
-          <form className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* Full Name */}
+            {/* Username */}
             <div>
               <label
-                htmlFor="name"
+                htmlFor="username"
                 className="block mb-2 text-sm font-semibold text-slate-700"
               >
-                Full Name
+                Username
               </label>
 
               <input
-                id="name"
+                id="username"
+                name="username"
                 type="text"
-                placeholder="Enter your full name"
-                className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block mb-2 text-sm font-semibold text-slate-700"
-              >
-                Email Address
-              </label>
-
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
-              />
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label
-                htmlFor="phone"
-                className="block mb-2 text-sm font-semibold text-slate-700"
-              >
-                Phone Number
-              </label>
-
-              <input
-                id="phone"
-                type="tel"
-                placeholder="Enter your phone number"
+                placeholder="Enter your username"
+                value={formData.username}
+                onChange={handleChange}
+                required
                 className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
               />
             </div>
@@ -98,8 +130,12 @@ export default function RegisterPage() {
 
               <input
                 id="password"
+                name="password"
                 type="password"
                 placeholder="Create a password"
+                value={formData.password}
+                onChange={handleChange}
+                required
                 className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
               />
             </div>
@@ -107,16 +143,20 @@ export default function RegisterPage() {
             {/* Confirm Password */}
             <div>
               <label
-                htmlFor="confirmPassword"
+                htmlFor="re_password"
                 className="block mb-2 text-sm font-semibold text-slate-700"
               >
                 Confirm Password
               </label>
 
               <input
-                id="confirmPassword"
+                id="re_password"
+                name="re_password"
                 type="password"
                 placeholder="Confirm your password"
+                value={formData.re_password}
+                onChange={handleChange}
+                required
                 className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
               />
             </div>
@@ -126,6 +166,7 @@ export default function RegisterPage() {
               <input
                 id="terms"
                 type="checkbox"
+                required
                 className="mt-1 h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
               />
 
@@ -153,9 +194,10 @@ export default function RegisterPage() {
             {/* Register Button */}
             <button
               type="submit"
-              className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-violet-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-violet-500/30"
+              disabled={loading}
+              className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-violet-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-violet-500/30 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
 
           </form>
@@ -182,6 +224,7 @@ export default function RegisterPage() {
           {/* Login */}
           <p className="mt-7 text-center text-sm text-slate-500">
             Already have an account?{" "}
+
             <Link
               href="/login"
               className="font-semibold text-violet-600 hover:text-violet-700"

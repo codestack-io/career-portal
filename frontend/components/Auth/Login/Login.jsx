@@ -1,6 +1,40 @@
-import Link from "next/link";
+"use client";
 
-export default function LoginPage() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { loginUser } from "../../../lib/auth";
+
+export default function Login() {
+  const router = useRouter();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const data = await loginUser(username, password);
+
+      console.log("Login successful:", data);
+
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+
+      router.push("/");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-blue-50 flex items-center justify-center px-6 py-20">
 
@@ -9,7 +43,7 @@ export default function LoginPage() {
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-300/20 rounded-full blur-3xl" />
 
       {/* Login Card */}
-      <div className="relative w-full max-w-md max-h-full py-10">
+      <div className="relative w-full max-w-md py-10">
 
         <div className="rounded-3xl border border-white/40 bg-white/70 backdrop-blur-2xl shadow-[0_20px_70px_rgba(31,38,135,0.15)] p-8 sm:p-10">
 
@@ -33,22 +67,32 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Login Form */}
-          <form className="space-y-5">
+          {/* Error */}
+          {error && (
+            <div className="mb-5 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
 
-            {/* Email */}
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* Username / Email */}
             <div>
               <label
-                htmlFor="email"
+                htmlFor="username"
                 className="block mb-2 text-sm font-semibold text-slate-700"
               >
-                Email Address
+                Username
               </label>
 
               <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
                 className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
               />
             </div>
@@ -56,6 +100,7 @@ export default function LoginPage() {
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-2">
+
                 <label
                   htmlFor="password"
                   className="text-sm font-semibold text-slate-700"
@@ -69,18 +114,23 @@ export default function LoginPage() {
                 >
                   Forgot password?
                 </Link>
+
               </div>
 
               <input
                 id="password"
                 type="password"
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
               />
             </div>
 
             {/* Remember me */}
             <div className="flex items-center gap-2">
+
               <input
                 id="remember"
                 type="checkbox"
@@ -93,14 +143,16 @@ export default function LoginPage() {
               >
                 Remember me
               </label>
+
             </div>
 
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-violet-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-violet-500/30"
+              disabled={loading}
+              className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-violet-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-violet-500/30 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
 
           </form>
@@ -127,6 +179,7 @@ export default function LoginPage() {
           {/* Register */}
           <p className="mt-7 text-center text-sm text-slate-500">
             Don&apos;t have an account?{" "}
+
             <Link
               href="/register"
               className="font-semibold text-violet-600 hover:text-violet-700"
@@ -136,7 +189,6 @@ export default function LoginPage() {
           </p>
 
         </div>
-
       </div>
     </main>
   );
