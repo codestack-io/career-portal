@@ -1,0 +1,83 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+venv/
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+
+lib64/
+parts/
+sdist/
+var/
+tmp/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+staticfiles/
+media/
+db.sqlite3
+local_settings.py
+
+# Ignore all migration files except __init__.py
+**/migrations/*.py
+**/migrations/*.pyc
+!**/migrations/__init__.py
+
+# Environment
+.env
+.qodo
+.env.local
+
+# Frontend (Next.js)
+node_modules/
+.next/
+out/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
