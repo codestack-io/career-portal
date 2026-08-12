@@ -1,4 +1,6 @@
-from django.urls import path
+from django.urls import path,include
+from django.contrib import admin
+
 from .views import (
     HeroBannerListView,
     AboutSectionListView,
@@ -27,5 +29,6 @@ urlpatterns = [
     path("faqs/", FAQListAPIView.as_view()),
     path("contact/",ContactInformationListAPIView.as_view()),
     path("footer/",FooterView.as_view()),
+    
 
 ]

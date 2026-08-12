@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     'rest_framework',
+    'djoser',
     'home',
     'corsheaders',
 ]
@@ -51,6 +52,19 @@ TAILWIND_APP_NAME = 'theme'
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+
+      "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.AllowAny",
+    ),
+}
+DJOSER = {
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "SEND_ACTIVATION_EMAIL": False,
+    "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}",
+    "SET_PASSWORD_RETYPE": True,
 }
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # MODIFIED: Placed at the top for reliable CORS handling
@@ -133,4 +147,6 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # MODIFIED: Allow requests from all origins (including Vercel deployment)
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
