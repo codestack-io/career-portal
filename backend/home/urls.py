@@ -31,7 +31,8 @@ urlpatterns = [
     path("faqs/", FAQListAPIView.as_view()),
     path("contact/",ContactInformationListAPIView.as_view()),
     path("footer/",FooterView.as_view()),
-    path("profile/", UserProfileView.as_view(), name="user-profile")
+   
+    path('profile/', UserProfileView.as_view(), name='user-profile'),
     
 
 ]

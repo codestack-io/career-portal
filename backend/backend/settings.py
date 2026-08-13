@@ -61,6 +61,10 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ),
 }
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 DJOSER = {
     
     'USER_CREATE_PASSWORD_RETYPE': True,
