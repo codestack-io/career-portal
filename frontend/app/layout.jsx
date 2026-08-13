@@ -1,5 +1,5 @@
-import { AuthProvider } from "@/app/context/AuthContext"; // Adjust import path if needed
-import Navbar from "@/components/Navbar/Navbar";
+import { AuthProvider } from "../app/context/AuthContext"; // Adjust import path if needed
+import Navbar from "../UiComponents/Navbar/Navbar";
 import "./globals.css";
 
 export default function RootLayout({ children }) {

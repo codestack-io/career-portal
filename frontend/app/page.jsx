@@ -1,17 +1,17 @@
 export const dynamic = "force-dynamic";
 
-import Navbar from "@/components/Navbar/Navbar";
-import Hero from "@/components/Hero/Hero";
-import About from "@/components/About/About";
-import Services from "@/components/Services/Services";
-import Footer from "@/components/Footer/Footer";
-import FAQ from "@/components/FAQ/FAQ";
-import Testimonials from "@/components/Testimonials/Testimonials";
-import WhyChooseUs from "@/components/WhyChooseUs/WhyChooseUs";
-import Blogs from "@/components/Blogs/Blogs";
-import StudyDestinations from "@/components/StudyDestinations/StudyDestinations";
-import Statistics from "@/components/Statistics/Statistics";
-import Universities from "../components/Universities/Universities";
+import Navbar from "../UiComponents/Navbar/Navbar";
+import Hero from "../UiComponents/Hero/Hero";
+import About from "../UiComponents/About/About";
+import Services from "../UiComponents/Services/Services";
+import Footer from "../UiComponents/Footer/Footer";
+import FAQ from "../UiComponents/FAQ/FAQ";
+import Testimonials from "../UiComponents/Testimonials/Testimonials";
+import WhyChooseUs from "../UiComponents/WhyChooseUs/WhyChooseUs";
+import Blogs from "../UiComponents/Blogs/Blogs";
+import StudyDestinations from "../UiComponents/StudyDestinations/StudyDestinations";
+import Statistics from "../UiComponents/Statistics/Statistics";
+import Universities from "../UiComponents/Universities/Universities";
 
 import {
   getHero,
