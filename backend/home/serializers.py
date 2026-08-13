@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import HeroBanner, AboutSection, ServiceSection,WhyChooseUs, University,Testimonial, Statistic,StudyDestination,Blog, FAQ,ContactInformation,Footer
+from .models import HeroBanner, AboutSection, ServiceSection,WhyChooseUs, University,Testimonial, Statistic,StudyDestination,Blog, FAQ,ContactInformation,Footer,UserProfile
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 class HeroBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = HeroBanner
@@ -60,4 +62,27 @@ class ContactInformationSerializer(serializers.ModelSerializer):
 class FooterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Footer
-        fields = "__all__"             
+        fields = "__all__"   
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email'] # adjust fields based on your custom user model
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            'id', 
+            'user', 
+            'phone', 
+            'country_of_interest', 
+            'target_degree', 
+            'passport_status', 
+            'avatar', 
+            'updated_at'
+        ]        
+
+

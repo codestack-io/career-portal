@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import email
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -61,10 +62,13 @@ REST_FRAMEWORK = {
     ),
 }
 DJOSER = {
-    "USER_CREATE_PASSWORD_RETYPE": True,
-    "SEND_ACTIVATION_EMAIL": False,
-    "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}",
-    "SET_PASSWORD_RETYPE": True,
+    
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SEND_ACTIVATION_EMAIL': False,
+    'PASSWORD_RESET_CONFIRM_URL': "reset-password/{uid}/{token}",
+    'SET_PASSWORD_RETYPE': True,
+    'PASSWORD CHANGED-EMAIL CONFIRMATION': True,
+
 }
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # MODIFIED: Placed at the top for reliable CORS handling
@@ -150,3 +154,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

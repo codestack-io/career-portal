@@ -1,4 +1,7 @@
 from django.db import models
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class HeroBanner(models.Model):
@@ -377,4 +380,32 @@ class Footer(models.Model):
         verbose_name_plural = "Footer"
 
     def __str__(self):
-        return self.company_name        
+        return self.company_name   
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name="profile"
+    )
+    phone = models.CharField(max_length=20, blank=True)
+    country_of_interest = models.CharField(max_length=100, blank=True)
+    target_degree = models.CharField(max_length=100, blank=True)
+    passport_status = models.CharField(max_length=50, blank=True)
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        user_identifier = getattr(self.user, 'email', None) or self.user.username
+        return f"Profile of {user_identifier}"
+
+
+# Signal to create or get UserProfile automatically when a User is created/updated
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+    else:
+        # Prevents errors if older users exist without a profile
+        UserProfile.objects.get_or_create(user=instance)     

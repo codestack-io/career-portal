@@ -1,5 +1,6 @@
 from django.urls import path,include
 from django.contrib import admin
+ 
 
 from .views import (
     HeroBannerListView,
@@ -14,6 +15,7 @@ from .views import (
     FAQListAPIView,
     ContactInformationListAPIView,
     FooterView,
+    UserProfileView
 )
 
 urlpatterns = [
@@ -29,6 +31,7 @@ urlpatterns = [
     path("faqs/", FAQListAPIView.as_view()),
     path("contact/",ContactInformationListAPIView.as_view()),
     path("footer/",FooterView.as_view()),
+    path("profile/", UserProfileView.as_view(), name="user-profile")
     
 
 ]
