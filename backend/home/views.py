@@ -1,10 +1,12 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView,RetrieveUpdateAPIView
 from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University, Testimonial, Statistic, StudyDestination, Blog, FAQ,ContactInformation,Footer,UserProfile
 from .serializers import HeroBannerSerializer, AboutSectionSerializer ,ServiceSectionSerializer,WhyChooseUsSerializer,UniversitySerializer,TestimonialSerializer, StatisticSerializer,StudyDestinationSerializer, BlogSerializer, FAQSerializer,ContactInformationSerializer,FooterSerializer,UserProfileSerializer
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
+# 1. Import your Authentication Class
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class HeroBannerListView(ListAPIView):
     queryset = HeroBanner.objects.filter(
@@ -73,9 +75,12 @@ class FooterView(ListAPIView):
 class UserProfileView(RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser, JSONParser] # Supports file uploads (avatars)
+    
+    # 2. ADD THIS LINE: Explicitly tell DRF to read the Bearer JWT token
+    authentication_classes = [JWTAuthentication] 
+    
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_object(self):
-        # Always return the profile of the authenticated user
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
-        return profile    
+        return profile

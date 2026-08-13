@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { registerUser } from "../../../lib/auth";
+import { useAuth } from "../../../app/context/AuthContext"; // 1. Import useAuth
 
 export default function Register() {
-  const router = useRouter();
+  const { login } = useAuth(); // 2. Extract login method
 
   const [formData, setFormData] = useState({
     username: "",
@@ -30,20 +30,26 @@ export default function Register() {
 
     setError("");
     setSuccess("");
+
+    // 3. Password match validation
+    if (formData.password !== formData.re_password) {
+      setError("Passwords do not match!");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // 4. Register the new account
       await registerUser(formData);
 
-      setSuccess("Account created successfully!");
+      setSuccess("Account created! Logging you in...");
 
-      setTimeout(() => {
-        router.push("/login");
-      }, 1000);
+      // 5. Auto-login and redirect to Home page
+      await login(formData.username, formData.password);
 
-    } catch (error) {
-      setError(error.message);
-    } finally {
+    } catch (err) {
+      setError(err.message || "Registration failed. Please try again.");
       setLoading(false);
     }
   }
@@ -53,7 +59,6 @@ export default function Register() {
 
       {/* Background decoration */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-violet-300/20 rounded-full blur-3xl" />
-
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-300/20 rounded-full blur-3xl" />
 
       {/* Register Card */}
@@ -81,14 +86,14 @@ export default function Register() {
             </p>
           </div>
 
-          {/* Error */}
+          {/* Error Message */}
           {error && (
             <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
               {error}
             </div>
           )}
 
-          {/* Success */}
+          {/* Success Message */}
           {success && (
             <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-600">
               {success}
@@ -161,7 +166,7 @@ export default function Register() {
               />
             </div>
 
-            {/* Terms */}
+            {/* Terms & Conditions */}
             <div className="flex items-start gap-2">
               <input
                 id="terms"
@@ -205,15 +210,11 @@ export default function Register() {
           {/* Divider */}
           <div className="flex items-center gap-4 my-7">
             <div className="h-px flex-1 bg-slate-200" />
-
-            <span className="text-sm text-slate-400">
-              OR
-            </span>
-
+            <span className="text-sm text-slate-400">OR</span>
             <div className="h-px flex-1 bg-slate-200" />
           </div>
 
-          {/* Google */}
+          {/* Google Button */}
           <button
             type="button"
             className="w-full rounded-xl border border-slate-200 bg-white px-6 py-3.5 font-semibold text-slate-700 transition-all duration-300 hover:bg-slate-50 hover:shadow-md"
@@ -221,10 +222,9 @@ export default function Register() {
             Continue with Google
           </button>
 
-          {/* Login */}
+          {/* Login Link */}
           <p className="mt-7 text-center text-sm text-slate-500">
             Already have an account?{" "}
-
             <Link
               href="/login"
               className="font-semibold text-violet-600 hover:text-violet-700"

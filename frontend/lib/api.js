@@ -37,6 +37,65 @@ export async function fetchAPI(endpoint) {
   }
 }
 
+// Append to lib/api.js
+
+// Append to lib/api.js
+
+export async function getUserProfile(accessToken) {
+  if (!accessToken) {
+    throw new Error("Authentication token is missing. Please log in again.");
+  }
+
+  // Ensure token is a string, not an object
+  const tokenString = typeof accessToken === "object" ? accessToken.access : accessToken;
+
+  const url = `${BASE_URL}/api/profile/`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${tokenString}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(
+      errorData.detail || errorData.message || `Profile fetch failed (${res.status})`
+    );
+  }
+
+  return res.json();
+}
+
+export async function updateUserProfile(accessToken, formData) {
+  if (!accessToken) {
+    throw new Error("Authentication token is missing. Please log in again.");
+  }
+
+  // Ensure token is a string, not an object
+  const tokenString = typeof accessToken === "object" ? accessToken.access : accessToken;
+
+  const url = `${BASE_URL}/api/profile/`;
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${tokenString}`,
+      // Do NOT set Content-Type; browser handles boundary for FormData
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    console.error("Backend 401 Error Payload:", errorData);
+    throw new Error(
+      errorData.detail || errorData.message || `Profile update failed (${res.status})`
+    );
+  }
+
+  return res.json();
+}
 
 // API functions
 export const getHero = () => fetchAPI("/hero/");

@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { loginUser } from "../../../lib/auth";
+import { useAuth } from "../../../app/context/AuthContext"; // 1. Import useAuth
 
 export default function Login() {
-  const router = useRouter();
+  const { login } = useAuth(); // 2. Extract login method from context
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -20,16 +19,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const data = await loginUser(username, password);
-
-      console.log("Login successful:", data);
-
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
-
-      router.push("/");
-    } catch (error) {
-      setError(error.message);
+      // 3. Let AuthContext handle API call, localStorage, React state, & redirect
+      await login(username, password);
+    } catch (err) {
+      setError(err.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }
@@ -77,7 +70,7 @@ export default function Login() {
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* Username / Email */}
+            {/* Username */}
             <div>
               <label
                 htmlFor="username"
@@ -100,7 +93,6 @@ export default function Login() {
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-2">
-
                 <label
                   htmlFor="password"
                   className="text-sm font-semibold text-slate-700"
@@ -114,7 +106,6 @@ export default function Login() {
                 >
                   Forgot password?
                 </Link>
-
               </div>
 
               <input
@@ -130,7 +121,6 @@ export default function Login() {
 
             {/* Remember me */}
             <div className="flex items-center gap-2">
-
               <input
                 id="remember"
                 type="checkbox"
@@ -143,7 +133,6 @@ export default function Login() {
               >
                 Remember me
               </label>
-
             </div>
 
             {/* Login Button */}
@@ -160,11 +149,7 @@ export default function Login() {
           {/* Divider */}
           <div className="flex items-center gap-4 my-7">
             <div className="h-px flex-1 bg-slate-200" />
-
-            <span className="text-sm text-slate-400">
-              OR
-            </span>
-
+            <span className="text-sm text-slate-400">OR</span>
             <div className="h-px flex-1 bg-slate-200" />
           </div>
 
@@ -176,10 +161,9 @@ export default function Login() {
             Continue with Google
           </button>
 
-          {/* Register */}
+          {/* Register Link */}
           <p className="mt-7 text-center text-sm text-slate-500">
             Don&apos;t have an account?{" "}
-
             <Link
               href="/register"
               className="font-semibold text-violet-600 hover:text-violet-700"

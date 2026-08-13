@@ -1,12 +1,15 @@
-import "./globals.css";
+import { AuthProvider } from "@/app/context/AuthContext"; // Adjust import path if needed
 import Navbar from "@/components/Navbar/Navbar";
+import "./globals.css";
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="overflow-x-hidden">
+    <html lang="en">
       <body>
-        <Navbar />
-        {children}
+        <AuthProvider>
+          <Navbar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

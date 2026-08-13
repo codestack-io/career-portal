@@ -55,10 +55,17 @@ export async function loginUser(username, password) {
 
 
 export async function getCurrentUser(accessToken) {
+  // Ensure token is a clean string (handles cases where an object might be passed)
+  const tokenString = typeof accessToken === "object" ? accessToken?.access : accessToken;
+
+  if (!tokenString || tokenString === "undefined" || tokenString === "null") {
+    throw new Error("No access token available.");
+  }
+
   const response = await fetch(`${BASE_URL}/auth/users/me/`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${tokenString}`,
     },
     cache: "no-store",
   });
@@ -66,13 +73,12 @@ export async function getCurrentUser(accessToken) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.detail || "Unable to get current user"
-    );
+    throw new Error(data.detail || "Unable to get current user");
   }
 
   return data;
 }
+
 
 
 export async function refreshAccessToken(refreshToken) {
