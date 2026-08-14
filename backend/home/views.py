@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView,RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView,RetrieveUpdateAPIView,RetrieveAPIView
 from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University, Testimonial, Statistic, StudyDestination, Blog, FAQ,ContactInformation,Footer,UserProfile
 from .serializers import HeroBannerSerializer, AboutSectionSerializer ,ServiceSectionSerializer,WhyChooseUsSerializer,UniversitySerializer,TestimonialSerializer, StatisticSerializer,StudyDestinationSerializer, BlogSerializer, FAQSerializer,ContactInformationSerializer,FooterSerializer,UserProfileSerializer
 from rest_framework.generics import RetrieveUpdateAPIView
@@ -57,6 +57,12 @@ class StudyDestinationListView(ListAPIView):
 class BlogListView(ListAPIView):
     queryset = Blog.objects.filter(is_active=True)
     serializer_class = BlogSerializer      
+
+# ADD THIS: Retrieve a single blog post by its slug
+class BlogDetailView(RetrieveAPIView):
+    queryset = Blog.objects.filter(is_active=True)
+    serializer_class = BlogSerializer
+    lookup_field = "slug"
 
 class FAQListAPIView(ListAPIView):
     queryset = FAQ.objects.filter(is_active=True)
