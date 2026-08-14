@@ -46,7 +46,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/study-destinations"
+            href="/studydestination"
             className="rounded-full px-5 py-2.5 text-slate-800 font-semibold transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:text-violet-700"
           >
             Destinations

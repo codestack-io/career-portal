@@ -52,7 +52,12 @@ class StatisticListView(ListAPIView):
 
 class StudyDestinationListView(ListAPIView):
     queryset = StudyDestination.objects.filter(is_active=True)
-    serializer_class = StudyDestinationSerializer  
+    serializer_class = StudyDestinationSerializer 
+
+class StudyDestinationDetailView(RetrieveAPIView):
+    queryset = StudyDestination.objects.filter(is_active=True)
+    serializer_class = StudyDestinationSerializer
+    lookup_field = "pk"  # Uses destination 'id'     
 
 class BlogListView(ListAPIView):
     queryset = Blog.objects.filter(is_active=True)

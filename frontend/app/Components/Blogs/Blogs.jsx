@@ -93,15 +93,7 @@ export default function Blogs() {
         ))}
       </div>
 
-      {/* Bottom Button */}
-      <div className="text-center mt-14 sm:mt-16">
-        <Link
-          href="/blogs"
-          className="inline-flex items-center gap-2 bg-slate-900 hover:bg-purple-600 text-white text-sm font-semibold px-8 py-3.5 rounded-full transition-all duration-200 shadow-sm"
-        >
-          View All Articles <ArrowRight size={16} />
-        </Link>
-      </div>
+    
     </section>
   );
 }
