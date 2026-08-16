@@ -9,7 +9,7 @@ export default async function ServicesPage() {
   const universityServices = services.filter((s) => s.category === "university");
 
   return (
-    <div className="min-h-screen flex flex-col justify-between overflow-x-hidden">
+    <div className=" flex flex-col justify-between overflow-x-hidden overflow-y-hidden">
       <Services
         studentServices={studentServices}
         universityServices={universityServices}
