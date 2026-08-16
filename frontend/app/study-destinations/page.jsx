@@ -1,4 +1,5 @@
-import StudyDestinations from "../Components/StudyDestination/StudyDestination";
+import StudyDestinations from "../Components/study-destinations/study-destinations";
+import Footer from "../../UiComponents/Footer/Footer";
 
 export const metadata = {
   title: "Study Destinations | VisaHub",
@@ -8,7 +9,8 @@ export const metadata = {
 export default function DestinationsPage() {
   return (
     <div className="w-full min-h-screen bg-slate-50/50 pt-20">
-      <StudyDestinations />
+      <StudyDestinations/>
+      <Footer/>
     </div>
   );
 }

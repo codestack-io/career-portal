@@ -1,6 +1,6 @@
 from rest_framework.generics import ListAPIView,RetrieveUpdateAPIView,RetrieveAPIView
 from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University, Testimonial, Statistic, StudyDestination, Blog, FAQ,ContactInformation,Footer,UserProfile
-from .serializers import HeroBannerSerializer, AboutSectionSerializer ,ServiceSectionSerializer,WhyChooseUsSerializer,UniversitySerializer,TestimonialSerializer, StatisticSerializer,StudyDestinationSerializer, BlogSerializer, FAQSerializer,ContactInformationSerializer,FooterSerializer,UserProfileSerializer
+from .serializers import HeroBannerSerializer, AboutSectionSerializer ,ServiceSectionSerializer,WhyChooseUsSerializer,UniversitySerializer,TestimonialSerializer, StatisticSerializer,StudyDestinationSerializer,StudyDestinationDetailSerializer, BlogSerializer, FAQSerializer,ContactInformationSerializer,FooterSerializer,UserProfileSerializer
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -56,8 +56,8 @@ class StudyDestinationListView(ListAPIView):
 
 class StudyDestinationDetailView(RetrieveAPIView):
     queryset = StudyDestination.objects.filter(is_active=True)
-    serializer_class = StudyDestinationSerializer
-    lookup_field = "pk"  # Uses destination 'id'     
+    serializer_class = StudyDestinationDetailSerializer # <-- MUST BE StudyDestinationDetailSerializer
+    lookup_field = "pk"    
 
 class BlogListView(ListAPIView):
     queryset = Blog.objects.filter(is_active=True)

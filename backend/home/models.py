@@ -231,46 +231,94 @@ class Statistic(models.Model):
         return self.title   
 
 class StudyDestination(models.Model):
-    name = models.CharField(
-        max_length=100,
-        verbose_name="Country Name"
-    )
-
+    name = models.CharField(max_length=100, verbose_name="Country Name")
     short_description = models.TextField()
-
-    image = models.URLField(
-        verbose_name="Country Image URL"
-    )
-
-    flag = models.URLField(
-        blank=True,
-        verbose_name="Flag URL"
-    )
-
+    full_description = models.TextField(blank=True) # Added
+    image = models.URLField(verbose_name="Country Image URL")
+    flag = models.URLField(blank=True, verbose_name="Flag URL")
     universities_count = models.PositiveIntegerField(default=0)
-
-    average_tuition = models.CharField(
-        max_length=100,
-        blank=True
-    )
-
-    popular_courses = models.CharField(
-        max_length=255,
-        blank=True,
-        help_text="Separate by commas"
-    )
-
+    average_tuition = models.CharField(max_length=100, blank=True)
+    living_cost = models.CharField(max_length=100, blank=True) # Added
+    intakes = models.CharField(max_length=100, blank=True) # Added
+    post_study_work = models.CharField(max_length=100, blank=True) # Added
+    popular_courses = models.CharField(max_length=255, blank=True, help_text="Separate by commas")
     is_active = models.BooleanField(default=True)
-
     display_order = models.PositiveIntegerField(default=1)
 
     class Meta:
         ordering = ["display_order"]
-        verbose_name = "Study Destination"
-        verbose_name_plural = "Study Destinations"
 
     def __str__(self):
-        return self.name 
+        return self.name
+
+
+
+class DestinationIntake(models.Model):
+    destination = models.ForeignKey(StudyDestination, on_delete=models.CASCADE, related_name='intakes_list')
+    intake_name = models.CharField(max_length=100)  # e.g., "Fall Intake"
+    months = models.CharField(max_length=100)       # e.g., "Starts in August/September"
+    display_order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ["display_order"]
+
+    def __str__(self):
+        return f"{self.destination.name} - {self.intake_name}"
+
+
+class DestinationProgramDuration(models.Model):
+    destination = models.ForeignKey(StudyDestination, on_delete=models.CASCADE, related_name='program_durations')
+    program_level = models.CharField(max_length=150) # e.g., "Bachelor's Degree"
+    duration = models.CharField(max_length=100)      # e.g., "4 years"
+    display_order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ["display_order"]
+
+    def __str__(self):
+        return f"{self.destination.name} - {self.program_level}"
+
+
+class DestinationCost(models.Model):
+    destination = models.ForeignKey(StudyDestination, on_delete=models.CASCADE, related_name='cost_breakdowns')
+    program_level = models.CharField(max_length=150) # e.g., "Undergraduate Courses"
+    amount_foreign = models.CharField(max_length=100) # e.g., "CAD $20,000 - 35,000"
+    amount_local = models.CharField(max_length=100)   # e.g., "19,20,000 - 33,60,000 BDT"
+    display_order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ["display_order"]
+
+    def __str__(self):
+        return f"{self.destination.name} - {self.program_level}"
+
+
+class DestinationCity(models.Model):
+    destination = models.ForeignKey(StudyDestination, on_delete=models.CASCADE, related_name='cities')
+    name = models.CharField(max_length=100)          # e.g., "Toronto"
+    tagline = models.CharField(max_length=255, blank=True) # e.g., "Top universities with global career access"
+    image = models.URLField()
+    display_order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ["display_order"]
+
+    def __str__(self):
+        return f"{self.destination.name} - {self.name}"
+
+
+class DestinationWorkOpportunity(models.Model):
+    destination = models.ForeignKey(StudyDestination, on_delete=models.CASCADE, related_name='work_opportunities')
+    title = models.CharField(max_length=200)        # e.g., "Part-time Work Options"
+    description = models.TextField()
+    display_order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ["display_order"]
+
+    def __str__(self):
+        return f"{self.destination.name} - {self.title}"
+         
 
 class Blog(models.Model):
     title = models.CharField(max_length=255)

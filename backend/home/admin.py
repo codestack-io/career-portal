@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic,StudyDestination, Blog, FAQ,ContactInformation,Footer,UserProfile
+from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic,StudyDestination, Blog, FAQ,ContactInformation,Footer,UserProfile,StudyDestination,DestinationIntake,DestinationProgramDuration,DestinationCost,DestinationCity,DestinationWorkOpportunity
 
 User = get_user_model()
 @admin.register(HeroBanner)
@@ -99,7 +99,27 @@ class StatisticAdmin(admin.ModelAdmin):
 
     search_fields = ("title",)
 
-    ordering = ("display_order",)  
+    ordering = ("display_order",) 
+
+class IntakeInline(admin.TabularInline):
+    model = DestinationIntake
+    extra = 1
+
+class ProgramDurationInline(admin.TabularInline):
+    model = DestinationProgramDuration
+    extra = 1
+
+class CostInline(admin.TabularInline):
+    model = DestinationCost
+    extra = 1
+
+class CityInline(admin.TabularInline):
+    model = DestinationCity
+    extra = 1
+
+class WorkOpportunityInline(admin.TabularInline):
+    model = DestinationWorkOpportunity
+    extra = 1
 
 @admin.register(StudyDestination)
 class StudyDestinationAdmin(admin.ModelAdmin):
@@ -115,6 +135,14 @@ class StudyDestinationAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
     ordering = ("display_order",)  
+
+    inlines = [
+        IntakeInline,
+        ProgramDurationInline,
+        CostInline,
+        CityInline,
+        WorkOpportunityInline,
+    ]
 
 @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
