@@ -10,7 +10,7 @@ import {
   DollarSign,
   Calendar,
   GraduationCap,
-  ArrowLeft,
+  ChevronRight,
   CheckCircle2,
   Briefcase,
   Globe,
@@ -71,7 +71,7 @@ export default function StudyDestinationDetail({ params }) {
           href="/study-destinations"
           className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-purple-600/25"
         >
-          <ArrowLeft size={18} /> Back to Destinations
+          All Destinations
         </Link>
       </div>
     );
@@ -81,7 +81,6 @@ export default function StudyDestinationDetail({ params }) {
     ? destination.popular_courses.split(',').map((c) => c.trim())
     : [];
 
-  // Slide Animation Definitions
   const slideFromLeft = {
     initial: { opacity: 0, x: -60 },
     whileInView: { opacity: 1, x: 0 },
@@ -102,26 +101,14 @@ export default function StudyDestinationDetail({ params }) {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-purple-500 selection:text-white pb-24 overflow-x-hidden">
-      {/* Hero Header */}
-      <section className="relative h-[460px] sm:h-[520px] w-full overflow-hidden border-b border-slate-800">
+      {/* Hero Header - Pulls up behind the navbar */}
+      <section className="relative h-[480px] sm:h-[550px] w-full overflow-hidden border-b border-slate-800 -mt-24 sm:-mt-28 pt-24 sm:pt-28">
         <img
           src={destination.image}
           alt={destination.name}
-          className="w-full h-full object-cover object-center transform scale-105 filter brightness-90"
+          className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 filter brightness-90"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/30 backdrop-blur-[2px]" />
-
-        {/* Floating Top Navigation */}
-        <div className="absolute top-8 left-0 right-0 max-w-7xl mx-auto px-4 sm:px-6 z-20">
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-2 bg-slate-900/60 hover:bg-slate-900/90 border border-white/10 hover:border-white/20 backdrop-blur-md text-slate-200 text-sm font-medium px-4 py-2 rounded-xl transition-all duration-300 shadow-lg group cursor-pointer"
-            aria-label="Go back to previous page"
-          >
-            <ArrowLeft size={18} className="text-purple-400 group-hover:-translate-x-1 transition-transform duration-200" />
-            <span>Back</span>
-          </button>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20 backdrop-blur-[1px]" />
 
         {/* Hero Title Container */}
         <div className="absolute bottom-12 left-0 right-0 max-w-7xl mx-auto px-4 sm:px-6 z-20">
@@ -140,7 +127,7 @@ export default function StudyDestinationDetail({ params }) {
               </div>
             )}
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-semibold tracking-wider uppercase mb-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs font-semibold tracking-wider uppercase mb-2 backdrop-blur-md">
                 <Globe size={13} /> Destination Overview
               </div>
               <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight">
@@ -153,6 +140,19 @@ export default function StudyDestinationDetail({ params }) {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 relative z-20">
+        {/* Breadcrumb Navigation Bar */}
+        <div className="mb-6 flex items-center gap-2 text-sm text-slate-400 bg-slate-900/80 border border-slate-800 px-4 py-2.5 rounded-xl backdrop-blur-md w-fit shadow-lg">
+          <Link href="/" className="hover:text-purple-400 transition-colors">
+            Home
+          </Link>
+          <ChevronRight size={14} className="text-slate-600" />
+          <Link href="/study-destinations" className="hover:text-purple-400 transition-colors">
+            Destinations
+          </Link>
+          <ChevronRight size={14} className="text-slate-600" />
+          <span className="text-purple-300 font-medium">{destination.name}</span>
+        </div>
+
         {/* Highlight Stats Bar */}
         <motion.div
           {...slideFromRight}
@@ -201,9 +201,7 @@ export default function StudyDestinationDetail({ params }) {
 
         {/* Split Grid Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* Main Informational Content */}
           <div className="lg:col-span-2 space-y-10">
-            {/* About Section - Slides from Left */}
             <motion.div
               {...slideFromLeft}
               className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl"
@@ -217,7 +215,6 @@ export default function StudyDestinationDetail({ params }) {
               </p>
             </motion.div>
 
-            {/* Popular Courses - Slides from Right */}
             {coursesList.length > 0 && (
               <motion.div
                 {...slideFromRight}
@@ -247,7 +244,6 @@ export default function StudyDestinationDetail({ params }) {
               </motion.div>
             )}
 
-            {/* Academic Intake Table - Slides from Left */}
             {destination.intakes_list?.length > 0 && (
               <motion.section
                 {...slideFromLeft}
@@ -279,7 +275,6 @@ export default function StudyDestinationDetail({ params }) {
               </motion.section>
             )}
 
-            {/* Program Duration Table - Slides from Right */}
             {destination.program_durations?.length > 0 && (
               <motion.section
                 {...slideFromRight}
@@ -311,7 +306,6 @@ export default function StudyDestinationDetail({ params }) {
               </motion.section>
             )}
 
-            {/* Cost Table - Slides from Left */}
             {destination.cost_breakdowns?.length > 0 && (
               <motion.section
                 {...slideFromLeft}
@@ -345,7 +339,6 @@ export default function StudyDestinationDetail({ params }) {
               </motion.section>
             )}
 
-            {/* Top Cities - Cards alternate entrance from Left/Right */}
             {destination.cities?.length > 0 && (
               <section id="cities">
                 <motion.h2 {...slideFromLeft} className="text-2xl font-bold text-white mb-6 flex items-center gap-2.5">
@@ -386,7 +379,6 @@ export default function StudyDestinationDetail({ params }) {
               </section>
             )}
 
-            {/* Work Opportunities - Alternate entries */}
             {destination.work_opportunities?.length > 0 && (
               <section id="work" className="space-y-4">
                 <motion.h2 {...slideFromLeft} className="text-2xl font-bold text-white mb-6 flex items-center gap-2.5">
@@ -412,11 +404,10 @@ export default function StudyDestinationDetail({ params }) {
             )}
           </div>
 
-          {/* Sticky Sidebar Form - Slides in from Right */}
           <aside className="lg:col-span-1">
             <motion.div
               {...slideFromRight}
-              className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-purple-500/20 text-white rounded-3xl p-6 sm:p-8 shadow-2xl sticky top-8"
+              className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-purple-500/20 text-white rounded-3xl p-6 sm:p-8 shadow-2xl sticky top-28"
             >
               <div className="flex items-center gap-2 text-purple-400 text-xs font-semibold uppercase tracking-wider mb-2">
                 <ShieldCheck size={16} /> Verified Guidance
