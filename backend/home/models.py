@@ -167,7 +167,7 @@ class University(models.Model):
 
     def __str__(self):
         return self.name  
-
+    
 class Testimonial(models.Model):
     name = models.CharField(max_length=150)
 
@@ -176,9 +176,13 @@ class Testimonial(models.Model):
         blank=True
     )
 
-    university = models.CharField(
-        max_length=200,
-        blank=True
+    # UPDATED: Replaced CharField with ForeignKey
+    university = models.ForeignKey(
+        University,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="testimonials"
     )
 
     feedback = models.TextField()
