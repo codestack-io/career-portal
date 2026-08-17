@@ -74,9 +74,15 @@ export default function About({ about }) {
               viewport={{ once: true }}
               className="absolute -bottom-8 -right-8 rounded-3xl bg-white p-8 shadow-xl"
             >
-              <h2 className="text-5xl font-bold text-violet-600">
-                16+
-              </h2>
+             <h2 className="text-5xl font-bold text-violet-600">
+        {inView && (
+          <CountUp
+            end={16}
+            duration={2.5}
+            suffix="+"
+          />
+        )}
+      </h2>
 
               <p className="mt-2 text-slate-500">
                 Years Experience

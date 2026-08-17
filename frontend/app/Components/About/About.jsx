@@ -69,11 +69,11 @@ function CountUp({ end, duration = 2000, prefix = "", suffix = "", decimals = 0 
 }
 
 // ==========================================
-// 🚀 MAIN ABOUT CONTENT COMPONENT
+// MAIN ABOUT CONTENT COMPONENT
 // ==========================================
 export default function AboutPage() {
   return (
-    <div className="space-y-24 sm:space-y-32 pb-20">
+    <div className="space-y-24 sm:space-y-32 pb-20 ">
       
       {/* ---------------------------------------------------- */}
       {/* SECTION 1: HERO & CONSULTANCY OVERVIEW              */}

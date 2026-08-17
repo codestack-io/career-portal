@@ -60,18 +60,18 @@ export default function Hero({ hero }) {
           custom={0}
           className="flex justify-center"
         >
-         <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-6 py-3 text-sm font-semibold text-violet-700 shadow-lg backdrop-blur">
-  {hero.badge}
+    <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-6 py-3 text-sm font-semibold text-violet-700 shadow-lg backdrop-blur">
+  {/* Removes numbers and '+' signs from hero.badge string */}
+  {hero.badge?.replace(/[0-9,+/]+/g, "").trim()} 
 
   {inView && (
     <CountUp
       end={hero.badge_count}
       duration={3}
       separator=","
+      suffix="+"
     />
   )}
-
-  
 </span>
         </motion.div>
 
