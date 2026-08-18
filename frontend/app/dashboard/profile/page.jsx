@@ -132,9 +132,15 @@ export default function ProfilePage() {
     }
   };
 
-  const avatarPreview = avatarFile
-    ? URL.createObjectURL(avatarFile)
-    : currentAvatar;
+  const formatAvatarUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${API_BASE_URL}${url}`;
+};
+ // Update avatarPreview line:
+const avatarPreview = avatarFile
+  ? URL.createObjectURL(avatarFile)
+  : formatAvatarUrl(currentAvatar);
 
   if (loading) {
     return (
