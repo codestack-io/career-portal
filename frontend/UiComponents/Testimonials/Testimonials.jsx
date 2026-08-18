@@ -1,14 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Quote, Star, User } from "lucide-react";
+import { Quote, Star, User, ChevronDown, ChevronUp } from "lucide-react";
+
 export default function Testimonials({ testimonials = [] }) {
-  // Extract array if API response is paginated (data.results)
+  const [showAll, setShowAll] = useState(false);
+
   const testimonialList = Array.isArray(testimonials)
     ? testimonials
     : testimonials?.results || [];
 
-  //if (testimonialList.length === 0) return null;
+  if (!testimonialList || testimonialList.length === 0) return null;
+
+  // Show initial 6 testimonials on homepage, toggle to full list
+  const displayedTestimonials = showAll
+    ? testimonialList
+    : testimonialList.slice(0, 6);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-violet-50 py-28">
@@ -19,7 +27,7 @@ export default function Testimonials({ testimonials = [] }) {
       <div className="relative mx-auto max-w-7xl px-6">
         {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: -50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
@@ -39,13 +47,10 @@ export default function Testimonials({ testimonials = [] }) {
           </p>
         </motion.div>
 
-        {/* Cards */}
+        {/* Cards Container */}
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {testimonialList.map((item, index) => {
-            // Safe calculation for star ratings
+          {displayedTestimonials.map((item, index) => {
             const starCount = Math.max(1, Math.min(5, Number(item.rating) || 5));
-
-            // Extract university name string whether sent as an object or text string
             const universityName =
               typeof item.university === "object"
                 ? item.university?.name
@@ -56,27 +61,25 @@ export default function Testimonials({ testimonials = [] }) {
                 key={item.id || index}
                 initial={{
                   opacity: 0,
-                  y: 80,
+                  y: -100,
                   scale: 0.9,
-                  rotateX: 15,
                 }}
                 whileInView={{
                   opacity: 1,
                   y: 0,
                   scale: 1,
-                  rotateX: 0,
                 }}
                 transition={{
                   duration: 0.8,
-                  delay: index * 0.15,
-                  ease: "easeOut",
+                  delay: (index % 6) * 0.15,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 15,
                 }}
                 viewport={{ once: true }}
                 whileHover={{
-                  y: -15,
+                  y: 10,
                   scale: 1.03,
-                  rotateX: -4,
-                  rotateY: index % 2 === 0 ? 4 : -4,
                   transition: {
                     type: "spring",
                     stiffness: 220,
@@ -84,10 +87,9 @@ export default function Testimonials({ testimonials = [] }) {
                   },
                 }}
                 whileTap={{ scale: 0.98 }}
-                style={{ transformStyle: "preserve-3d" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl transition-all duration-500"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl transition-all duration-300"
               >
-                {/* Ambient Glow */}
+                {/* Background Glow */}
                 <motion.div
                   className="absolute -right-24 -top-24 h-52 w-52 rounded-full bg-gradient-to-r from-violet-500/30 to-blue-500/30 blur-3xl"
                   initial={{ scale: 0.6, opacity: 0.2 }}
@@ -96,7 +98,22 @@ export default function Testimonials({ testimonials = [] }) {
                 />
 
                 <div>
-                  <Quote size={40} className="mb-6 text-violet-500 opacity-20" />
+                  {/* Movable Animated Quote Icon */}
+                  <motion.div
+                    initial={{ y: 0, rotate: 0 }}
+                    whileHover={{
+                      y: [-4, 4, -4],
+                      rotate: [0, -10, 10, 0],
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2,
+                      ease: "easeInOut",
+                    }}
+                    className="mb-6 inline-block"
+                  >
+                    <Quote size={40} className="text-violet-500 opacity-30 transition-colors group-hover:opacity-80" />
+                  </motion.div>
 
                   {/* Review Text */}
                   <p className="leading-8 text-slate-600">
@@ -117,7 +134,6 @@ export default function Testimonials({ testimonials = [] }) {
 
                 {/* Card Footer */}
                 <div className="mt-8 flex items-center gap-4 border-t border-slate-100 pt-6">
-                  {/* Student Image / Avatar */}
                   {item.image ? (
                     <motion.img
                       src={item.image}
@@ -153,6 +169,26 @@ export default function Testimonials({ testimonials = [] }) {
             );
           })}
         </div>
+
+        {/* Inline Toggle Button */}
+        {testimonialList.length > 6 && (
+          <div className="mt-12 text-center">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-7 py-3 font-semibold text-violet-700 hover:bg-violet-100 transition-colors shadow-sm"
+            >
+              {showAll ? (
+                <>
+                  Show Less <ChevronUp size={18} />
+                </>
+              ) : (
+                <>
+                  View More Testimonials ({testimonialList.length - 6} more) <ChevronDown size={18} />
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

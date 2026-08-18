@@ -4,6 +4,14 @@ from .serializers import HeroBannerSerializer, AboutSectionSerializer ,ServiceSe
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.conf import settings
+from django.contrib.auth.models import User
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 # 1. Import your Authentication Class
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -95,3 +103,79 @@ class UserProfileView(RetrieveUpdateAPIView):
     def get_object(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
         return profile
+
+class GoogleLoginView(APIView):
+
+    permission_classes = []
+
+    def post(self, request):
+
+        credential = request.data.get("credential")
+
+        if not credential:
+            return Response(
+                {"detail": "Google credential is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Verify Google credential
+            google_user = id_token.verify_oauth2_token(
+                credential,
+                requests.Request(),
+                settings.GOOGLE_CLIENT_ID,
+            )
+
+            email = google_user.get("email")
+            first_name = google_user.get("given_name", "")
+            last_name = google_user.get("family_name", "")
+
+            if not email:
+                return Response(
+                    {"detail": "Google account email was not provided."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Find existing user by email
+            user = User.objects.filter(email=email).first()
+
+            # Create user if they don't exist
+            if not user:
+
+                username = email.split("@")[0]
+
+                # Make username unique
+                original_username = username
+                counter = 1
+
+                while User.objects.filter(username=username).exists():
+                    username = f"{original_username}{counter}"
+                    counter += 1
+
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                )
+
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                }
+            })
+
+        except ValueError:
+            return Response(
+                {"detail": "Invalid Google credential."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )    

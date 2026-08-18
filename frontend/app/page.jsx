@@ -28,7 +28,6 @@ import {
 } from "@/lib/api";
 
 export default async function Home() {
-
   const [
     heroRes,
     aboutRes,
@@ -55,48 +54,34 @@ export default async function Home() {
     getUniversities(),
   ]);
 
-  // Extract paginated results
+  // Extract Single Objects safely
+  const hero = heroRes?.results ? heroRes.results[0] : heroRes?.[0] ?? null;
+  const about = aboutRes?.results ? aboutRes.results[0] : aboutRes?.[0] ?? null;
+  const footer = footerRes?.results ? footerRes.results[0] : footerRes?.[0] ?? null;
 
-const hero = heroRes?.[0] ?? null;
-const about = aboutRes?.[0] ?? null;
-const footer = footerRes?.[0] ?? null;
-
-const services = servicesRes ?? [];
-const faqs = faqsRes ?? [];
-const testimonials = testimonialsRes ?? [];
-const whyChooseUs = whyChooseUsRes ?? [];
-const blogs = blogsRes ?? [];
-const studyDestinations = studyDestinationsRes ?? [];
-const statistics = statisticsRes ?? [];
-const universities = universitiesRes ?? [];
+  // Extract Arrays safely (Supports DRF Pagination + Flat Arrays)
+  const services = servicesRes?.results || servicesRes || [];
+  const faqs = faqsRes?.results || faqsRes || [];
+  const testimonials = testimonialsRes?.results || testimonialsRes || [];
+  const whyChooseUs = whyChooseUsRes?.results || whyChooseUsRes || [];
+  const blogs = blogsRes?.results || blogsRes || [];
+  const studyDestinations = studyDestinationsRes?.results || studyDestinationsRes || [];
+  const statistics = statisticsRes?.results || statisticsRes || [];
+  const universities = universitiesRes?.results || universitiesRes || [];
 
   return (
     <main className="relative w-full overflow-hidden">
-
-      <Navbar />
-
       <Hero hero={hero} />
-
       <About about={about} />
-
       <Services services={services} />
-
       <WhyChooseUs features={whyChooseUs} />
-
       <StudyDestinations destinations={studyDestinations} />
-
       <Universities universities={universities} />
-
       <Statistics statistics={statistics} />
-
       <Testimonials testimonials={testimonials} />
-
       <Blogs blogs={blogs} />
-
       <FAQ faqs={faqs} />
-
       <Footer footer={footer} />
-
     </main>
   );
 }

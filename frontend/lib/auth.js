@@ -102,3 +102,25 @@ export async function refreshAccessToken(refreshToken) {
 
   return data;
 }
+
+export async function googleLogin(credential) {
+  const response = await fetch(`${BASE_URL}/api/google/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      credential,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || "Google authentication failed"
+    );
+  }
+
+  return data;
+}
