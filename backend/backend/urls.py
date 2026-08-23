@@ -28,6 +28,7 @@ urlpatterns = [
     # Authentication APIs
     path("auth/", include("djoser.urls")),
     path("auth/", include("djoser.urls.jwt")),
+    path('auth/', include('djoser.social.urls')),
 ]
 
 # Serving uploaded media files during local development

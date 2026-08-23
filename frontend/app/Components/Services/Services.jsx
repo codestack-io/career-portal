@@ -16,11 +16,10 @@ import {
 } from "lucide-react";
 
 /**
- * Services.jsx (White Theme Edition)
+ * Services.jsx
  * -------------------------------------------------------------------------
- * Study-abroad "Services" section styled as a light boarding-pass / visa-stamp
- * interface — bright canvas background with clean contrast, sharp borders, 
- * and bronze branding accents.
+ * Modern sans-serif implementation styled with clean card containers,
+ * slate canvas background, and unified brand violet/blue gradients.
  * ------------------------------------------------------------------------- */
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
@@ -103,15 +102,15 @@ export default function Services() {
   }
 
   return (
-    <section className="relative w-full bg-[#F8F9FA] text-[#0F172A] overflow-hidden">
+    <section className="relative w-full bg-[#F8FAFC] text-slate-900 font-sans overflow-hidden">
       {/* Flight-path grid texture */}
       <FlightGrid />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 md:py-28">
         {/* Eyebrow / header stats */}
-        <div className="flex items-center justify-between gap-4 mb-10 md:mb-14 border-b border-slate-200 pb-4">
+        <div className="flex items-center justify-between gap-4 mb-10 md:mb-14 border-b border-slate-200/80 pb-4">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[11px] font-semibold tracking-[0.28em] uppercase text-[#B45309]">
+            <span className="font-mono text-[11px] font-semibold tracking-[0.28em] uppercase text-violet-600">
               Departures · Services
             </span>
           </div>
@@ -120,30 +119,29 @@ export default function Services() {
           </span>
         </div>
 
-        <h2
-          className="font-serif leading-[0.95] text-[clamp(2.4rem,6vw,4.2rem)] mb-4 text-slate-900 font-bold"
-          style={{ fontFamily: "'Fraunces', ui-serif, Georgia, serif" }}
-        >
+        {/* Modern Sans-Serif Header */}
+        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-6">
           Everything you need,
           <br />
-          <span className="italic text-[#B45309] font-normal">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-blue-600">
             stamped &amp; cleared.
           </span>
         </h2>
-        <p className="max-w-xl text-slate-600 text-base md:text-lg mb-12 md:mb-16">
+        
+        <p className="max-w-xl text-slate-600 text-base md:text-lg mb-12 md:mb-16 leading-relaxed">
           Pick a terminal below. Every service is a checkpoint on the same
           route — from your first application to the day you land.
         </p>
 
         {/* Terminal Switcher */}
-        <div className="inline-flex items-center gap-2 p-1.5 rounded-full bg-slate-200/60 border border-slate-300/50 mb-10">
+        <div className="inline-flex items-center gap-2 p-1.5 rounded-2xl bg-slate-200/60 border border-slate-300/50 mb-10 backdrop-blur-md">
           {TERMINALS.map((t) => {
             const isActive = t.key === terminal;
             return (
               <button
                 key={t.key}
                 onClick={() => setTerminal(t.key)}
-                className={`relative px-5 py-2.5 rounded-full font-mono text-xs font-semibold tracking-wider uppercase transition-colors ${
+                className={`relative px-5 py-2.5 rounded-xl font-mono text-xs font-semibold tracking-wider uppercase transition-colors ${
                   isActive
                     ? "text-white"
                     : "text-slate-600 hover:text-slate-900"
@@ -152,7 +150,7 @@ export default function Services() {
                 {isActive && (
                   <motion.span
                     layoutId="terminal-pill"
-                    className="absolute inset-0 rounded-full bg-[#B45309] shadow-sm"
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 shadow-md shadow-violet-500/20"
                     transition={{ type: "spring", stiffness: 400, damping: 32 }}
                   />
                 )}
@@ -190,14 +188,14 @@ export default function Services() {
                       <div
                         className={`relative flex items-center gap-4 rounded-2xl border px-4 py-4 transition-all duration-300 ${
                           isActive
-                            ? "border-[#B45309] bg-white shadow-md shadow-slate-200"
+                            ? "border-violet-600 bg-white shadow-md shadow-violet-500/10"
                             : "border-slate-200/80 hover:border-slate-300 bg-white/60 hover:bg-white"
                         }`}
                       >
                         {isActive && (
                           <motion.div
                             layoutId="stub-active"
-                            className="absolute inset-0 rounded-2xl ring-2 ring-[#B45309]/20"
+                            className="absolute inset-0 rounded-2xl ring-2 ring-violet-600/20"
                             transition={{ type: "spring", stiffness: 350, damping: 30 }}
                           />
                         )}
@@ -205,7 +203,7 @@ export default function Services() {
                         <span
                           className={`relative z-10 font-mono text-[11px] tabular-nums px-2 py-1 rounded-md border font-medium ${
                             isActive
-                              ? "border-[#B45309]/30 bg-[#B45309]/10 text-[#B45309]"
+                              ? "border-violet-600/30 bg-violet-50 text-violet-700"
                               : "border-slate-200 bg-slate-50 text-slate-400"
                           }`}
                         >
@@ -215,7 +213,7 @@ export default function Services() {
                         <Icon
                           size={18}
                           className={`relative z-10 shrink-0 ${
-                            isActive ? "text-[#B45309]" : "text-slate-400"
+                            isActive ? "text-violet-600" : "text-slate-400"
                           }`}
                         />
 
@@ -229,7 +227,7 @@ export default function Services() {
                       </div>
 
                       {/* Ticket punch hole effect (Desktop) */}
-                      <div className="hidden md:block absolute -right-[21px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#F8F9FA] border border-slate-200" />
+                      <div className="hidden md:block absolute -right-[21px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#F8FAFC] border border-slate-200" />
                     </button>
                   </li>
                 );
@@ -237,7 +235,7 @@ export default function Services() {
             </ol>
 
             {/* Right Column: Ticket Document Details */}
-            <div className="relative rounded-[28px] border border-slate-200/80 bg-white p-8 md:p-12 min-h-[420px] overflow-hidden shadow-[0_10px_30px_-15px_rgba(15,23,42,0.08)]">
+            <div className="relative rounded-3xl border border-white/60 bg-white/80 p-8 md:p-12 min-h-[420px] overflow-hidden shadow-xl shadow-slate-200/50 backdrop-blur-xl">
               <TicketTexture />
 
               <AnimatePresence mode="wait">
@@ -252,15 +250,13 @@ export default function Services() {
                   >
                     <div className="flex items-start justify-between gap-6 mb-8">
                       <div>
-                        <span className="block font-mono text-[11px] font-semibold tracking-[0.25em] uppercase text-[#B45309] mb-3">
+                        <span className="block font-mono text-[11px] font-semibold tracking-[0.25em] uppercase text-violet-600 mb-3">
                           Checkpoint {String(filtered.findIndex((f) => f.id === active.id) + 1).padStart(2, "0")}
                           {" / "}
                           {String(filtered.length).padStart(2, "0")}
                         </span>
-                        <h3
-                          className="font-serif text-3xl md:text-[2.6rem] leading-[1.05] max-w-lg text-slate-900 font-bold"
-                          style={{ fontFamily: "'Fraunces', ui-serif, Georgia, serif" }}
-                        >
+                        
+                        <h3 className="text-2xl md:text-4xl font-bold tracking-tight text-slate-900 leading-tight max-w-lg">
                           {active.title}
                         </h3>
                       </div>
@@ -272,10 +268,10 @@ export default function Services() {
                           className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm shrink-0"
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center shrink-0 shadow-sm">
+                        <div className="w-16 h-16 rounded-2xl border border-violet-100 bg-violet-50 flex items-center justify-center shrink-0 shadow-sm text-violet-600">
                           {(() => {
                             const Icon = pickLineIcon(active.title);
-                            return <Icon size={24} className="text-[#B45309]" />;
+                            return <Icon size={26} />;
                           })()}
                         </div>
                       )}
@@ -314,7 +310,7 @@ function BoardingCTA({ label }) {
       whileHover="hover"
       initial="rest"
       animate="rest"
-      className="relative inline-flex items-center gap-2 rounded-full pl-6 pr-2 py-2 font-mono text-xs font-semibold uppercase tracking-widest text-white bg-[#B45309] shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+      className="relative inline-flex items-center gap-2 rounded-xl pl-6 pr-2 py-2.5 font-mono text-xs font-semibold uppercase tracking-widest text-white bg-gradient-to-r from-violet-600 to-blue-600 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 transition-all overflow-hidden"
     >
       <span className="relative z-10">{label}</span>
       <motion.span
@@ -323,7 +319,7 @@ function BoardingCTA({ label }) {
           hover: { rotate: 45, x: 2 },
         }}
         transition={{ type: "spring", stiffness: 400, damping: 18 }}
-        className="relative z-10 w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center"
+        className="relative z-10 w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center backdrop-blur-sm"
       >
         <ArrowUpRight size={14} />
       </motion.span>
@@ -349,10 +345,10 @@ function Stamp() {
       className="pointer-events-none absolute bottom-8 right-8 select-none"
     >
       <div
-        className="w-24 h-24 rounded-full border-[3px] border-[#B45309]/80 flex items-center justify-center bg-[#B45309]/[0.02]"
+        className="w-24 h-24 rounded-full border-[3px] border-violet-600/80 flex items-center justify-center bg-violet-600/[0.03]"
         style={{ transform: "rotate(-18deg)" }}
       >
-        <span className="font-mono text-[9px] font-bold tracking-[0.2em] uppercase text-[#B45309] text-center leading-tight">
+        <span className="font-mono text-[9px] font-bold tracking-[0.2em] uppercase text-violet-600 text-center leading-tight">
           Cleared
           <br />
           for transit
@@ -365,7 +361,7 @@ function Stamp() {
 function FlightGrid() {
   return (
     <div
-      className="pointer-events-none absolute inset-0 opacity-[0.5]"
+      className="pointer-events-none absolute inset-0 opacity-[0.4]"
       style={{
         backgroundImage:
           "radial-gradient(circle, rgba(15, 23, 42, 0.08) 1px, transparent 1px)",
@@ -387,7 +383,7 @@ function TicketTexture() {
 function LoadingRow() {
   return (
     <div className="flex items-center gap-3 py-16 text-slate-500">
-      <Loader2 className="animate-spin text-[#B45309]" size={18} />
+      <Loader2 className="animate-spin text-violet-600" size={18} />
       <span className="font-mono text-xs tracking-widest uppercase">
         Checking arrivals board…
       </span>
@@ -398,12 +394,12 @@ function LoadingRow() {
 function ErrorRow({ endpoint }) {
   return (
     <div className="flex items-start gap-3 py-16 text-slate-600 max-w-md">
-      <AlertTriangle size={18} className="text-[#B45309] shrink-0 mt-0.5" />
+      <AlertTriangle size={18} className="text-amber-500 shrink-0 mt-0.5" />
       <p className="text-sm leading-relaxed">
         Couldn&apos;t reach the services feed at{" "}
-        <code className="font-mono text-[#B45309] bg-slate-100 px-1 py-0.5 rounded">{endpoint}</code>. Confirm
+        <code className="font-mono text-violet-600 bg-slate-100 px-1 py-0.5 rounded">{endpoint}</code>. Confirm
         your Django server is running and{" "}
-        <code className="font-mono text-[#B45309] bg-slate-100 px-1 py-0.5 rounded">CORS</code> allows this
+        <code className="font-mono text-violet-600 bg-slate-100 px-1 py-0.5 rounded">CORS</code> allows this
         origin, then refresh.
       </p>
     </div>
