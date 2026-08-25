@@ -67,12 +67,30 @@ class AboutSection(models.Model):
     def __str__(self):
         return self.title
 
-class ServiceSection(models.Model):
-    CATEGORY_CHOICES = [
-        ("student", "Student Services"),
-        ("university", "University Services"),
-    ]
+# 1. New dynamic Category model for services
+class ServiceCategory(models.Model):
+    name = models.CharField(
+        max_length=100, 
+        verbose_name="Category Name"
+    )
+    slug = models.SlugField(
+        unique=True, 
+        help_text="Unique URL identifier (e.g., 'student-services')"
+    )
+    display_order = models.PositiveIntegerField(default=1)
+    is_active = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ["display_order"]
+        verbose_name = "Service Category"
+        verbose_name_plural = "Service Categories"
+
+    def __str__(self):
+        return self.name
+
+
+# 2. Updated ServiceSection model using ForeignKey
+class ServiceSection(models.Model):
     title = models.CharField(
         max_length=255,
         verbose_name="Title"
@@ -87,10 +105,13 @@ class ServiceSection(models.Model):
         verbose_name="Icon URL"
     )
 
-    category = models.CharField(
-        max_length=20,
-        choices=CATEGORY_CHOICES,
-        default="student"
+    # UPDATED: Converted from CharField choices to ForeignKey
+    category = models.ForeignKey(
+        ServiceCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="services"
     )
 
     display_order = models.PositiveIntegerField(default=1)
@@ -103,7 +124,7 @@ class ServiceSection(models.Model):
         verbose_name_plural = "Services"
 
     def __str__(self):
-        return self.title 
+        return self.title
 
 class WhyChooseUs(models.Model):
     title = models.CharField(

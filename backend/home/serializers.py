@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import HeroBanner, AboutSection, ServiceSection,WhyChooseUs, University,Testimonial, Statistic,StudyDestination,Blog, FAQ,ContactInformation,Footer,UserProfile,StudyDestination,DestinationIntake,DestinationProgramDuration, DestinationCost,DestinationCity,DestinationWorkOpportunity
+from .models import HeroBanner, AboutSection,ServiceCategory, ServiceSection,WhyChooseUs, University,Testimonial, Statistic,StudyDestination,Blog, FAQ,ContactInformation,Footer,UserProfile,StudyDestination,DestinationIntake,DestinationProgramDuration, DestinationCost,DestinationCity,DestinationWorkOpportunity
     
    
 from django.contrib.auth import get_user_model
@@ -16,6 +16,11 @@ class AboutSectionSerializer(serializers.ModelSerializer):
         model = AboutSection
         fields = "__all__"
 
+
+class ServiceCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServiceCategory
+        fields = '__all__'
 
 class ServiceSectionSerializer(serializers.ModelSerializer):
     class Meta:

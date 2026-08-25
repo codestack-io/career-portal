@@ -1,6 +1,5 @@
-from django.urls import path,include
-from django.contrib import admin
- 
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from .views import (
     HeroBannerListView,
@@ -18,28 +17,34 @@ from .views import (
     ContactInformationListAPIView,
     FooterView,
     UserProfileView,
-    GoogleLoginView
+    GoogleLoginView,
+    ServiceCategoryViewSet,
+    ServiceSectionViewSet,
 )
+
+# Initialize DRF Router for ViewSets
+router = DefaultRouter()
+router.register(r'service-categories', ServiceCategoryViewSet)
+router.register(r'services-v2', ServiceSectionViewSet)
 
 urlpatterns = [
     path("hero/", HeroBannerListView.as_view(), name="hero"),
     path("about/", AboutSectionListView.as_view(), name="about"),
     path("services/", ServiceSectionListView.as_view(), name="services"),
-    path("why-choose-us/", WhyChooseUsListView.as_view()),
-    path("universities/", UniversityListView.as_view()),
-    path("testimonials/", TestimonialListView.as_view()),
-    path("statistics/", StatisticListView.as_view()),
-    path("study-destinations/",StudyDestinationListView.as_view()),
+    path("why-choose-us/", WhyChooseUsListView.as_view(), name="why-choose-us"),
+    path("universities/", UniversityListView.as_view(), name="universities"),
+    path("testimonials/", TestimonialListView.as_view(), name="testimonials"),
+    path("statistics/", StatisticListView.as_view(), name="statistics"),
+    path("study-destinations/", StudyDestinationListView.as_view(), name="study-destinations"),
     path("study-destinations/<int:pk>/", StudyDestinationDetailView.as_view(), name="study-destination-detail"),
-    path("blogs/", BlogListView.as_view()),
+    path("blogs/", BlogListView.as_view(), name="blogs"),
     path("blogs/<slug:slug>/", BlogDetailView.as_view(), name="blog-detail"),
-    path("faqs/", FAQListAPIView.as_view()),
-    path("contact/",ContactInformationListAPIView.as_view()),
-    path("footer/",FooterView.as_view()),
-   
-    path('profile/', UserProfileView.as_view(), name='user-profile'),
+    path("faqs/", FAQListAPIView.as_view(), name="faqs"),
+    path("contact/", ContactInformationListAPIView.as_view(), name="contact"),
+    path("footer/", FooterView.as_view(), name="footer"),
+    path("profile/", UserProfileView.as_view(), name="user-profile"),
     path("google/", GoogleLoginView.as_view(), name="google-login"),
     
-
+    # Include router URLs for ViewSets
+    path("", include(router.urls)),
 ]
-

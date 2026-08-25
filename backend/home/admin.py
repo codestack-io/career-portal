@@ -1,9 +1,32 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import HeroBanner, AboutSection, ServiceSection, WhyChooseUs, University,Testimonial, Statistic,StudyDestination, Blog, FAQ,ContactInformation,Footer,UserProfile,StudyDestination,DestinationIntake,DestinationProgramDuration,DestinationCost,DestinationCity,DestinationWorkOpportunity
+
+from .models import (
+    HeroBanner,
+    AboutSection,
+    ServiceCategory,
+    ServiceSection,
+    WhyChooseUs,
+    University,
+    Testimonial,
+    Statistic,
+    StudyDestination,
+    Blog,
+    FAQ,
+    ContactInformation,
+    Footer,
+    UserProfile,
+    DestinationIntake,
+    DestinationProgramDuration,
+    DestinationCost,
+    DestinationCity,
+    DestinationWorkOpportunity,
+)
 
 User = get_user_model()
+
+
 @admin.register(HeroBanner)
 class HeroBannerAdmin(admin.ModelAdmin):
     list_display = ("title", "badge", "is_active")
@@ -20,29 +43,29 @@ class AboutSectionAdmin(admin.ModelAdmin):
         "students_recruited",
         "is_active",
     )
-
     list_filter = ("is_active",)
     search_fields = ("title", "subtitle")
 
+
+@admin.register(ServiceCategory)
+class ServiceCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug", "display_order", "is_active")
+    prepopulated_fields = {"slug": ("name",)}
+
+
 @admin.register(ServiceSection)
 class ServiceSectionAdmin(admin.ModelAdmin):
-    list_display = (
-        "title",
-        "display_order",
-        "category",
-        "is_active",
-    )
-
+    list_display = ("title", "category", "display_order", "is_active")
     list_filter = ("category", "is_active")
-    search_fields = ("title",)
-    ordering = ("display_order",)
+
 
 @admin.register(WhyChooseUs)
 class WhyChooseUsAdmin(admin.ModelAdmin):
     list_display = ("title", "display_order", "is_active")
     list_filter = ("is_active",)
     search_fields = ("title",)
-    ordering = ("display_order",)  
+    ordering = ("display_order",)
+
 
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
@@ -52,20 +75,16 @@ class UniversityAdmin(admin.ModelAdmin):
         "is_featured",
         "display_order",
     )
-
     list_filter = (
         "country",
         "is_featured",
     )
-
     search_fields = (
         "name",
         "country",
     )
+    ordering = ("display_order",)
 
-    ordering = (
-        "display_order",
-    )  
 
 @admin.register(Testimonial)
 class TestimonialAdmin(admin.ModelAdmin):
@@ -76,15 +95,13 @@ class TestimonialAdmin(admin.ModelAdmin):
         "display_order",
         "is_active",
     )
-
     list_filter = ("is_active",)
-
     search_fields = (
         "name",
         "university",
     )
+    ordering = ("display_order",)
 
-    ordering = ("display_order",) 
 
 @admin.register(Statistic)
 class StatisticAdmin(admin.ModelAdmin):
@@ -94,32 +111,35 @@ class StatisticAdmin(admin.ModelAdmin):
         "display_order",
         "is_active",
     )
-
     list_filter = ("is_active",)
-
     search_fields = ("title",)
+    ordering = ("display_order",)
 
-    ordering = ("display_order",) 
 
 class IntakeInline(admin.TabularInline):
     model = DestinationIntake
     extra = 1
 
+
 class ProgramDurationInline(admin.TabularInline):
     model = DestinationProgramDuration
     extra = 1
+
 
 class CostInline(admin.TabularInline):
     model = DestinationCost
     extra = 1
 
+
 class CityInline(admin.TabularInline):
     model = DestinationCity
     extra = 1
 
+
 class WorkOpportunityInline(admin.TabularInline):
     model = DestinationWorkOpportunity
     extra = 1
+
 
 @admin.register(StudyDestination)
 class StudyDestinationAdmin(admin.ModelAdmin):
@@ -129,13 +149,9 @@ class StudyDestinationAdmin(admin.ModelAdmin):
         "display_order",
         "is_active",
     )
-
     list_filter = ("is_active",)
-
     search_fields = ("name",)
-
-    ordering = ("display_order",)  
-
+    ordering = ("display_order",)
     inlines = [
         IntakeInline,
         ProgramDurationInline,
@@ -143,6 +159,7 @@ class StudyDestinationAdmin(admin.ModelAdmin):
         CityInline,
         WorkOpportunityInline,
     ]
+
 
 @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
@@ -153,16 +170,16 @@ class BlogAdmin(admin.ModelAdmin):
         "published_date",
         "is_active",
     )
-
     list_filter = ("category", "is_active")
+    search_fields = ("title", "author")
 
-    search_fields = ("title", "author") 
 
 @admin.register(FAQ)
 class FAQAdmin(admin.ModelAdmin):
     list_display = ("question", "display_order", "is_active")
     list_editable = ("display_order", "is_active")
     ordering = ("display_order",)
+
 
 @admin.register(ContactInformation)
 class ContactInformationAdmin(admin.ModelAdmin):
@@ -172,8 +189,8 @@ class ContactInformationAdmin(admin.ModelAdmin):
         "email",
         "is_active",
     )
-
     list_editable = ("is_active",)
+
 
 @admin.register(Footer)
 class FooterAdmin(admin.ModelAdmin):
@@ -181,26 +198,34 @@ class FooterAdmin(admin.ModelAdmin):
     list_filter = ("is_active",)
     search_fields = ("company_name", "email")
 
-# 1. Define how the UserProfile form looks inside the User page
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
-    verbose_name_plural = 'Profile'
-    readonly_fields = ('created_at', 'updated_at')
+    verbose_name_plural = "Profile"
+    readonly_fields = ("created_at", "updated_at")
 
-# 2. Attach the profile inline to the default User admin class
+
 class UserAdmin(BaseUserAdmin):
     inlines = (UserProfileInline,)
 
-# 3. Unregister Django's default User admin and register your customized one
+
 try:
     admin.site.unregister(User)
+except admin.sites.NotRegistered:
+    pass
 finally:
     admin.site.register(User, UserAdmin)
 
-# 4. Optional: Also register UserProfile as its own separate section in Admin sidebar
+
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'phone', 'country_of_interest', 'target_degree', 'passport_status')
-    search_fields = ('user__username', 'user__email', 'phone', 'country_of_interest')
-    readonly_fields = ('created_at', 'updated_at')   
+    list_display = (
+        "user",
+        "phone",
+        "country_of_interest",
+        "target_degree",
+        "passport_status",
+    )
+    search_fields = ("user__username", "user__email", "phone", "country_of_interest")
+    readonly_fields = ("created_at", "updated_at")
