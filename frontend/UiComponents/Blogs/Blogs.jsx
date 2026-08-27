@@ -15,6 +15,15 @@ export default function Blogs({ blogs = [] }) {
   const featured = blogs[0];
   const others = blogs.slice(1);
 
+  // Helper function to safely extract author display name
+  const getAuthorName = (author) => {
+    if (!author) return "Admin";
+    if (typeof author === "object") {
+      return author.username || author.email || "Admin";
+    }
+    return author;
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-violet-50 py-28">
 
@@ -87,7 +96,8 @@ export default function Blogs({ blogs = [] }) {
 
                 <span className="flex items-center gap-2">
                   <User size={16}/>
-                  {featured.author}
+                  {/* FIXED: Safely render author name */}
+                  {getAuthorName(featured.author)}
                 </span>
 
                 <span className="flex items-center gap-2">

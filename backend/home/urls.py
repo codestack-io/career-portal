@@ -1,5 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from django.conf import settings
+from django.conf.urls.static import static
 
 from .views import (
     HeroBannerListView,
@@ -44,7 +46,8 @@ urlpatterns = [
     path("footer/", FooterView.as_view(), name="footer"),
     path("profile/", UserProfileView.as_view(), name="user-profile"),
     path("google/", GoogleLoginView.as_view(), name="google-login"),
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
     
     # Include router URLs for ViewSets
     path("", include(router.urls)),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

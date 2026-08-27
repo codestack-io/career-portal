@@ -23,6 +23,12 @@ const cardVariants = {
 };
 
 function ServiceCard({ service }) {
+  // Safely extract string label whether category is an object or a plain string
+  const categoryName =
+    typeof service.category === "object"
+      ? service.category?.name
+      : service.category;
+
   return (
     <motion.div
       variants={cardVariants}
@@ -80,9 +86,13 @@ function ServiceCard({ service }) {
         <h3 className="mb-3 text-xl font-semibold tracking-tight text-slate-900">
           {service.title}
         </h3>
-        <span className="mb-4 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
-          {service.category}
-        </span>
+
+        {/* Category Badge */}
+        {categoryName && (
+          <span className="mb-4 inline-flex w-fit rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
+            {categoryName}
+          </span>
+        )}
 
         {/* Description */}
         <p className="mb-8 flex-1 text-[15px] leading-relaxed text-slate-500">
@@ -112,7 +122,6 @@ export default function Services({ services }) {
       ?.filter((s) => s.is_active)
       ?.sort((a, b) => a.display_order - b.display_order) || [];
 
-  // PASTE YOUR CLOUDINARY IMAGE URL HERE
   const cloudinaryBgUrl =
     "https://res.cloudinary.com/ciiop60x/image/upload/v1785944828/bg-2_rue33e.jpg";
 
