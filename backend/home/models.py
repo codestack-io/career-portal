@@ -183,18 +183,22 @@ class StudyDestination(models.Model):
     name = models.CharField(max_length=100, verbose_name="Country Name")
     short_description = models.TextField()
     full_description = models.TextField(blank=True)
-    image = models.URLField(verbose_name="Country Image URL")
-    flag = models.URLField(blank=True, verbose_name="Flag URL")
+    
+   
+    image = models.ImageField(upload_to="destinations/", verbose_name="Country Image")
+   
+    
     universities_count = models.PositiveIntegerField(default=0)
-    average_tuition = models.CharField(max_length=100, blank=True)
-    living_cost = models.CharField(max_length=100, blank=True)
-    intakes = models.CharField(max_length=100, blank=True)
-    post_study_work = models.CharField(max_length=100, blank=True)
-    popular_courses = models.CharField(
-        max_length=255, blank=True, help_text="Separate by commas"
-    )
+    
+    
+    popular_courses = models.JSONField(default=list, blank=True, help_text="e.g. ['CS', 'MBA']")
+    
     is_active = models.BooleanField(default=True)
     display_order = models.PositiveIntegerField(default=1)
+    
+   
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["display_order"]
@@ -222,31 +226,45 @@ class DestinationProgramDuration(models.Model):
     destination = models.ForeignKey(
         StudyDestination, on_delete=models.CASCADE, related_name="program_durations"
     )
-    program_level = models.CharField(max_length=150)
-    duration = models.CharField(max_length=100)
+    
+    
+    PROGRAM_LEVEL_CHOICES = [
+        ('bachelors', "Bachelor's Degree"),
+        ('masters', "Master's Degree"),
+        ('phd', "Doctorate / PhD"),
+        ('diploma', "Diploma"),
+    ]
+    program_level = models.CharField(max_length=50, choices=PROGRAM_LEVEL_CHOICES)
+    duration = models.CharField(max_length=100, help_text="e.g., '3-4 Years'")
     display_order = models.PositiveIntegerField(default=1)
 
     class Meta:
         ordering = ["display_order"]
 
     def __str__(self):
-        return f"{self.destination.name} - {self.program_level}"
+        return f"{self.destination.name} - {self.get_program_level_display()}"
 
 
 class DestinationCost(models.Model):
     destination = models.ForeignKey(
         StudyDestination, on_delete=models.CASCADE, related_name="cost_breakdowns"
     )
-    program_level = models.CharField(max_length=150)
-    amount_foreign = models.CharField(max_length=100)
-    amount_local = models.CharField(max_length=100)
+    program_level = models.CharField(
+        max_length=50, choices=DestinationProgramDuration.PROGRAM_LEVEL_CHOICES
+    )
+    
+    # FIX: DecimalField for financial accuracy
+    amount_foreign = models.DecimalField(max_digits=10, decimal_places=2, help_text="Amount in original currency")
+    currency_code = models.CharField(max_length=10, default="USD", help_text="e.g., USD, AUD, GBP")
+    amount_local = models.DecimalField(max_digits=12, decimal_places=2, help_text="Amount in local currency")
+    
     display_order = models.PositiveIntegerField(default=1)
 
     class Meta:
         ordering = ["display_order"]
 
     def __str__(self):
-        return f"{self.destination.name} - {self.program_level}"
+        return f"{self.destination.name} - {self.get_program_level_display()}"
 
 
 class DestinationCity(models.Model):
@@ -255,7 +273,7 @@ class DestinationCity(models.Model):
     )
     name = models.CharField(max_length=100)
     tagline = models.CharField(max_length=255, blank=True)
-    image = models.URLField()
+    image = models.ImageField(upload_to="destinations/cities/")
     display_order = models.PositiveIntegerField(default=1)
 
     class Meta:

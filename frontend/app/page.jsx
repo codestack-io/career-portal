@@ -7,7 +7,6 @@ import Services from "../UiComponents/Services/Services";
 import Footer from "../UiComponents/Footer/Footer";
 import FAQ from "../UiComponents/FAQ/FAQ";
 import Testimonials from "../UiComponents/Testimonials/Testimonials";
-import WhyChooseUs from "../UiComponents/WhyChooseUs/WhyChooseUs";
 import Blogs from "../UiComponents/Blogs/Blogs";
 import StudyDestinations from "../UiComponents/StudyDestinations/StudyDestinations";
 import Statistics from "../UiComponents/Statistics/Statistics";
@@ -20,7 +19,6 @@ import {
   getFooter,
   getFAQs,
   getTestimonials,
-  getWhyChooseUs,
   getBlogs,
   getStudyDestinations,
   getStatistics,
@@ -35,7 +33,7 @@ export default async function Home() {
     footerRes,
     faqsRes,
     testimonialsRes,
-    whyChooseUsRes,
+    
     blogsRes,
     studyDestinationsRes,
     statisticsRes,
@@ -47,7 +45,6 @@ export default async function Home() {
     getFooter(),
     getFAQs(),
     getTestimonials(),
-    getWhyChooseUs(),
     getBlogs(),
     getStudyDestinations(),
     getStatistics(),
@@ -63,7 +60,7 @@ export default async function Home() {
   const services = servicesRes?.results || servicesRes || [];
   const faqs = faqsRes?.results || faqsRes || [];
   const testimonials = testimonialsRes?.results || testimonialsRes || [];
-  const whyChooseUs = whyChooseUsRes?.results || whyChooseUsRes || [];
+  
   const blogs = blogsRes?.results || blogsRes || [];
   const studyDestinations = studyDestinationsRes?.results || studyDestinationsRes || [];
   const statistics = statisticsRes?.results || statisticsRes || [];
@@ -74,7 +71,6 @@ export default async function Home() {
       <Hero hero={hero} />
       <About about={about} />
       <Services services={services} />
-      <WhyChooseUs features={whyChooseUs} />
       <StudyDestinations destinations={studyDestinations} />
       <Universities universities={universities} />
       <Statistics statistics={statistics} />

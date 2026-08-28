@@ -108,12 +108,7 @@ class StatisticSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class StudyDestinationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudyDestination
-        fields = "__all__"
-
-
+# Child serializers placed BEFORE parent StudyDestination serializers
 class DestinationIntakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DestinationIntake
@@ -142,6 +137,17 @@ class DestinationWorkOpportunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = DestinationWorkOpportunity
         fields = ["id", "title", "description"]
+
+
+class StudyDestinationSerializer(serializers.ModelSerializer):
+    intakes_list = DestinationIntakeSerializer(many=True, read_only=True)
+    cost_breakdowns = DestinationCostSerializer(many=True, read_only=True)
+    cities = DestinationCitySerializer(many=True, read_only=True)
+    work_opportunities = DestinationWorkOpportunitySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = StudyDestination
+        fields = "__all__"
 
 
 class StudyDestinationDetailSerializer(serializers.ModelSerializer):

@@ -3,30 +3,61 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .models import (
-    HeroBanner,
     AboutSection,
-    ServiceCategory,
-    ServiceSection,
-    WhyChooseUs,
-    University,
-    Testimonial,
-    Statistic,
-    StudyDestination,
     Blog,
-    FAQ,
     ContactInformation,
-    Footer,
-    UserProfile,
+    DestinationCity,
+    DestinationCost,
     DestinationIntake,
     DestinationProgramDuration,
-    DestinationCost,
-    DestinationCity,
     DestinationWorkOpportunity,
+    FAQ,
+    Footer,
+    HeroBanner,
+    ServiceCategory,
+    ServiceSection,
+    Statistic,
+    StudyDestination,
+    Testimonial,
+    University,
+    UserProfile,
+    WhyChooseUs,
 )
 
 User = get_user_model()
 
 
+# ==========================================
+# Inlines for Study Destination
+# ==========================================
+class IntakeInline(admin.TabularInline):
+    model = DestinationIntake
+    extra = 1
+
+
+class ProgramDurationInline(admin.TabularInline):
+    model = DestinationProgramDuration
+    extra = 1
+
+
+class CostInline(admin.TabularInline):
+    model = DestinationCost
+    extra = 1
+
+
+class CityInline(admin.TabularInline):
+    model = DestinationCity
+    extra = 1
+
+
+class WorkOpportunityInline(admin.TabularInline):
+    model = DestinationWorkOpportunity
+    extra = 1
+
+
+# ==========================================
+# Model Admins
+# ==========================================
 @admin.register(HeroBanner)
 class HeroBannerAdmin(admin.ModelAdmin):
     list_display = ("title", "badge", "is_active")
@@ -116,31 +147,6 @@ class StatisticAdmin(admin.ModelAdmin):
     ordering = ("display_order",)
 
 
-class IntakeInline(admin.TabularInline):
-    model = DestinationIntake
-    extra = 1
-
-
-class ProgramDurationInline(admin.TabularInline):
-    model = DestinationProgramDuration
-    extra = 1
-
-
-class CostInline(admin.TabularInline):
-    model = DestinationCost
-    extra = 1
-
-
-class CityInline(admin.TabularInline):
-    model = DestinationCity
-    extra = 1
-
-
-class WorkOpportunityInline(admin.TabularInline):
-    model = DestinationWorkOpportunity
-    extra = 1
-
-
 @admin.register(StudyDestination)
 class StudyDestinationAdmin(admin.ModelAdmin):
     list_display = (
@@ -148,10 +154,12 @@ class StudyDestinationAdmin(admin.ModelAdmin):
         "universities_count",
         "display_order",
         "is_active",
+        "created_at",
     )
     list_filter = ("is_active",)
     search_fields = ("name",)
     ordering = ("display_order",)
+    readonly_fields = ("created_at", "updated_at")
     inlines = [
         IntakeInline,
         ProgramDurationInline,
@@ -199,6 +207,9 @@ class FooterAdmin(admin.ModelAdmin):
     search_fields = ("company_name", "email")
 
 
+# ==========================================
+# User & Profile Customization
+# ==========================================
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
