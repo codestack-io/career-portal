@@ -66,9 +66,20 @@ class ServiceSectionSerializer(serializers.ModelSerializer):
 
 
 class WhyChooseUsSerializer(serializers.ModelSerializer):
+    # Returns full image URL (e.g., http://127.0.0.1:8000/media/why_choose_us_icons/...)
+    icon = serializers.SerializerMethodField()
+
     class Meta:
         model = WhyChooseUs
-        fields = "__all__"
+        fields = ["id", "title", "description", "icon", "display_order", "is_active"]
+
+    def get_icon(self, obj):
+        if obj.icon:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.icon.url)
+            return obj.icon.url
+        return None
 
 
 class UniversitySerializer(serializers.ModelSerializer):

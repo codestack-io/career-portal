@@ -11,9 +11,9 @@ class HeroBanner(models.Model):
     title = models.CharField(max_length=255)
     subtitle = models.TextField()
     primary_button_text = models.CharField(max_length=100)
-    primary_button_link = models.URLField()
+    primary_button_link = models.CharField(max_length=500, blank=True, null=True)
     secondary_button_text = models.CharField(max_length=100, blank=True)
-    secondary_button_link = models.URLField(blank=True)
+    secondary_button_link = models.CharField(max_length=500, blank=True, null=True)
     badge_text = models.CharField(max_length=100, blank=True)
     badge_count = models.PositiveIntegerField(default=10000)
     hero_image = models.URLField()
@@ -95,9 +95,21 @@ class ServiceSection(models.Model):
 class WhyChooseUs(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
     description = models.TextField(verbose_name="Description")
-    icon = models.URLField(blank=True, verbose_name="Icon URL")
-    display_order = models.PositiveIntegerField(default=1)
-    is_active = models.BooleanField(default=True)
+    
+    # FIX: Replaced URLField with proper ImageField for direct media management
+    icon = models.ImageField(
+        upload_to="why_choose_us_icons/", 
+        blank=True, 
+        null=True, 
+        verbose_name="Icon Image"
+    )
+    
+    display_order = models.PositiveIntegerField(default=1, verbose_name="Display Order")
+    is_active = models.BooleanField(default=True, verbose_name="Is Active")
+    
+    # Audit timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["display_order"]
@@ -106,7 +118,6 @@ class WhyChooseUs(models.Model):
 
     def __str__(self):
         return self.title
-
 
 class University(models.Model):
     name = models.CharField(max_length=255, verbose_name="University Name")

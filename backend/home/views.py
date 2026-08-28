@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny
 
 from .models import (
     AboutSection,
@@ -73,9 +74,14 @@ class ServiceSectionListView(ListAPIView):
     serializer_class = ServiceSectionSerializer
 
 
-class WhyChooseUsListView(ListAPIView):
-    queryset = WhyChooseUs.objects.filter(is_active=True).order_by("id")
+class WhyChooseUsViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Public Endpoint: Fetches all active Why Choose Us cards ordered by display_order.
+    """
+    queryset = WhyChooseUs.objects.filter(is_active=True).order_by("display_order")
     serializer_class = WhyChooseUsSerializer
+    permission_classes = [AllowAny]  
+    pagination_class = None  
 
 
 class UniversityListView(ListAPIView):

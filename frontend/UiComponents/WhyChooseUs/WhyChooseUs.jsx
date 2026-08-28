@@ -1,152 +1,149 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-export default function WhyChooseUs({ features = [] }) {
-    const cardVariants = {
-  rest: {},
-  hover: {},
-};
+export default function WhyChooseUs({ 
+  features = [], 
+  stats = { experience: "15+", students: "20K+" } 
+}) {
+  const cardVariants = {
+    rest: {},
+    hover: {},
+  };
 
-const iconVariants = {
-  rest: {
-    x: 0,
-    rotate: 0,
-    scale: 1,
-  },
-  hover: {
-    x: [0, -35, 12, -8, 3, 0],
-    rotate: [0, -10, 10, -6, 0],
-    scale: [1, 1.2, 1.1, 1.15, 1.1],
-    transition: {
-      duration: 0.9,
+  const iconVariants = {
+    rest: {
+      x: 0,
+      rotate: 0,
+      scale: 1,
     },
-  },
-};
+    hover: {
+      x: [0, -35, 12, -8, 3, 0],
+      rotate: [0, -10, 10, -6, 0],
+      scale: [1, 1.2, 1.1, 1.15, 1.1],
+      transition: {
+        duration: 0.9,
+      },
+    },
+  };
+
   return (
-    <section className="relative overflow-hidden bg-white py-28">
+    <section className="relative overflow-hidden bg-slate-950 py-28 text-white">
+      {/* Dynamic Background Glows matching /services palette */}
+      <div className="pointer-events-none absolute left-0 top-0 h-[450px] w-[450px] rounded-full bg-violet-600/10 blur-[140px]" />
+      <div className="pointer-events-none absolute right-0 bottom-0 h-[450px] w-[450px] rounded-full bg-blue-600/10 blur-[140px]" />
 
-      {/* Background */}
-
-      <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-violet-300/10 blur-[130px]" />
-      <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-blue-300/10 blur-[130px]" />
-
-      <div className="relative mx-auto max-w-7xl px-6">
-
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
 
-          {/* LEFT */}
-
+          {/* LEFT CONTENT */}
           <motion.div
             initial={{ opacity: 0, x: -70 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: .8 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-
-            <span className="rounded-full bg-violet-100 px-5 py-2 font-semibold text-violet-700">
+            {/* Pill Label */}
+            <span className="rounded-full border border-violet-500/20 bg-violet-500/10 px-5 py-2 font-semibold text-violet-400">
               Why Choose Us
             </span>
 
-            <h2 className="mt-6 text-5xl font-extrabold leading-tight text-slate-900">
+            {/* Main Title */}
+            <h2 className="mt-6 text-5xl font-extrabold leading-tight text-white">
               Your Trusted Study Abroad Partner
             </h2>
 
-            <p className="mt-7 text-lg leading-9 text-slate-600">
+            {/* Subtitle Description */}
+            <p className="mt-7 text-lg leading-9 text-slate-400">
               We help students achieve their dream of studying abroad with
               expert counseling, university selection, scholarships, visa
               processing, and complete admission support.
             </p>
 
-            {/* Statistics */}
-
-            <div className="mt-10 grid grid-cols-2 gap-8">
-
+            {/* Dynamic Statistics */}
+            <div className="mt-10 grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
               <div>
-                <h3 className="text-5xl font-bold text-violet-600">
-                  15+
+                <h3 className="text-5xl font-bold text-violet-500">
+                  {stats.experience}
                 </h3>
-
-                <p className="mt-2 text-slate-500">
+                <p className="mt-2 font-medium text-slate-400">
                   Years Experience
                 </p>
               </div>
 
               <div>
-                <h3 className="text-5xl font-bold text-violet-600">
-                  20K+
+                <h3 className="text-5xl font-bold text-violet-500">
+                  {stats.students}
                 </h3>
-
-                <p className="mt-2 text-slate-500">
+                <p className="mt-2 font-medium text-slate-400">
                   Students Guided
                 </p>
               </div>
-
             </div>
 
-            <button className="mt-12 flex items-center gap-3 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 px-8 py-4 font-semibold text-white shadow-xl transition hover:scale-105">
-
+            {/* Dynamic CTA Redirect */}
+            <Link
+              href="/contact"
+              className="mt-12 inline-flex items-center gap-3 rounded-full bg-violet-600 px-8 py-4 font-semibold text-white shadow-lg shadow-violet-600/20 transition hover:scale-105 hover:bg-violet-500"
+            >
               Free Consultation
-
               <ArrowRight size={18} />
-
-            </button>
-
+            </Link>
           </motion.div>
 
-          {/* RIGHT */}
-
+          {/* RIGHT CARDS GRID */}
           <div className="grid gap-6 sm:grid-cols-2">
+            {features.map((item, index) => {
+              // Ensure icon resolved safely
+              const iconUrl = typeof item.icon === "string" ? item.icon : item.icon?.url;
 
-            {features.map((item, index) => (
-
-             <motion.div
-  key={item.id}
-  variants={cardVariants}
-  initial="rest"
-  whileHover="hover"
-  whileInView={{
-    opacity: 1,
-    y: 0,
-  }}
-  viewport={{ once: true }}
-  transition={{
-    duration: 0.7,
-    delay: index * 0.1,
-  }}
-  className="group rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition-all hover:-translate-y-3 hover:shadow-2xl"
->
-
+              return (
                 <motion.div
-  variants={iconVariants}
-  className="mb-6 flex h-[120px] w-[120px] items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-lg"
->
-  <img
-    src={item.icon}
-    alt={item.title}
-    className="h-[80px] w-[80px] object-contain"
-  />
-</motion.div>
+                  key={item.id || index}
+                  variants={cardVariants}
+                  initial="rest"
+                  whileHover="hover"
+                  whileInView={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  viewport={{ once: true }}
+                  transition={{
+                    duration: 0.7,
+                    delay: index * 0.1,
+                  }}
+                  className="group rounded-3xl border border-white/10 bg-slate-900/50 p-8 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:border-violet-500/40 hover:bg-slate-900/80 hover:shadow-2xl hover:shadow-violet-500/10"
+                >
+                  {/* Icon Card */}
+                  {iconUrl && (
+                    <motion.div
+                      variants={iconVariants}
+                      className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-violet-500/20 bg-slate-800/80 shadow-md group-hover:border-violet-500/40"
+                    >
+                      <img
+                        src={iconUrl}
+                        alt={item.title}
+                        className="h-10 w-10 object-contain"
+                      />
+                    </motion.div>
+                  )}
 
-                <h3 className="text-2xl font-bold text-slate-900">
-                  {item.title}
-                </h3>
+                  <h3 className="text-2xl font-bold text-white">
+                    {item.title}
+                  </h3>
 
-                <p className="mt-4 leading-8 text-slate-600">
-                  {item.description}
-                </p>
-
-              </motion.div>
-
-            ))}
-
+                  <p className="mt-4 leading-relaxed text-slate-400">
+                    {item.description}
+                  </p>
+                </motion.div>
+              );
+            })}
           </div>
 
         </div>
-
       </div>
-
     </section>
   );
 }
