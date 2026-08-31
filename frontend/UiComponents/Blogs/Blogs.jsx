@@ -24,6 +24,15 @@ export default function Blogs({ blogs = [] }) {
     return author;
   };
 
+  // Helper function to safely extract category display name
+  const getCategoryName = (category) => {
+    if (!category) return "General";
+    if (typeof category === "object") {
+      return category.name || "General";
+    }
+    return category;
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-violet-50 py-28">
 
@@ -81,7 +90,8 @@ export default function Blogs({ blogs = [] }) {
             <div className="p-10">
 
               <span className="rounded-full bg-violet-100 px-4 py-2 text-sm font-semibold text-violet-700">
-                {featured.category}
+                {/* FIXED: Use helper to extract string value safely */}
+                {getCategoryName(featured.category)}
               </span>
 
               <h3 className="mt-6 text-3xl font-bold text-slate-900">
@@ -96,7 +106,6 @@ export default function Blogs({ blogs = [] }) {
 
                 <span className="flex items-center gap-2">
                   <User size={16}/>
-                  {/* FIXED: Safely render author name */}
                   {getAuthorName(featured.author)}
                 </span>
 
@@ -156,12 +165,14 @@ export default function Blogs({ blogs = [] }) {
                 <img
                   src={blog.featured_image}
                   className="h-36 w-36 rounded-2xl object-cover transition duration-500 group-hover:scale-105"
+                  alt={blog.title}
                 />
 
                 <div>
 
                   <span className="text-sm font-semibold text-violet-600">
-                    {blog.category}
+                    {/* FIXED: Use helper to safely handle category display */}
+                    {getCategoryName(blog.category)}
                   </span>
 
                   <h4 className="mt-2 line-clamp-2 text-xl font-bold">

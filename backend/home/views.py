@@ -28,6 +28,7 @@ from .models import (
     University,
     UserProfile,
     WhyChooseUs,
+    BlogCategory
 )
 from .serializers import (
     AboutSectionSerializer,
@@ -45,6 +46,7 @@ from .serializers import (
     UniversitySerializer,
     UserProfileSerializer,
     WhyChooseUsSerializer,
+    BlogCategorySerializer
 )
 
 
@@ -147,15 +149,27 @@ class StudyDestinationDetailView(RetrieveAPIView):
     lookup_field = "pk"
     permission_classes = [AllowAny]
 
+class BlogCategoryListView(ListAPIView):
+    queryset = BlogCategory.objects.filter(is_active=True)
+    serializer_class = BlogCategorySerializer
+    permission_classes = [AllowAny]
+    pagination_class = None
 
 class BlogListView(ListAPIView):
     queryset = Blog.objects.select_related("author", "category").filter(is_active=True)
     serializer_class = BlogSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["category", "author"]
-    search_fields = ["title", "content", "summary"]
-    ordering_fields = ["created_at", "title"]
+    
+    # Filter by category ID or slug, author ID
+    filterset_fields = ["category", "category__slug", "author"]
+    
+    
+    search_fields = ["title", "content", "short_description"]
+    
+    
+    ordering_fields = ["published_date", "title"]
+    ordering = ["-published_date"] 
 
 
 class BlogDetailView(RetrieveAPIView):

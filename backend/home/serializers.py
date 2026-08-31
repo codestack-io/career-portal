@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import (
     AboutSection,
     Blog,
+    BlogCategory,
     ContactInformation,
     DestinationCity,
     DestinationCost,
@@ -166,6 +167,12 @@ class StudyDestinationDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class BlogCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogCategory
+        fields = ["id", "name", "slug", "is_active"]
+
+
 class BlogSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     author_id = serializers.PrimaryKeyRelatedField(
@@ -174,11 +181,33 @@ class BlogSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False,
     )
+    
+    # Category handling: nested dictionary for GET, ID input for POST/PUT
+    category = BlogCategorySerializer(read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=BlogCategory.objects.all(),
+        source="category",
+        write_only=True,
+        required=False,
+        allow_null=True
+    )
+
+    # Ensures absolute media URL (e.g., http://127.0.0.1:8000/media/blogs/image.jpg)
+    featured_image = serializers.SerializerMethodField()
+    
     published_date = serializers.DateField(format="%d/%m/%Y")
 
     class Meta:
         model = Blog
         fields = "__all__"
+
+    def get_featured_image(self, obj):
+        if obj.featured_image:
+            request = self.context.get("request")
+            if request is not None:
+                return request.build_absolute_uri(obj.featured_image.url)
+            return obj.featured_image.url
+        return None
 
 
 class FAQSerializer(serializers.ModelSerializer):

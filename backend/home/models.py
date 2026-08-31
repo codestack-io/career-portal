@@ -31,7 +31,7 @@ class HeroBanner(models.Model):
 class AboutSection(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
     subtitle = models.CharField(max_length=255, blank=True, verbose_name="Subtitle")
-    description = models.TextField(verbose_name="Description")
+    description = CKEditor5Field("Description", config_name="extends")
     image = models.URLField(blank=True, verbose_name="Image URL")
     years_of_experience = models.PositiveIntegerField(default=0)
     university_partners = models.PositiveIntegerField(default=0)
@@ -72,7 +72,7 @@ class ServiceCategory(models.Model):
 
 class ServiceSection(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
-    description = models.TextField(verbose_name="Description")
+    description = CKEditor5Field("Description", config_name="extends")
     icon = models.URLField(blank=True, verbose_name="Icon URL")
     category = models.ForeignKey(
         ServiceCategory,
@@ -107,7 +107,6 @@ class WhyChooseUs(models.Model):
     display_order = models.PositiveIntegerField(default=1, verbose_name="Display Order")
     is_active = models.BooleanField(default=True, verbose_name="Is Active")
     
-    # Audit timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -118,6 +117,7 @@ class WhyChooseUs(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class University(models.Model):
     name = models.CharField(max_length=255, verbose_name="University Name")
@@ -159,7 +159,6 @@ class Testimonial(models.Model):
     is_active = models.BooleanField(default=True)
     display_order = models.PositiveIntegerField(default=1)
 
-    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -171,7 +170,7 @@ class Testimonial(models.Model):
     def __str__(self):
         return f"{self.name} - {self.university or 'General'}"
 
-    
+
 class Statistic(models.Model):
     title = models.CharField(max_length=100, verbose_name="Statistic Title")
     value = models.CharField(max_length=50, verbose_name="Statistic Value")
@@ -191,21 +190,15 @@ class Statistic(models.Model):
 class StudyDestination(models.Model):
     name = models.CharField(max_length=100, verbose_name="Country Name")
     short_description = models.TextField()
-    full_description = models.TextField(blank=True)
+    full_description = CKEditor5Field("Full Description", config_name="extends", blank=True)
     
-   
     image = models.ImageField(upload_to="destinations/", verbose_name="Country Image")
-   
-    
     universities_count = models.PositiveIntegerField(default=0)
-    
-    
     popular_courses = models.JSONField(default=list, blank=True, help_text="e.g. ['CS', 'MBA']")
     
     is_active = models.BooleanField(default=True)
     display_order = models.PositiveIntegerField(default=1)
     
-   
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -236,7 +229,6 @@ class DestinationProgramDuration(models.Model):
         StudyDestination, on_delete=models.CASCADE, related_name="program_durations"
     )
     
-    
     PROGRAM_LEVEL_CHOICES = [
         ('bachelors', "Bachelor's Degree"),
         ('masters', "Master's Degree"),
@@ -261,7 +253,6 @@ class DestinationCost(models.Model):
     program_level = models.CharField(
         max_length=50, choices=DestinationProgramDuration.PROGRAM_LEVEL_CHOICES
     )
-    
     
     amount_foreign = models.DecimalField(max_digits=10, decimal_places=2, help_text="Amount in original currency")
     currency_code = models.CharField(max_length=10, default="USD", help_text="e.g., USD, AUD, GBP")
@@ -297,7 +288,7 @@ class DestinationWorkOpportunity(models.Model):
         StudyDestination, on_delete=models.CASCADE, related_name="work_opportunities"
     )
     title = models.CharField(max_length=200)
-    description = models.TextField()
+    description = CKEditor5Field("Description", config_name="extends")
     display_order = models.PositiveIntegerField(default=1)
 
     class Meta:
@@ -305,7 +296,6 @@ class DestinationWorkOpportunity(models.Model):
 
     def __str__(self):
         return f"{self.destination.name} - {self.title}"
-
 
 class BlogCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name="Category Name")
@@ -331,10 +321,19 @@ class BlogCategory(models.Model):
 
 class Blog(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
-    short_description = models.TextField()
+    slug = models.SlugField(unique=True, blank=True)
+    short_description = models.TextField(blank=True, verbose_name="Short Description (Optional)")
     content = CKEditor5Field("Text", config_name="extends")
-    featured_image = models.URLField()
+    
+    # Updated: Changed from URLField to ImageField for proper file upload handling
+    featured_image = models.ImageField(
+        upload_to="blogs/", 
+        blank=True, 
+        null=True, 
+        verbose_name="Featured Image"
+    )
+    
+    # Author is already correctly configured as a ForeignKey to AUTH_USER_MODEL
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -342,7 +341,6 @@ class Blog(models.Model):
     )
     published_date = models.DateField()
     
-    # Updated: Convert CharField to ForeignKey following your project's foreign key pattern
     category = models.ForeignKey(
         BlogCategory,
         on_delete=models.SET_NULL,
@@ -369,10 +367,10 @@ class Blog(models.Model):
     def __str__(self):
         return self.title
 
-
 class FAQ(models.Model):
     question = models.CharField(max_length=255)
-    answer = models.TextField()
+    # UPGRADED: Allows links and styled steps inside accordion answers
+    answer = CKEditor5Field("Answer", config_name="extends")
     display_order = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
 

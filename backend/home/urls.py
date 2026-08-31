@@ -22,6 +22,7 @@ from .views import (
     GoogleLoginView,
     ServiceCategoryViewSet,
     ServiceSectionViewSet,
+    BlogCategoryListView,
 )
 
 # Initialize DRF Router for ViewSets
@@ -29,6 +30,9 @@ router = DefaultRouter()
 router.register(r"service-categories", ServiceCategoryViewSet, basename="service-category")
 router.register(r"services-v2", ServiceSectionViewSet, basename="service-section-v2")
 router.register(r"why-choose-us", WhyChooseUsViewSet, basename="why-choose-us") 
+
+
+
 
 urlpatterns = [
     path("hero/", HeroBannerListView.as_view(), name="hero"),
@@ -39,8 +43,9 @@ urlpatterns = [
     path("statistics/", StatisticListView.as_view(), name="statistics"),
     path("study-destinations/", StudyDestinationListView.as_view(), name="study-destinations"),
     path("study-destinations/<int:pk>/", StudyDestinationDetailView.as_view(), name="study-destination-detail"),
-    path("blogs/", BlogListView.as_view(), name="blogs"),
-    path("blogs/<slug:slug>/", BlogDetailView.as_view(), name="blog-detail"),
+    path('blogs/', BlogListView.as_view(), name='blog-list'),
+    path('blogs/categories/', BlogCategoryListView.as_view(), name='blog-category-list'),
+    path('blogs/<slug:slug>/', BlogDetailView.as_view(), name='blog-detail'),
     path("faqs/", FAQListAPIView.as_view(), name="faqs"),
     path("contact/", ContactInformationListAPIView.as_view(), name="contact"),
     path("footer/", FooterView.as_view(), name="footer"),
