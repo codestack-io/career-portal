@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     'rest_framework',
+    'django_filters',
     'djoser',
-    'social_django',  # ADDED: Required for Djoser Social Auth
+    'social_django', 
+     
     'home',
     'corsheaders',
     'django_ckeditor_5'
@@ -132,9 +134,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

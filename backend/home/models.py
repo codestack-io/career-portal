@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class HeroBanner(models.Model):
@@ -96,7 +97,6 @@ class WhyChooseUs(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
     description = models.TextField(verbose_name="Description")
     
-    # FIX: Replaced URLField with proper ImageField for direct media management
     icon = models.ImageField(
         upload_to="why_choose_us_icons/", 
         blank=True, 
@@ -142,27 +142,36 @@ class Testimonial(models.Model):
     name = models.CharField(max_length=150)
     designation = models.CharField(max_length=150, blank=True)
     university = models.ForeignKey(
-        University,
+        "University",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="testimonials",
     )
+    
+    image = models.ImageField(
+        upload_to="testimonials/", blank=True, null=True, verbose_name="Student Image"
+    )
     feedback = models.TextField()
-    image = models.URLField(blank=True, verbose_name="Student Image URL")
-    rating = models.PositiveSmallIntegerField(default=5)
+    rating = models.PositiveSmallIntegerField(
+        default=5, validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     is_active = models.BooleanField(default=True)
     display_order = models.PositiveIntegerField(default=1)
 
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
-        ordering = ["display_order"]
+        ordering = ["display_order", "-created_at"]
         verbose_name = "Testimonial"
         verbose_name_plural = "Testimonials"
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.university or 'General'}"
 
-
+    
 class Statistic(models.Model):
     title = models.CharField(max_length=100, verbose_name="Statistic Title")
     value = models.CharField(max_length=50, verbose_name="Statistic Value")
@@ -253,7 +262,7 @@ class DestinationCost(models.Model):
         max_length=50, choices=DestinationProgramDuration.PROGRAM_LEVEL_CHOICES
     )
     
-    # FIX: DecimalField for financial accuracy
+    
     amount_foreign = models.DecimalField(max_digits=10, decimal_places=2, help_text="Amount in original currency")
     currency_code = models.CharField(max_length=10, default="USD", help_text="e.g., USD, AUD, GBP")
     amount_local = models.DecimalField(max_digits=12, decimal_places=2, help_text="Amount in local currency")
@@ -298,14 +307,33 @@ class DestinationWorkOpportunity(models.Model):
         return f"{self.destination.name} - {self.title}"
 
 
+class BlogCategory(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Category Name")
+    slug = models.SlugField(
+        unique=True,
+        blank=True,
+        help_text="Unique URL identifier",
+    )
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Blog Category"
+        verbose_name_plural = "Blog Categories"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
 class Blog(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     short_description = models.TextField()
-
-    # FIXED: Direct assignment without double variable binding
     content = CKEditor5Field("Text", config_name="extends")
-
     featured_image = models.URLField()
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -313,7 +341,16 @@ class Blog(models.Model):
         related_name="blogs",
     )
     published_date = models.DateField()
-    category = models.CharField(max_length=100)
+    
+    # Updated: Convert CharField to ForeignKey following your project's foreign key pattern
+    category = models.ForeignKey(
+        BlogCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="blogs",
+    )
+    
     read_time = models.CharField(
         max_length=30, help_text="Example: 5 min read"
     )

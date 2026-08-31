@@ -73,7 +73,6 @@ export default async function Home() {
       <Services services={services} />
       <StudyDestinations destinations={studyDestinations} />
       <Universities universities={universities} />
-      <Statistics statistics={statistics} />
       <Testimonials testimonials={testimonials} />
       <Blogs blogs={blogs} />
       <FAQ faqs={faqs} />
