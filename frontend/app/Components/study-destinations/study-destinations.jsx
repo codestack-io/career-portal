@@ -82,10 +82,12 @@ export default function StudyDestinations() {
         viewport={{ once: true, margin: '-50px' }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
-        {destinations.map((dest, index) => {
-          const coursesList = dest.popular_courses
-            ? dest.popular_courses.split(',').map((c) => c.trim())
-            : [];
+       {destinations.map((dest, index) => {
+  const coursesList = typeof dest?.popular_courses === 'string'
+    ? dest.popular_courses.split(',').map((c) => c.trim())
+    : Array.isArray(dest?.popular_courses)
+    ? dest.popular_courses
+    : [];
 
           return (
             <motion.div

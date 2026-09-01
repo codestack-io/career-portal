@@ -29,14 +29,13 @@ export default function FaqClient({ initialFaqs = [] }) {
     if (!query) return true;
     
     const qText = faq.question?.toLowerCase() || "";
-    // Strips HTML tags from CKEditor5 HTML response so user can search rich text cleanly
     const aText = faq.answer?.replace(/<[^>]*>?/gm, "").toLowerCase() || ""; 
     
     return qText.includes(query) || aText.includes(query);
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-4 pt-28 sm:pt-36 pb-12">
+    <div className="mx-auto max-w-4xl px-4 pt-12 sm:pt-16 pb-12">
       {/* Header & Search Bar */}
       <div className="mb-8 text-center">
         <span className="mb-3 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3.5 py-1 text-xs font-semibold tracking-wide text-violet-600">
@@ -109,7 +108,6 @@ export default function FaqClient({ initialFaqs = [] }) {
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                           >
-                            {/* Render CKEditor HTML output Safely */}
                             <div
                               className="prose prose-slate max-w-none border-t border-slate-100 px-4 pb-4 pt-3 text-sm leading-relaxed text-slate-600"
                               dangerouslySetInnerHTML={{ __html: faq.answer }}

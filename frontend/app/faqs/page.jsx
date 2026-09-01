@@ -8,17 +8,15 @@ export const metadata = {
 };
 
 export default async function FaqPage() {
-  // Fetch FAQs server-side (Django API)
   const faqs = await getFAQs();
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-[#F8FAFC]">
-      {/* Main Content Container */}
-      <main className="flex-1 w-full pt-28 sm:pt-32">
+    <div className="flex flex-col overflow-hidden w-full bg-[#F8FAFC]">
+      {/* Main Container expands to push footer down naturally */}
+      <main className="flex-1 flex flex-col justify-between w-full">
         <FaqClient initialFaqs={faqs} />
       </main>
 
-      {/* Footer Section */}
       <Footer />
     </div>
   );

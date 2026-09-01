@@ -80,9 +80,11 @@ export default function StudyDestinationDetail({ params }) {
     );
   }
 
-  const coursesList = destination.popular_courses
-    ? destination.popular_courses.split(',').map((c) => c.trim())
-    : [];
+ const coursesList = typeof destination.popular_courses === 'string'
+  ? destination.popular_courses.split(',').map((c) => c.trim())
+  : Array.isArray(destination.popular_courses)
+  ? destination.popular_courses
+  : [];
 
   const slideFromLeft = {
     initial: { opacity: 0, x: -60 },

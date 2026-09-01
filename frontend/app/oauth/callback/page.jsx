@@ -13,17 +13,19 @@ function CallbackContent() {
     try {
       const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-      // Djoser expects JSON payload containing state and code
+      // Send x-www-form-urlencoded payload including redirect_uri
+      const formData = new URLSearchParams();
+      formData.append("state", decodeURIComponent(state));
+      formData.append("code", decodeURIComponent(code));
+      formData.append("redirect_uri", "http://localhost:3000/oauth/callback");
+
       const res = await fetch(`${backendUrl}/auth/o/google-oauth2/`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         credentials: "include",
-        body: JSON.stringify({
-          state: state,
-          code: code,
-        }),
+        body: formData.toString(),
       });
 
       const responseText = await res.text();
@@ -55,7 +57,6 @@ function CallbackContent() {
   }
 
   useEffect(() => {
-    // Prevent React 18 Strict Mode double execution
     if (hasExecuted.current) return;
 
     const state = searchParams.get("state");

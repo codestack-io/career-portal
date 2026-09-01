@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { ArrowRight,Mail, MapPin, Clock } from "lucide-react";
 
 const fadeUp = {
   hidden: {
@@ -107,7 +107,7 @@ export default function Footer({ footer }) {
           </div>
         </motion.div>
 
-        {/* ================= Footer Grid ================= */}
+        
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -131,7 +131,7 @@ export default function Footer({ footer }) {
                 "Helping students achieve their dream of studying abroad through expert counseling, admissions, scholarships, and visa assistance."}
             </p>
 
-            {/* Contact Details with Clickable Google Maps Address */}
+           
             <div className="mt-8 space-y-4">
               <div className="flex items-start gap-3">
                 <MapPin className="mt-1 text-violet-400 shrink-0" size={20} />
@@ -150,21 +150,7 @@ export default function Footer({ footer }) {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <Phone className="mt-1 text-violet-400 shrink-0" size={20} />
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Phone
-                  </p>
-                  <a
-                    href={`tel:${footer?.phone ?? "+8801234567890"}`}
-                    className="text-slate-200 transition hover:text-violet-400"
-                  >
-                    {footer?.phone ?? "+880 1234 567890"}
-                  </a>
-                </div>
-              </div>
-
+              
               <div className="flex items-start gap-3">
                 <Mail className="mt-1 text-violet-400 shrink-0" size={20} />
                 <div>
@@ -252,7 +238,7 @@ export default function Footer({ footer }) {
           </div>
         </motion.div>
 
-        {/* ================= Bottom Bar ================= */}
+       
         <div className="border-t border-white/10 py-8">
           <div className="flex flex-col items-center justify-between gap-6 text-sm text-slate-400 md:flex-row">
             <p>
