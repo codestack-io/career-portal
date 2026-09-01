@@ -33,9 +33,12 @@ export default function StudyDestinations() {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Read backend URL from environment variable with a local fallback
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+
   useEffect(() => {
     axios
-      .get('http://127.0.0.1:8000/api/study-destinations/')
+      .get(`${API_BASE_URL}/api/study-destinations/`)
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : res.data.results || [];
         setDestinations(data);
@@ -45,7 +48,7 @@ export default function StudyDestinations() {
         console.error('Error loading study destinations:', err);
         setLoading(false);
       });
-  }, []);
+  }, [API_BASE_URL]);
 
   if (loading) {
     return (

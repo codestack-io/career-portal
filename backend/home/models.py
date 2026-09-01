@@ -7,6 +7,7 @@ from django_ckeditor_5.fields import CKEditor5Field
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
+
 class HeroBanner(models.Model):
     badge = models.CharField(max_length=100, blank=True)
     title = models.CharField(max_length=255)
@@ -368,9 +369,20 @@ class Blog(models.Model):
         return self.title
 
 class FAQ(models.Model):
+    CATEGORY_CHOICES = [
+        ('general', 'General'),
+        ('admissions', 'Admission Guidance'),
+        ('scholarships', 'Scholarships'),
+        ('visa', 'Visa Process'),
+    ]
+
     question = models.CharField(max_length=255)
-  
     answer = CKEditor5Field("Answer", config_name="extends")
+    category = models.CharField(
+        max_length=50, 
+        choices=CATEGORY_CHOICES, 
+        default='general'
+    )
     display_order = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
 
@@ -380,7 +392,7 @@ class FAQ(models.Model):
         verbose_name_plural = "FAQs"
 
     def __str__(self):
-        return self.question
+        return f"[{self.get_category_display()}] {self.question}"
 
 
 class ContactInformation(models.Model):

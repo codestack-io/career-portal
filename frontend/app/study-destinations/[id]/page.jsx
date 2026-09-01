@@ -31,11 +31,14 @@ export default function StudyDestinationDetail({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  // Read backend URL from environment variable with a local fallback
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+
   useEffect(() => {
     if (!id) return;
 
     axios
-      .get(`http://127.0.0.1:8000/api/study-destinations/${id}/`)
+      .get(`${API_BASE_URL}/api/study-destinations/${id}/`)
       .then((res) => {
         setDestination(res.data);
         setLoading(false);
@@ -45,7 +48,7 @@ export default function StudyDestinationDetail({ params }) {
         setError(true);
         setLoading(false);
       });
-  }, [id]);
+  }, [id, API_BASE_URL]);
 
   if (loading) {
     return (
@@ -455,8 +458,8 @@ export default function StudyDestinationDetail({ params }) {
               </form>
 
               <div className="mt-6 pt-6 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-                <span>⚡ 100% Free Consultation</span>
-                <span>🔒 Data Protected</span>
+                <span>100% Free Consultation</span>
+                <span>Data Protected</span>
               </div>
             </motion.div>
           </aside>

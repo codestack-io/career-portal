@@ -211,9 +211,11 @@ class BlogSerializer(serializers.ModelSerializer):
 
 
 class FAQSerializer(serializers.ModelSerializer):
+    category_display = serializers.CharField(source='get_category_display', read_only=True)
+
     class Meta:
         model = FAQ
-        fields = "__all__"
+        fields = ['id', 'question', 'answer', 'category', 'category_display', 'display_order', 'is_active']
 
 
 class ContactInformationSerializer(serializers.ModelSerializer):

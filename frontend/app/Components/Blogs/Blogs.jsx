@@ -3,15 +3,17 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 
 export default function Blogs() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+
   useEffect(() => {
     axios
-      .get('http://127.0.0.1:8000/api/blogs/')
+      .get(`${API_BASE_URL}/api/blogs/`)
       .then((res) => {
         const blogData = Array.isArray(res.data)
           ? res.data
@@ -23,7 +25,7 @@ export default function Blogs() {
         console.error('Failed to fetch blogs:', err);
         setLoading(false);
       });
-  }, []);
+  }, [API_BASE_URL]);
 
   if (loading) {
     return (
@@ -53,7 +55,7 @@ export default function Blogs() {
         </p>
       </div>
 
-      {/* Grid Layout - VisaHub Minimalist Style */}
+      {/* Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 lg:gap-12">
         {blogs.map((blog) => (
           <Link
@@ -72,17 +74,14 @@ export default function Blogs() {
 
             {/* Content Stack below Image */}
             <div className="mt-4 sm:mt-5">
-              {/* Published Date */}
               <p className="text-slate-500 text-sm sm:text-base font-normal">
                 {blog.published_date}
               </p>
 
-              {/* Title */}
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mt-2 group-hover:text-purple-600 transition-colors duration-200 leading-snug sm:leading-tight">
                 {blog.title}
               </h2>
 
-              {/* Short Description */}
               {blog.short_description && (
                 <p className="text-slate-600 text-sm sm:text-base leading-relaxed mt-2.5 line-clamp-2">
                   {blog.short_description}
@@ -92,8 +91,6 @@ export default function Blogs() {
           </Link>
         ))}
       </div>
-
-    
     </section>
   );
 }

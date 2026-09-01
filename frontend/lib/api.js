@@ -1,6 +1,26 @@
 import { refreshAccessToken } from "./auth";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "");
+
+/**
+ * Safely accesses localStorage only when executing in browser context
+ */
+const getStorageItem = (key) => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(key);
+};
+
+const setStorageItem = (key, value) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(key, value);
+  }
+};
+
+const removeStorageItem = (key) => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(key);
+  }
+};
 
 /**
  * Universal public fetcher supporting dynamic parameters & pagination
@@ -8,14 +28,17 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export async function fetchAPI(endpoint, queryParams = {}) {
   if (!BASE_URL) {
     console.error("NEXT_PUBLIC_API_URL is not defined");
-    return [];
+    return null;
   }
 
-  // Construct URL with search/filter parameters
-  const url = new URL(`${BASE_URL}/api${endpoint}`);
-  Object.keys(queryParams).forEach((key) => {
-    if (queryParams[key] !== undefined && queryParams[key] !== null && queryParams[key] !== "") {
-      url.searchParams.append(key, queryParams[key]);
+  // Ensure path starts with a single slash
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const url = new URL(`${BASE_URL}/api${cleanEndpoint}`);
+
+  // Construct URL query parameters dynamically
+  Object.entries(queryParams).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      url.searchParams.append(key, value);
     }
   });
 
@@ -27,14 +50,13 @@ export async function fetchAPI(endpoint, queryParams = {}) {
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`API Error [${res.status}] ${url.toString()}:`, errorText);
-      return [];
+      return null;
     }
 
-    const data = await res.json();
-    return data;
+    return await res.json();
   } catch (error) {
     console.error(`Fetch Error: ${url.toString()}`, error);
-    return [];
+    return null;
   }
 }
 
@@ -42,31 +64,37 @@ export async function fetchAPI(endpoint, queryParams = {}) {
  * Authenticated Request Helper with Auto Token Refresh
  */
 async function fetchWithAuth(url, options = {}) {
-  let token = localStorage.getItem("accessToken");
+  let token = getStorageItem("accessToken");
 
   const headers = {
     ...options.headers,
-    Authorization: token ? `Bearer ${token}` : "",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
+
+  // If payload is plain object (not FormData), serialize to JSON
+  if (options.body && !(options.body instanceof FormData) && typeof options.body === "object") {
+    headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(options.body);
+  }
 
   let res = await fetch(url, { ...options, headers });
 
   // Handle 401 Unauthorized by attempting to refresh token
   if (res.status === 401) {
-    const refreshToken = localStorage.getItem("refreshToken");
+    const refreshToken = getStorageItem("refreshToken");
 
     if (refreshToken) {
       try {
         const refreshData = await refreshAccessToken(refreshToken);
         token = refreshData.access;
-        localStorage.setItem("accessToken", token);
+        setStorageItem("accessToken", token);
 
         // Retry initial request with new access token
         headers.Authorization = `Bearer ${token}`;
         res = await fetch(url, { ...options, headers });
       } catch (refreshErr) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        removeStorageItem("accessToken");
+        removeStorageItem("refreshToken");
         throw new Error("Session expired. Please log in again.");
       }
     }
@@ -89,11 +117,11 @@ export async function getUserProfile() {
   return fetchWithAuth(url, { method: "GET" });
 }
 
-export async function updateUserProfile(formData) {
+export async function updateUserProfile(data) {
   const url = `${BASE_URL}/api/profile/`;
   return fetchWithAuth(url, {
     method: "PATCH",
-    body: formData,
+    body: data,
   });
 }
 
@@ -117,7 +145,7 @@ export const getBlogs = ({ search = "", category = "", page = 1, pageSize = 6 } 
 export const getStudyDestinations = ({ country = "", costRange = "", page = 1, pageSize = 6 } = {}) =>
   fetchAPI("/study-destinations/", { country, cost_range: costRange, page, page_size: pageSize });
 
-export const getFAQs = ({ page = 1, pageSize = 5 } = {}) =>
+export const getFAQs = ({ page = 1, pageSize = 10 } = {}) =>
   fetchAPI("/faqs/", { page, page_size: pageSize });
 
 export const getUniversities = (pageSize = 6) => fetchAPI("/universities/", { page_size: pageSize });

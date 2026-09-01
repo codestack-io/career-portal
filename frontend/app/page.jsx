@@ -1,11 +1,9 @@
 export const dynamic = "force-dynamic";
 
-import Navbar from "../UiComponents/Navbar/Navbar";
 import Hero from "../UiComponents/Hero/Hero";
 import About from "../UiComponents/About/About";
 import Services from "../UiComponents/Services/Services";
 import Footer from "../UiComponents/Footer/Footer";
-import FAQ from "../UiComponents/FAQ/FAQ";
 import Testimonials from "../UiComponents/Testimonials/Testimonials";
 import Blogs from "../UiComponents/Blogs/Blogs";
 import StudyDestinations from "../UiComponents/StudyDestinations/StudyDestinations";
@@ -17,7 +15,6 @@ import {
   getAbout,
   getServices,
   getFooter,
-  getFAQs,
   getTestimonials,
   getBlogs,
   getStudyDestinations,
@@ -26,29 +23,27 @@ import {
 } from "@/lib/api";
 
 export default async function Home() {
+  // Positional alignment MUST match between Promise.all and array destructuring
   const [
-    heroRes,
-    aboutRes,
-    servicesRes,
-    footerRes,
-    faqsRes,
-    testimonialsRes,
-    
-    blogsRes,
-    studyDestinationsRes,
-    statisticsRes,
-    universitiesRes,
+    heroRes,              
+    aboutRes,             
+    servicesRes,          
+    footerRes,            
+    testimonialsRes,     
+    blogsRes,             
+    studyDestinationsRes, 
+    statisticsRes,        
+    universitiesRes,      
   ] = await Promise.all([
-    getHero(),
-    getAbout(),
-    getServices(),
-    getFooter(),
-    getFAQs(),
-    getTestimonials(),
-    getBlogs(),
-    getStudyDestinations(),
-    getStatistics(),
-    getUniversities(),
+    getHero(),              
+    getAbout(),            
+    getServices(),          
+    getFooter(),            
+    getTestimonials(),     
+    getBlogs(),             
+    getStudyDestinations(), 
+    getStatistics(),        
+    getUniversities(),      
   ]);
 
   // Extract Single Objects safely
@@ -58,9 +53,7 @@ export default async function Home() {
 
   // Extract Arrays safely (Supports DRF Pagination + Flat Arrays)
   const services = servicesRes?.results || servicesRes || [];
-  const faqs = faqsRes?.results || faqsRes || [];
   const testimonials = testimonialsRes?.results || testimonialsRes || [];
-  
   const blogs = blogsRes?.results || blogsRes || [];
   const studyDestinations = studyDestinationsRes?.results || studyDestinationsRes || [];
   const statistics = statisticsRes?.results || statisticsRes || [];
@@ -70,12 +63,12 @@ export default async function Home() {
     <main className="relative w-full overflow-hidden">
       <Hero hero={hero} />
       <About about={about} />
+      <Statistics statistics={statistics} />
       <Services services={services} />
       <StudyDestinations destinations={studyDestinations} />
       <Universities universities={universities} />
       <Testimonials testimonials={testimonials} />
       <Blogs blogs={blogs} />
-      <FAQ faqs={faqs} />
       <Footer footer={footer} />
     </main>
   );

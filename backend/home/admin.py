@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.template.defaultfilters import truncatechars
+from django.utils.html import strip_tags
 
 from .models import (
     AboutSection,
@@ -27,9 +29,7 @@ from .models import (
 User = get_user_model()
 
 
-# ==========================================
-# Inlines for Study Destination
-# ==========================================
+
 class IntakeInline(admin.TabularInline):
     model = DestinationIntake
     extra = 1
@@ -55,9 +55,7 @@ class WorkOpportunityInline(admin.TabularInline):
     extra = 1
 
 
-# ==========================================
-# Model Admins
-# ==========================================
+
 @admin.register(HeroBanner)
 class HeroBannerAdmin(admin.ModelAdmin):
     list_display = ("title", "badge", "is_active")
@@ -181,12 +179,17 @@ class BlogAdmin(admin.ModelAdmin):
     list_filter = ("category", "is_active")
     search_fields = ("title", "author")
 
-
 @admin.register(FAQ)
 class FAQAdmin(admin.ModelAdmin):
-    list_display = ("question", "display_order", "is_active")
+    list_display = ("question", "short_answer", "display_order", "is_active")
     list_editable = ("display_order", "is_active")
     ordering = ("display_order",)
+
+    @admin.display(description="Short Answer")
+    def short_answer(self, obj):
+        
+        clean_text = strip_tags(obj.answer or "")
+        return truncatechars(clean_text, 100)
 
 
 @admin.register(ContactInformation)
@@ -207,9 +210,7 @@ class FooterAdmin(admin.ModelAdmin):
     search_fields = ("company_name", "email")
 
 
-# ==========================================
-# User & Profile Customization
-# ==========================================
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
