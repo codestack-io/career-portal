@@ -49,7 +49,7 @@ class AboutSectionSerializer(serializers.ModelSerializer):
 class ServiceCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceCategory
-        fields = "__all__"
+        fields = ["id", "name", "slug"]
 
 
 class ServiceSectionSerializer(serializers.ModelSerializer):

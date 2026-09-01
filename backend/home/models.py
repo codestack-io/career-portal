@@ -325,7 +325,7 @@ class Blog(models.Model):
     short_description = models.TextField(blank=True, verbose_name="Short Description (Optional)")
     content = CKEditor5Field("Text", config_name="extends")
     
-    # Updated: Changed from URLField to ImageField for proper file upload handling
+    
     featured_image = models.ImageField(
         upload_to="blogs/", 
         blank=True, 
@@ -333,7 +333,7 @@ class Blog(models.Model):
         verbose_name="Featured Image"
     )
     
-    # Author is already correctly configured as a ForeignKey to AUTH_USER_MODEL
+    
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -369,7 +369,7 @@ class Blog(models.Model):
 
 class FAQ(models.Model):
     question = models.CharField(max_length=255)
-    # UPGRADED: Allows links and styled steps inside accordion answers
+  
     answer = CKEditor5Field("Answer", config_name="extends")
     display_order = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
