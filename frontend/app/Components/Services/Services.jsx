@@ -3,31 +3,39 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Sparkles, GraduationCap, Building2 } from "lucide-react";
-
-const TERMINALS = [
-  { key: "student", label: "Student Services", icon: GraduationCap },
-  { key: "university", label: "University Services", icon: Building2 },
-];
+import { ArrowUpRight, Sparkles, Folder, Layers } from "lucide-react";
 
 const containerVariants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
+      staggerChildren: 0.05,
+      delayChildren: 0.02,
     },
   },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
   },
 };
+
+// Services often come from a CMS with HTML-formatted descriptions
+// (e.g. "<p>Book safe, fully-furnished ...</p>"). Strip tags so the
+// card preview shows plain, readable text instead of raw markup.
+function stripHtml(value) {
+  if (!value) return "";
+  return value
+    .replace(/<\/?[^>]+(>|$)/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function ServiceCard({ service }) {
   const categoryName =
@@ -35,196 +43,188 @@ function ServiceCard({ service }) {
       ? service.category?.name
       : service.category;
 
-  return (
-    <motion.div
-      variants={cardVariants}
-      whileHover={{
-        y: -10,
-        scale: 1.02,
-        rotateX: 3,
-        rotateY: -3,
-      }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="group relative h-full"
-    >
-      {/* Outer Gradient Glow */}
-      <div className="pointer-events-none absolute -inset-px rounded-[28px] bg-gradient-to-br from-violet-500/40 via-blue-500/20 to-transparent opacity-0 blur-[2px] transition-opacity duration-500 group-hover:opacity-100" />
+  const description = stripHtml(service.description);
 
-      <div
-        className="
-          relative flex h-full flex-col rounded-[28px] border border-slate-200/80
-          bg-white/80 p-8 shadow-sm backdrop-blur-xl transition-all duration-500
-          group-hover:border-violet-200 group-hover:bg-white
-          group-hover:shadow-[0_20px_50px_rgba(99,102,241,.15)]
-        "
-      >
-        {/* Service Icon */}
-        <div className="mb-6">
-          <motion.div
-            whileHover={{
-              rotate: [0, -10, 8, -4, 0],
-              scale: 1.08,
-            }}
-            transition={{ duration: 0.6 }}
-            className="
-              flex h-16 w-16 items-center justify-center rounded-2xl
-              bg-gradient-to-br from-violet-100 via-slate-50 to-blue-100
-              border border-violet-100/60 shadow-inner
-            "
-          >
+  return (
+    <motion.div variants={cardVariants} className="group h-full">
+      <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-colors duration-200 hover:border-slate-300">
+        <div className="mb-5 flex items-start justify-between gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-50 border border-slate-200">
             {service.icon ? (
               <img
                 src={service.icon}
-                alt={service.title}
-                className="h-10 w-10 object-contain"
+                alt=""
+                className="h-20 w-20 object-contain"
               />
             ) : (
-              <Sparkles className="h-7 w-7 text-violet-600" />
+              <Sparkles className="h-5 w-5 text-indigo-600" />
             )}
-          </motion.div>
+          </div>
+          {categoryName && (
+            <span className="mt-1 shrink-0 text-[13px] font-medium text-indigo-600">
+              {categoryName}
+            </span>
+          )}
         </div>
 
-        {/* Title */}
-        <h3 className="mb-2 text-xl font-bold tracking-tight text-slate-900">
+        <h3 className="mb-2 text-base font-semibold leading-snug text-slate-900">
           {service.title}
         </h3>
 
-        {/* Category Badge */}
-        {categoryName && (
-          <span className="mb-4 inline-flex w-fit rounded-full bg-violet-100/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-700">
-            {categoryName}
-          </span>
-        )}
-
-        {/* Description */}
-        <p className="mb-8 flex-1 text-sm leading-relaxed text-slate-600">
-          {service.description}
+        <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-500 line-clamp-3">
+          {description}
         </p>
 
-        {/* Action Link */}
         <Link
           href={`/services/${service.slug || service.id}`}
-          className="
-            inline-flex w-fit items-center gap-1.5 text-sm font-semibold
-            text-violet-600 transition-all duration-300
-            group-hover:gap-2.5 group-hover:text-violet-700
-          "
+          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-slate-900 transition-colors duration-200 hover:text-indigo-600"
         >
-          Learn More
-          <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          Learn more
+          <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </Link>
       </div>
     </motion.div>
   );
 }
 
-export default function Services({ initialServices = [] }) {
-  const [activeTerminal, setActiveTerminal] = useState("student");
+export default function ServicesPage({ initialServices = [], initialCategories = [] }) {
+  const [selectedCategoryKey, setSelectedCategoryKey] = useState("all");
 
-  // Filter & Sort services based on active terminal
+  // Dynamically extract categories from initialServices if initialCategories prop is empty
+  const categories = useMemo(() => {
+    if (initialCategories && initialCategories.length > 0) {
+      return [{ key: "all", name: "All Services" }, ...initialCategories];
+    }
+
+    const map = new Map();
+    initialServices.forEach((s) => {
+      if (!s.category) return;
+      if (typeof s.category === "object") {
+        const key = (s.category.slug || s.category.name || "").toLowerCase();
+        if (!map.has(key)) {
+          map.set(key, { key, name: s.category.name || key });
+        }
+      } else {
+        const key = String(s.category).toLowerCase();
+        if (!map.has(key)) {
+          map.set(key, { key, name: s.category });
+        }
+      }
+    });
+
+    return [
+      { key: "all", name: "All Services" },
+      ...Array.from(map.values()),
+    ];
+  }, [initialServices, initialCategories]);
+
+  // Filter active services based on selection
   const filteredServices = useMemo(() => {
     if (!Array.isArray(initialServices)) return [];
 
     return initialServices
       .filter((s) => {
         if (s.is_active === false) return false;
-        if (!s.category) return true;
+        if (selectedCategoryKey === "all") return true;
 
         const categorySlug =
           typeof s.category === "object"
-            ? (s.category.slug || s.category.name || "").toLowerCase()
-            : String(s.category).toLowerCase();
+            ? (s.category?.slug || s.category?.name || "").toLowerCase()
+            : String(s.category || "").toLowerCase();
 
-        return categorySlug.includes(activeTerminal.toLowerCase());
+        return categorySlug === selectedCategoryKey.toLowerCase();
       })
       .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
-  }, [initialServices, activeTerminal]);
+  }, [initialServices, selectedCategoryKey]);
 
   return (
-    <section className="relative overflow-hidden bg-[#F8FAFC] px-6 py-24 sm:px-10 lg:px-16">
-      {/* Background Gradients */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-40 top-0 h-[400px] w-[400px] rounded-full bg-violet-200/40 blur-3xl" />
-        <div className="absolute -right-40 bottom-0 h-[400px] w-[400px] rounded-full bg-blue-200/40 blur-3xl" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-7xl">
+    <section className="min-h-screen bg-white px-6 pb-20 pt-16 sm:px-10 lg:px-16">
+      <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="mx-auto mb-12 max-w-3xl text-center"
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-12 max-w-2xl"
         >
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-4 py-1.5 text-xs font-semibold tracking-wide text-violet-600">
-            <Sparkles className="h-3.5 w-3.5" />
-            Our Services
-          </span>
+          
 
-          <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            Everything you need for a{" "}
-            <span className="bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
-              successful
-            </span>{" "}
-            journey abroad
+          <h2 className="text-3xl mt-11 font-semibold tracking-tight text-slate-900 sm:text-4xl">
+            Explore services by category
           </h2>
-
-          <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
-            From your first application to settling in, our experts guide you
-            through every step of studying and building a career overseas.
+          <p className="mt-3 text-base text-slate-500">
+            Browse everything we offer, from admissions support to
+            pre-departure housing, organized the way you&apos;ll actually need it.
           </p>
         </motion.div>
 
-        {/* Terminal Switcher Tabs */}
-        <div className="mb-14 flex justify-center">
-          <div className="inline-flex items-center gap-2 rounded-2xl bg-slate-200/70 p-1.5 border border-slate-300/50 backdrop-blur-md">
-            {TERMINALS.map((t) => {
-              const isActive = t.key === activeTerminal;
-              const Icon = t.icon;
-              return (
-                <button
-                  key={t.key}
-                  onClick={() => setActiveTerminal(t.key)}
-                  className={`relative flex items-center gap-2 px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${
-                    isActive ? "text-white" : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="active-pill"
-                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 shadow-md shadow-violet-500/20"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                  <Icon className="relative z-10 h-4 w-4" />
-                  <span className="relative z-10">{t.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Cards Grid Container */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTerminal}
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {filteredServices.length > 0 ? (
-              filteredServices.map((service) => (
-                <ServiceCard key={service.id} service={service} />
-              ))
-            ) : (
-              <div className="col-span-full py-16 text-center text-slate-500">
-                No services available under this category.
+        {/* Main Grid: Sidebar Left + Cards Right */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:gap-10">
+          {/* LEFT SIDE: Category Sidebar */}
+          <aside className="lg:col-span-1">
+            <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-3">
+              <div className="mb-2 flex items-center gap-2 px-3 pb-3 pt-1">
+                <Layers className="h-4 w-4 text-slate-400" />
+                <h3 className="text-xs font-semibold text-slate-500">
+                  Categories &middot; {categories.length - 1}
+                </h3>
               </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+
+              <div className="flex flex-row gap-1 overflow-x-auto pb-2 no-scrollbar lg:flex-col lg:overflow-x-visible lg:pb-0">
+                {categories.map((cat) => {
+                  const key = cat.slug || cat.key || cat.name;
+                  const isActive =
+                    key.toLowerCase() === selectedCategoryKey.toLowerCase();
+
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setSelectedCategoryKey(key)}
+                      className={`group flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors duration-150 ${
+                        isActive
+                          ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      }`}
+                    >
+                      <Folder
+                        className={`h-4 w-4 shrink-0 ${
+                          isActive ? "text-white" : "text-slate-400"
+                        }`}
+                      />
+                      <span className="whitespace-nowrap lg:whitespace-normal">
+                        {cat.name || cat.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </aside>
+
+          {/* RIGHT SIDE: Services Display Grid */}
+          <main className="lg:col-span-3">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedCategoryKey}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+              >
+                {filteredServices.length > 0 ? (
+                  filteredServices.map((service) => (
+                    <ServiceCard key={service.id} service={service} />
+                  ))
+                ) : (
+                  <div className="col-span-full rounded-2xl border border-dashed border-slate-300 py-16 text-center text-sm text-slate-500">
+                    No services found under this category.
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+        </div>
       </div>
     </section>
   );

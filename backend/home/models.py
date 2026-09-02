@@ -48,17 +48,54 @@ class AboutSection(models.Model):
 
 
 class ServiceCategory(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Category Name")
+    
+    CATEGORY_CHOICES = [
+        ('admissions', 'University Admission & Course Selection'),
+        ('scholarships', 'Scholarship & Financial Aid Assistance'),
+        ('visa_guidance', 'Visa Processing & Interview Prep'),
+        ('test_prep', 'English Proficiency & Test Preparation'),
+        ('career_counseling', 'Career Counseling & Profile Building'),
+        ('accommodation', 'Student Accommodation & Arrival Support'),
+        ('travel_insurance', 'Travel, Health & Medical Insurance'),
+        ('post_study_work', 'Post-Study Work & Migration Guidance'),
+    ]
+
+    name = models.CharField(
+        max_length=100, 
+        verbose_name="Category Name"
+    )
     slug = models.SlugField(
         unique=True,
         blank=True,
         help_text="Unique URL identifier (e.g., 'student-services')",
     )
+    
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subcategories',
+        verbose_name="Parent Category"
+    )
+    description = models.TextField(
+        blank=True, 
+        help_text="Brief category overview for frontend headers"
+    )
+    icon = models.CharField(
+        max_length=50, 
+        blank=True, 
+        help_text="Lucide icon string key (e.g., 'GraduationCap', 'ShieldCheck')"
+    )
     display_order = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
+    
+    # Metadata for SEO routing
+    meta_title = models.CharField(max_length=150, blank=True)
+    meta_description = models.TextField(blank=True)
 
     class Meta:
-        ordering = ["display_order"]
+        ordering = ["display_order", "name"]
         verbose_name = "Service Category"
         verbose_name_plural = "Service Categories"
 
@@ -68,13 +105,20 @@ class ServiceCategory(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
+        if self.parent:
+            return f"{self.parent.name} → {self.name}"
         return self.name
 
 
 class ServiceSection(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
     description = CKEditor5Field("Description", config_name="extends")
-    icon = models.URLField(blank=True, verbose_name="Icon URL")
+    icon = models.ImageField(
+        upload_to="services/icons/",
+        blank=True,
+        null=True,
+        verbose_name="Icon Image",
+    )
     category = models.ForeignKey(
         ServiceCategory,
         on_delete=models.SET_NULL,

@@ -56,19 +56,24 @@ function CallbackContent() {
     }
   }
 
-  useEffect(() => {
-    if (hasExecuted.current) return;
+ useEffect(() => {
+  if (!id) return;
 
-    const state = searchParams.get("state");
-    const code = searchParams.get("code");
-
-    if (state && code) {
-      hasExecuted.current = true;
-      exchangeCodeForTokens(state, code);
-    } else {
-      setError("Invalid OAuth callback parameters.");
-    }
-  }, [searchParams]);
+  // Clean trailing slash ensured at the end
+  const cleanId = String(id).replace(/\/$/, '');
+  
+  axios
+    .get(`${API_BASE_URL}/api/study-destinations/${cleanId}/`)
+    .then((res) => {
+      setDestination(res.data);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error('API Error:', err.response?.status, err.message);
+      setError(true);
+      setLoading(false);
+    });
+}, [id, API_BASE_URL]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">

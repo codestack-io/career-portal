@@ -15,11 +15,9 @@ import {
   Briefcase,
   Globe,
   Sparkles,
-  Send,
   MapPin,
   Clock,
   Coins,
-  ShieldCheck,
 } from 'lucide-react';
 
 export default function StudyDestinationDetail({ params }) {
@@ -31,7 +29,6 @@ export default function StudyDestinationDetail({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Read backend URL from environment variable with a local fallback
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
   useEffect(() => {
@@ -80,11 +77,11 @@ export default function StudyDestinationDetail({ params }) {
     );
   }
 
- const coursesList = typeof destination.popular_courses === 'string'
-  ? destination.popular_courses.split(',').map((c) => c.trim())
-  : Array.isArray(destination.popular_courses)
-  ? destination.popular_courses
-  : [];
+  const coursesList = typeof destination.popular_courses === 'string'
+    ? destination.popular_courses.split(',').map((c) => c.trim())
+    : Array.isArray(destination.popular_courses)
+    ? destination.popular_courses
+    : [];
 
   const slideFromLeft = {
     initial: { opacity: 0, x: -60 },
@@ -106,7 +103,6 @@ export default function StudyDestinationDetail({ params }) {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-purple-500 selection:text-white pb-24 overflow-x-hidden">
-      {/* Hero Header - Pulls up behind the navbar */}
       <section className="relative h-[480px] sm:h-[550px] w-full overflow-hidden border-b border-slate-800 -mt-24 sm:-mt-28 pt-24 sm:pt-28">
         <img
           src={destination.image}
@@ -115,7 +111,6 @@ export default function StudyDestinationDetail({ params }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20 backdrop-blur-[1px]" />
 
-        {/* Hero Title Container */}
         <div className="absolute bottom-12 left-0 right-0 max-w-7xl mx-auto px-4 sm:px-6 z-20">
           <motion.div
             {...slideFromLeft}
@@ -143,9 +138,7 @@ export default function StudyDestinationDetail({ params }) {
         </div>
       </section>
 
-      {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 relative z-20">
-        {/* Breadcrumb Navigation Bar */}
         <div className="mb-6 flex items-center gap-2 text-sm text-slate-400 bg-slate-900/80 border border-slate-800 px-4 py-2.5 rounded-xl backdrop-blur-md w-fit shadow-lg">
           <Link href="/" className="hover:text-purple-400 transition-colors">
             Home
@@ -158,7 +151,6 @@ export default function StudyDestinationDetail({ params }) {
           <span className="text-purple-300 font-medium">{destination.name}</span>
         </div>
 
-        {/* Highlight Stats Bar */}
         <motion.div
           {...slideFromRight}
           className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-6 shadow-2xl grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
@@ -204,7 +196,6 @@ export default function StudyDestinationDetail({ params }) {
           </div>
         </motion.div>
 
-        {/* Split Grid Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-10">
             <motion.div
@@ -412,57 +403,19 @@ export default function StudyDestinationDetail({ params }) {
           <aside className="lg:col-span-1">
             <motion.div
               {...slideFromRight}
-              className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-purple-500/20 text-white rounded-3xl p-6 sm:p-8 shadow-2xl sticky top-28"
+              className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-purple-500/20 rounded-2xl p-6 text-white shadow-xl sticky top-28"
             >
-              <div className="flex items-center gap-2 text-purple-400 text-xs font-semibold uppercase tracking-wider mb-2">
-                <ShieldCheck size={16} /> Verified Guidance
-              </div>
-              <h3 className="text-2xl font-extrabold mb-2 text-white">Study in {destination.name}</h3>
-              <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-                Connect with our expert advisors for personalized university options, scholarships, and visa filing.
+              <h3 className="text-xl font-bold mb-2">Apply to {destination.name}</h3>
+              <p className="text-sm text-slate-400 mb-6">
+                Get personalized guidance from our education experts to start your admissions process.
               </p>
-
-              <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium text-slate-300 mb-1.5 block">Full Name</label>
-                  <input
-                    type="text"
-                    placeholder="John Doe"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-slate-300 mb-1.5 block">Email Address</label>
-                  <input
-                    type="email"
-                    placeholder="john@example.com"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-slate-300 mb-1.5 block">Phone Number</label>
-                  <input
-                    type="tel"
-                    placeholder="+880 1700-000000"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-purple-600/25 mt-2"
-                >
-                  <Send size={16} /> Request Free Counseling
-                </button>
-              </form>
-
-              <div className="mt-6 pt-6 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-                <span>100% Free Consultation</span>
-                <span>Data Protected</span>
-              </div>
+              <Link
+                href="/contact"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-purple-600/30"
+              >
+                Get Free Counseling
+                <ChevronRight size={18} />
+              </Link>
             </motion.div>
           </aside>
         </div>
