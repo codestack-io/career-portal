@@ -47,8 +47,8 @@ export default function RootLayout({ children }) {
   const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}>
-      <body className="flex min-h-full flex-col bg-slate-950 font-sans text-slate-100 selection:bg-violet-500 selection:text-white">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full "scroll-smooth" data-scroll-behavior="smooth" antialiased`}>
+      <body className="flex min-h-full flex-col bg-slate-950 font-sans text-slate-100 selection:bg-violet-500 selection:text-white ">
         
         {/* Wrap everything that needs state in AuthProvider */}
         <AuthProvider>

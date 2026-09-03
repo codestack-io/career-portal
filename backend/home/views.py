@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets,generics
+from rest_framework import filters, status, viewsets, generics
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -11,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
-
 
 from .models import (
     AboutSection,
@@ -94,7 +93,7 @@ class ContactInformationListAPIView(ListAPIView):
     pagination_class = None
 
 
-# --- ViewSets for Services & Why Choose Us ---
+# --- ViewSets & Generics for Services & Why Choose Us ---
 
 class ServiceCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ServiceCategory.objects.filter(is_active=True)
@@ -106,11 +105,20 @@ class ServiceSectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ServiceSection.objects.filter(is_active=True)
     serializer_class = ServiceSectionSerializer
     permission_classes = [AllowAny]
+    lookup_field = 'slug'  # Enables slug lookup for DRF Routers
+
 
 class ServiceSectionListView(ListAPIView):
     queryset = ServiceSection.objects.filter(is_active=True)
     serializer_class = ServiceSectionSerializer
-    permission_classes = [AllowAny]    
+    permission_classes = [AllowAny]
+
+
+class ServiceDetailView(generics.RetrieveAPIView):
+    queryset = ServiceSection.objects.filter(is_active=True)
+    serializer_class = ServiceSectionSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'slug'
 
 
 class WhyChooseUsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -149,27 +157,23 @@ class StudyDestinationDetailView(RetrieveAPIView):
     lookup_field = "pk"
     permission_classes = [AllowAny]
 
+
 class BlogCategoryListView(ListAPIView):
     queryset = BlogCategory.objects.filter(is_active=True)
     serializer_class = BlogCategorySerializer
     permission_classes = [AllowAny]
     pagination_class = None
 
+
 class BlogListView(ListAPIView):
     queryset = Blog.objects.select_related("author", "category").filter(is_active=True)
     serializer_class = BlogSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    
-    # Filter by category ID or slug, author ID
     filterset_fields = ["category", "category__slug", "author"]
-    
-    
     search_fields = ["title", "content", "short_description"]
-    
-    
     ordering_fields = ["published_date", "title"]
-    ordering = ["-published_date"] 
+    ordering = ["-published_date"]
 
 
 class BlogDetailView(RetrieveAPIView):

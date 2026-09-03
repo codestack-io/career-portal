@@ -4,6 +4,16 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+function stripHtml(value) {
+  if (!value) return "";
+  return value
+    .replace(/<\/?[^>]+(>|$)/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 const containerVariants = {
   hidden: {},
   visible: {
@@ -28,6 +38,8 @@ function ServiceCard({ service }) {
     typeof service.category === "object"
       ? service.category?.name
       : service.category;
+
+      const description = stripHtml(service.description);
 
   return (
     <motion.div
@@ -72,9 +84,9 @@ function ServiceCard({ service }) {
           </span>
         )}
 
-        <p className="mb-8 flex-1 text-[15px] leading-relaxed text-slate-500">
-          {service.description}
-        </p>
+      <p className="mb-8 flex-1 text-[15px] leading-relaxed text-slate-500 line-clamp-3">
+         {description}
+      </p>
 
         <Link
           href={`/services/${service.slug || service.id}`}

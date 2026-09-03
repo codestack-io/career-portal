@@ -1,4 +1,4 @@
-import Services from "../Components/Services/Services";
+import Services from "../Components/Services/page";
 import Footer from "../../UiComponents/Footer/Footer";
 import { getServices } from "../../lib/api";
 

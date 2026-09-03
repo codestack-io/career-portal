@@ -48,7 +48,6 @@ class AboutSection(models.Model):
 
 
 class ServiceCategory(models.Model):
-    
     CATEGORY_CHOICES = [
         ('admissions', 'University Admission & Course Selection'),
         ('scholarships', 'Scholarship & Financial Aid Assistance'),
@@ -69,7 +68,6 @@ class ServiceCategory(models.Model):
         blank=True,
         help_text="Unique URL identifier (e.g., 'student-services')",
     )
-    
     parent = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
@@ -82,10 +80,11 @@ class ServiceCategory(models.Model):
         blank=True, 
         help_text="Brief category overview for frontend headers"
     )
-    icon = models.CharField(
-        max_length=50, 
-        blank=True, 
-        help_text="Lucide icon string key (e.g., 'GraduationCap', 'ShieldCheck')"
+    icon = models.ImageField(
+        upload_to="categories/icons/",
+        blank=True,
+        null=True,
+        help_text="Upload a category icon image (e.g., PNG, SVG, or WEBP)"
     )
     display_order = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
@@ -101,7 +100,14 @@ class ServiceCategory(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base_slug = slugify(self.name)
+            slug = base_slug
+            count = 1
+           
+            while ServiceCategory.objects.filter(slug=slug).exclude(id=self.id).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -112,6 +118,11 @@ class ServiceCategory(models.Model):
 
 class ServiceSection(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
+    slug = models.SlugField(
+        unique=True, 
+        blank=True, 
+        help_text="Unique URL slug (e.g. visa-documentation-and-file-audit)"
+    )
     description = CKEditor5Field("Description", config_name="extends")
     icon = models.ImageField(
         upload_to="services/icons/",
@@ -134,9 +145,20 @@ class ServiceSection(models.Model):
         verbose_name = "Service"
         verbose_name_plural = "Services"
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title) if self.title else "service"
+            slug = base_slug
+            count = 1
+            # Prevent duplicate slugs if multiple services share the same title
+            while ServiceSection.objects.filter(slug=slug).exclude(id=self.id).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
-
 
 class WhyChooseUs(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
