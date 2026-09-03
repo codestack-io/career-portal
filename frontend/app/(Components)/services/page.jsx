@@ -1,5 +1,3 @@
-// app/services/page.jsx
-
 import ServicesClient from "./ServicesClient";
 
 async function getData() {

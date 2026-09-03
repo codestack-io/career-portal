@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Folder, Layers } from "lucide-react";
+import { Sparkles, Folder, Layers, Search, X } from "lucide-react";
 
 const containerVariants = {
   hidden: {},
@@ -31,7 +31,35 @@ function stripHtml(value) {
     .trim();
 }
 
-function ServiceCard({ service }) {
+function HighlightText({ text = "", highlight = "" }) {
+  if (!highlight.trim()) {
+    return <span>{text}</span>;
+  }
+
+  // Escape special regex characters in the search query to prevent crashes
+  const escapedQuery = highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escapedQuery})`, "gi");
+  const parts = text.split(regex);
+
+  return (
+    <span>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark
+            key={i}
+            className="bg-amber-100 text-amber-900 font-medium rounded-sm px-0.5"
+          >
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </span>
+  );
+}
+
+function ServiceCard({ service, searchQuery }) {
   const categoryName =
     typeof service.category === "object"
       ? service.category?.name
@@ -61,12 +89,14 @@ function ServiceCard({ service }) {
           )}
         </div>
 
+        {/* Highlighted Title */}
         <h3 className="mb-2 text-base font-semibold leading-snug text-slate-900">
-          {service.title}
+          <HighlightText text={service.title} highlight={searchQuery} />
         </h3>
 
+        {/* Highlighted Description */}
         <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-500 line-clamp-3">
-          {description}
+          <HighlightText text={description} highlight={searchQuery} />
         </p>
 
         <Link
@@ -82,8 +112,8 @@ function ServiceCard({ service }) {
 
 export default function ServicesClient({ initialServices = [], initialCategories = [] }) {
   const [selectedCategoryKey, setSelectedCategoryKey] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  
   const safeServices = useMemo(() => {
     if (Array.isArray(initialServices)) return initialServices;
     if (initialServices && Array.isArray(initialServices.results)) return initialServices.results;
@@ -116,21 +146,35 @@ export default function ServicesClient({ initialServices = [], initialCategories
     return [{ key: "all", name: "All Services" }, ...Array.from(map.values())];
   }, [safeServices, safeCategories]);
 
+  // Combined Filter: Inactive Check + Category Filter + Search Query Match
   const filteredServices = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
     return safeServices
       .filter((s) => {
         if (s.is_active === false) return false;
-        if (selectedCategoryKey === "all") return true;
 
+        // Category Filter
         const categorySlug =
           typeof s.category === "object"
             ? (s.category?.slug || s.category?.name || "").toLowerCase()
             : String(s.category || "").toLowerCase();
 
-        return categorySlug === selectedCategoryKey.toLowerCase();
+        const matchesCategory =
+          selectedCategoryKey === "all" || categorySlug === selectedCategoryKey.toLowerCase();
+
+        if (!matchesCategory) return false;
+
+        // Search Filter (Title + Description)
+        if (!query) return true;
+
+        const titleMatch = (s.title || "").toLowerCase().includes(query);
+        const descriptionMatch = stripHtml(s.description).toLowerCase().includes(query);
+
+        return titleMatch || descriptionMatch;
       })
       .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
-  }, [safeServices, selectedCategoryKey]);
+  }, [safeServices, selectedCategoryKey, searchQuery]);
 
   return (
     <section className="min-h-screen bg-white px-6 pb-20 pt-16 sm:px-10 lg:px-16">
@@ -140,14 +184,36 @@ export default function ServicesClient({ initialServices = [], initialCategories
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-12 max-w-2xl"
+          className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
         >
-          <h2 className="mt-11 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-            Explore services by category
-          </h2>
-          <p className="mt-3 text-base text-slate-500">
-            Browse everything we offer, from admissions support to pre-departure housing.
-          </p>
+          <div className="max-w-2xl">
+            <h2 className="mt-11 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+              Explore services by category
+            </h2>
+            <p className="mt-3 text-base text-slate-500">
+              Browse everything we offer, from admissions support to pre-departure housing.
+            </p>
+          </div>
+
+          {/* Search Bar Input */}
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search services..."
+              className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:gap-10">
@@ -189,7 +255,7 @@ export default function ServicesClient({ initialServices = [], initialCategories
           <main className="lg:col-span-3">
             <AnimatePresence mode="wait">
               <motion.div
-                key={selectedCategoryKey}
+                key={`${selectedCategoryKey}-${searchQuery}`}
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -197,11 +263,24 @@ export default function ServicesClient({ initialServices = [], initialCategories
               >
                 {filteredServices.length > 0 ? (
                   filteredServices.map((service) => (
-                    <ServiceCard key={service.id || service.slug} service={service} />
+                    <ServiceCard key={service.id || service.slug} service={service} searchQuery={searchQuery} />
                   ))
                 ) : (
-                  <div className="col-span-full rounded-2xl border border-dashed border-slate-300 py-16 text-center text-sm text-slate-500">
-                    No services found under this category.
+                  <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 py-16 text-center">
+                    <p className="text-sm text-slate-500">
+                      No services found matching your criteria.
+                    </p>
+                    {(searchQuery || selectedCategoryKey !== "all") && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery("");
+                          setSelectedCategoryKey("all");
+                        }}
+                        className="mt-3 text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                      >
+                        Reset filters
+                      </button>
+                    )}
                   </div>
                 )}
               </motion.div>

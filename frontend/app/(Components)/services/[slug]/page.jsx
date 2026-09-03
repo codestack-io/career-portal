@@ -3,30 +3,26 @@ import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
 
 async function getService(slug) {
-  
   const cleanSlug = slug ? String(slug).trim() : "";
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-  const url = `${baseUrl}/api/services/${cleanSlug}/`;
 
   try {
-    const res = await fetch(url, {
+    const res = await fetch(`${baseUrl}/api/services/${cleanSlug}/`, {
       cache: "no-store",
     });
 
     if (!res.ok) {
-      console.error(`[Server Fetch Failed] Status: ${res.status} | URL: ${url}`);
+      console.error(`[Server Fetch Failed] Status: ${res.status} for slug:${cleanSlug}`);
       return null;
     }
-    
     return await res.json();
   } catch (error) {
-    console.error(`[Server Fetch Error] URL: ${url} | Error:`, error.message);
+    console.error("Error fetching service details:", error);
     return null;
   }
 }
 
 export async function generateMetadata({ params }) {
-  // Await params for Next.js 15+ compatibility
   const resolvedParams = await params;
   const service = await getService(resolvedParams.slug);
 
@@ -43,7 +39,6 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ServiceDetailPage({ params }) {
-  // Await params explicitly
   const resolvedParams = await params;
   const service = await getService(resolvedParams.slug);
 
@@ -60,7 +55,7 @@ export default async function ServiceDetailPage({ params }) {
     <main className="min-h-screen bg-[#F8FAFF] px-6 py-16 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-4xl">
         <Link
-          href="/services"
+          href="/Components/Services"
           className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-violet-600"
         >
           <ArrowLeft className="h-4 w-4" />

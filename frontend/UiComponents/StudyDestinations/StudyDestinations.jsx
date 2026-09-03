@@ -4,9 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useInView, useSpring, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-/* -----------------------------
-   Animated Counter Component
-------------------------------*/
+
 function AnimatedCounter({ value, suffix = "" }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
@@ -35,9 +33,7 @@ function AnimatedCounter({ value, suffix = "" }) {
   );
 }
 
-/* -----------------------------
-   Country Card Component (Dark)
-------------------------------*/
+
 
 function CountryCard({ country, index }) {
   return (
@@ -96,9 +92,7 @@ function CountryCard({ country, index }) {
   );
 }
 
-/* -----------------------------
-   Main Section Component
-------------------------------*/
+
 
 export default function StudyDestinations({ destinations = [] }) {
   const marqueeUp = {
@@ -138,7 +132,7 @@ export default function StudyDestinations({ destinations = [] }) {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
-          {/* LEFT CONTENT */}
+         
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -161,13 +155,13 @@ export default function StudyDestinations({ destinations = [] }) {
               achieve your dream with expert admission guidance.
             </p>
 
-            {/* Standardized Gradient Button */}
+         
             <button className="mt-8 flex items-center gap-3 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-8 py-4 font-semibold text-white shadow-lg shadow-violet-600/25 transition-all hover:-translate-y-0.5 hover:shadow-violet-600/40 active:translate-y-0">
               <span>Explore Destinations</span>
               <ArrowRight size={18} />
             </button>
 
-            {/* Statistics with Count Up */}
+            
             <div className="mt-14 grid grid-cols-3 gap-8 border-t border-slate-800/80 pt-8">
               <div>
                 <h3 className="text-4xl font-black text-white">
@@ -198,16 +192,16 @@ export default function StudyDestinations({ destinations = [] }) {
             </div>
           </motion.div>
 
-          {/* RIGHT MARQUEE */}
+         
           <div className="relative h-[680px] overflow-hidden">
-            {/* Top Dark Fade Mask */}
+            
             <div className="pointer-events-none absolute left-0 right-0 top-0 z-20 h-28 bg-gradient-to-b from-slate-950 via-slate-950/80 to-transparent" />
 
-            {/* Bottom Dark Fade Mask */}
+           
             <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-28 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent" />
 
             <div className="grid grid-cols-2 gap-6">
-              {/* LEFT COLUMN */}
+              
               <motion.div
                 variants={marqueeUp}
                 animate="animate"
@@ -222,7 +216,7 @@ export default function StudyDestinations({ destinations = [] }) {
                 ))}
               </motion.div>
 
-              {/* RIGHT COLUMN */}
+              
               <motion.div
                 variants={marqueeDown}
                 animate="animate"
