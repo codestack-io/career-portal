@@ -256,6 +256,7 @@ class Statistic(models.Model):
 
 class StudyDestination(models.Model):
     name = models.CharField(max_length=100, verbose_name="Country Name")
+    slug = models.SlugField(max_length=255, unique=True, null=True, blank=True)
     short_description = models.TextField()
     full_description = CKEditor5Field("Full Description", config_name="extends", blank=True)
     
@@ -272,8 +273,11 @@ class StudyDestination(models.Model):
     class Meta:
         ordering = ["display_order"]
 
-    def __str__(self):
-        return self.name
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class DestinationIntake(models.Model):

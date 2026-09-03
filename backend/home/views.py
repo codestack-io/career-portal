@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import get_object_or_404
 
 from .models import (
     AboutSection,
@@ -154,8 +155,22 @@ class StudyDestinationListView(ListAPIView):
 class StudyDestinationDetailView(RetrieveAPIView):
     queryset = StudyDestination.objects.filter(is_active=True)
     serializer_class = StudyDestinationDetailSerializer
-    lookup_field = "pk"
     permission_classes = [AllowAny]
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup_val = self.kwargs.get(lookup_url_kwarg or 'id') or self.kwargs.get('pk')
+
+        # Check if the parameter passed in URL is numeric ID or string slug
+        if str(lookup_val).isdigit():
+            filter_kwargs = {'pk': lookup_val}
+        else:
+            filter_kwargs = {'slug': lookup_val}
+
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 
 class BlogCategoryListView(ListAPIView):

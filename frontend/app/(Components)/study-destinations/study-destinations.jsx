@@ -33,7 +33,6 @@ export default function StudyDestinations() {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Read backend URL from environment variable with a local fallback
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
   useEffect(() => {
@@ -82,16 +81,18 @@ export default function StudyDestinations() {
         viewport={{ once: true, margin: '-50px' }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
-       {destinations.map((dest, index) => {
-  const coursesList = typeof dest?.popular_courses === 'string'
-    ? dest.popular_courses.split(',').map((c) => c.trim())
-    : Array.isArray(dest?.popular_courses)
-    ? dest.popular_courses
-    : [];
+        {destinations.map((dest, index) => {
+          const coursesList = typeof dest?.popular_courses === 'string'
+            ? dest.popular_courses.split(',').map((c) => c.trim())
+            : Array.isArray(dest?.popular_courses)
+            ? dest.popular_courses
+            : [];
+
+          const destinationIdentifier = dest.slug || dest.id;
 
           return (
             <motion.div
-              key={dest.id}
+              key={dest.id || index}
               custom={index}
               variants={cardVariants}
               whileHover={{ y: -6 }}
@@ -100,37 +101,37 @@ export default function StudyDestinations() {
             >
               <div className="relative h-56 w-full overflow-hidden">
                 <img
-                  src={dest.image}
-                  alt={dest.name}
+                  src={dest.image || dest.country_image}
+                  alt={dest.name || dest.country_name}
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
                 <div className="absolute bottom-4 left-4 flex items-center gap-3">
-                  {dest.flag && (
+                  {(dest.flag || dest.flag_image) && (
                     <motion.img
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.2 }}
-                      src={dest.flag}
+                      src={dest.flag || dest.flag_image}
                       alt={`${dest.name} flag`}
                       className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-md"
                     />
                   )}
-                  <h3 className="text-2xl font-bold text-white drop-shadow-sm">{dest.name}</h3>
+                  <h3 className="text-2xl font-bold text-white drop-shadow-sm">{dest.name || dest.country_name}</h3>
                 </div>
               </div>
 
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
                   <p className="text-slate-600 text-sm line-clamp-3 leading-relaxed mb-6">
-                    {dest.short_description}
+                    {dest.short_description || dest.description}
                   </p>
                   <div className="bg-slate-50/80 rounded-2xl p-4 space-y-3 mb-6 border border-slate-100">
                     <div className="flex items-center justify-between text-xs sm:text-sm">
                       <span className="text-slate-500 flex items-center gap-1.5 font-medium">
                         <Building2 size={16} className="text-purple-600" /> Universities
                       </span>
-                      <span className="font-bold text-slate-900">{dest.universities_count}+</span>
+                      <span className="font-bold text-slate-900">{dest.universities_count || dest.universities || 0}+</span>
                     </div>
                     {dest.average_tuition && (
                       <div className="flex items-center justify-between text-xs sm:text-sm border-t border-slate-200/60 pt-2.5">
@@ -162,7 +163,7 @@ export default function StudyDestinations() {
                   )}
                 </div>
 
-                <Link href={`/study-destinations/${dest.id}`}>
+                <Link href={`/study-destinations/${destinationIdentifier}`}>
                   <motion.div
                     whileTap={{ scale: 0.98 }}
                     className="w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-purple-600 text-white text-sm font-semibold py-3 px-4 rounded-xl transition-colors duration-300 shadow-sm group/btn"

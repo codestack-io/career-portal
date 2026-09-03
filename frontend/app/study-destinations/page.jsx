@@ -1,4 +1,4 @@
-import StudyDestinations from "../Components/study-destinations/study-destinations";
+import StudyDestinations from "../(Components)/study-destinations/study-destinations";
 import Footer from "../../UiComponents/Footer/Footer";
 
 export const metadata = {
