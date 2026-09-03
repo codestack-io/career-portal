@@ -98,6 +98,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 # Disables session-state verification for REST API / Single Page App OAuth setups
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = []
+SOCIAL_AUTH_GOOGLE_OAUTH2_STATE_PARAMETER = True
 SOCIAL_AUTH_STRATEGY = 'social_django.strategy.DjangoStrategy'
 SOCIAL_AUTH_STORAGE = 'social_django.models.DjangoStorage'
 
@@ -145,6 +146,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
+
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_REDIRECT_URIS = [
+    'http://localhost:3000/oauth/callback',
+    'http://localhost:3000/oauth/callback/',  # Include trailing slash variant if needed
 ]
 
 LANGUAGE_CODE = 'en-us'

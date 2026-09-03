@@ -7,79 +7,71 @@ function CallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState("");
-  const hasExecuted = useRef(false);
+  const processingRef = useRef(false);
 
-  async function exchangeCodeForTokens(state, code) {
-    try {
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  useEffect(() => {
+    const state = searchParams.get("state");
+    const code = searchParams.get("code");
 
-      // Send x-www-form-urlencoded payload including redirect_uri
-      const formData = new URLSearchParams();
-      formData.append("state", decodeURIComponent(state));
-      formData.append("code", decodeURIComponent(code));
-      formData.append("redirect_uri", "http://localhost:3000/oauth/callback");
+    // Prevent React double-invocation in dev mode
+    if (processingRef.current) return;
 
-      const res = await fetch(`${backendUrl}/auth/o/google-oauth2/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        credentials: "include",
-        body: formData.toString(),
-      });
-
-      const responseText = await res.text();
-      let data = {};
-      try {
-        data = JSON.parse(responseText);
-      } catch {
-        console.error("Non-JSON Response received:", responseText);
-      }
-
-      if (res.ok) {
-        localStorage.setItem("access_token", data.access);
-        localStorage.setItem("refresh_token", data.refresh);
-        router.push("/dashboard");
-      } else {
-        console.error(`Backend Error (${res.status}):`, data);
-        const message =
-          data.non_field_errors?.[0] ||
-          data.detail ||
-          data.state?.[0] ||
-          data.code?.[0] ||
-          "Google authentication failed.";
-        setError(message);
-      }
-    } catch (err) {
-      console.error("Network error:", err);
-      setError("An error occurred during authentication.");
+    if (!state || !code) {
+      setError("Missing state or authorization code from Google.");
+      return;
     }
-  }
 
- useEffect(() => {
-  if (!id) return;
+    async function exchangeCodeForTokens() {
+      processingRef.current = true; // Lock execution
 
-  // Clean trailing slash ensured at the end
-  const cleanId = String(id).replace(/\/$/, '');
-  
-  axios
-    .get(`${API_BASE_URL}/api/study-destinations/${cleanId}/`)
-    .then((res) => {
-      setDestination(res.data);
-      setLoading(false);
-    })
-    .catch((err) => {
-      console.error('API Error:', err.response?.status, err.message);
-      setError(true);
-      setLoading(false);
-    });
-}, [id, API_BASE_URL]);
+      try {
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+        // Djoser expects x-www-form-urlencoded format
+        const bodyParams = new URLSearchParams();
+        bodyParams.append("state", state);
+        bodyParams.append("code", code);
+        bodyParams.append("redirect_uri", "http://localhost:3000/oauth/callback");
+
+        const res = await fetch(`${backendUrl}/auth/o/google-oauth2/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: bodyParams.toString(),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+          localStorage.setItem("access_token", data.access);
+          localStorage.setItem("refresh_token", data.refresh);
+          router.push("/dashboard");
+        } else {
+          console.error(`Backend Error (${res.status}):`, data);
+          const message =
+            data.non_field_errors?.[0] ||
+            data.detail ||
+            data.state?.[0] ||
+            data.code?.[0] ||
+            "Google authentication failed.";
+          setError(message);
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        setError("An error occurred during authentication.");
+      }
+    }
+
+    exchangeCodeForTokens();
+  }, [searchParams, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
       {error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
-          {error}
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600 shadow-sm">
+          <p className="font-semibold mb-1">Authentication Error</p>
+          <p className="text-sm">{error}</p>
         </div>
       ) : (
         <div className="text-center">
@@ -93,7 +85,7 @@ function CallbackContent() {
 
 export default function OAuthCallback() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
       <CallbackContent />
     </Suspense>
   );

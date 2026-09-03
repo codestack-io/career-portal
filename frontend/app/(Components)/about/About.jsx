@@ -2,10 +2,6 @@
 
 import React, { useEffect, useState, useRef } from "react";
 
-// ==========================================
-// 📸 CLOUDINARY IMAGE URL CONFIGURATION
-// Replace the empty strings below with your Cloudinary URLs
-// ==========================================
 const IMAGES = {
   heroMain: "https://res.cloudinary.com/ciiop60x/video/upload/v1786637507/video-2_qfuuky.mp4",
   heroFounder:"https://res.cloudinary.com/ciiop60x/image/upload/v1786635680/im-1_txvfq8.jpg",
@@ -17,9 +13,6 @@ const IMAGES = {
   expert5: "https://res.cloudinary.com/ciiop60x/image/upload/v1786635681/im-5_fmiiyw.jpg",
 };
 
-// ==========================================
-// 🔢 ANIMATED COUNTUP COMPONENT
-// ==========================================
 function CountUp({ end, duration = 2000, prefix = "", suffix = "", decimals = 0 }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -68,41 +61,30 @@ function CountUp({ end, duration = 2000, prefix = "", suffix = "", decimals = 0 
   );
 }
 
-// ==========================================
-// MAIN ABOUT CONTENT COMPONENT
-// ==========================================
 export default function AboutPage() {
   return (
     <div className="space-y-24 sm:space-y-32 pb-20 ">
       
-      {/* ---------------------------------------------------- */}
-      {/* SECTION 1: HERO & CONSULTANCY OVERVIEW              */}
-      {/* ---------------------------------------------------- */}
       <section className="text-slate-900 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* LEFT COLUMN: Visual Composite Card */}
             <div className="lg:col-span-6 relative">
               <div className="relative mx-auto max-w-md lg:max-w-none">
                 
-                
-                {/* Main Video Container */}
-            {/* Main Video Container */}
-<div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-100 aspect-[4/3] sm:aspect-[1/1] transition-transform duration-500 hover:scale-[1.01]">
-  <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    className="w-full h-full object-cover"
-  >
-    <source src={IMAGES.heroMain} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-</div>
+                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-100 aspect-[4/3] sm:aspect-[1/1] transition-transform duration-500 hover:scale-[1.01]">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  >
+                    <source src={IMAGES.heroMain} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
 
-                {/* Floating Stat Badge 1 (Top Right) */}
                 <div className="absolute -top-6 -right-4 sm:right-2 bg-white rounded-3xl p-4 sm:p-5 shadow-xl border border-slate-100 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-300">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +99,6 @@ export default function AboutPage() {
                   </div>
                 </div>
 
-                {/* Floating Stat Badge 2 (Bottom Left) */}
                 <div className="absolute -bottom-6 -left-4 sm:left-2 bg-[#111827] text-white rounded-3xl p-5 shadow-2xl border border-slate-800 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-300">
                   <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
                     <svg className="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -135,7 +116,6 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Copy & Content */}
             <div className="lg:col-span-6 space-y-6 sm:space-y-8">
               <div>
                 <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold tracking-wide uppercase">
@@ -151,7 +131,6 @@ export default function AboutPage() {
                 We streamline complex immigration processes into clear, achievable steps. Whether pursuing higher education, expanding your career abroad, or relocating your family, our licensed specialists ensure your application meets global compliance rules effortlessly.
               </p>
 
-              {/* Checklist Features */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 {[
                   "Certified Immigration Experts",
@@ -187,7 +166,9 @@ export default function AboutPage() {
                   <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Global Partners</p>
                 </div>
                 <div>
-                  <p className="text-2xl sm:text-4xl font-black text-slate-900">24/7</p>
+                  <p className="text-2xl sm:text-4xl font-black text-slate-900">
+                    <CountUp end={24} suffix="/7" />
+                  </p>
                   <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Legal Guidance</p>
                 </div>
               </div>
@@ -222,70 +203,56 @@ export default function AboutPage() {
         </div>
       </section>
 
-     {/* ---------------------------------------------------- */}
-     {/* SECTION 2: WHO WE ARE (MISSION & VISION)           */}
-     {/* ---------------------------------------------------- */}
+      {/* SECTION 2: WHO WE ARE (MISSION & VISION) */}
+      <section className="relative overflow-hidden py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="relative rounded-[2.5rem] overflow-hidden p-8 sm:p-12 lg:p-16 ">
+            <img
+              src={IMAGES.bgImg}
+              alt="Who We Are Background"
+              className="absolute inset-0 w-full h-full object-cover z-0 opacity-32 "
+            />
 
-<section className="relative overflow-hidden py-12">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-    
-    {/* CENTERED BACKGROUND IMAGE CONTAINER */}
-    <div className="relative rounded-[2.5rem] overflow-hidden p-8 sm:p-12 lg:p-16 ">
+            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/90 to-white/80 backdrop-blur-[2px] z-10" />
+
+            <div className="relative z-20 max-w-4xl mx-auto space-y-8">
+              <div className="text-center space-y-4">
+                <h2 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight">
+                  Who we are
+                </h2>
+                <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full" />
+              </div>
+
+              <div className="space-y-4 text-slate-700 text-base sm:text-lg leading-relaxed text-center sm:text-left">
+                <p className="font-medium">
+                  We are a dedicated visa and immigration agency committed to helping individuals and families achieve their dreams of living, working, and studying abroad. With years of experience and a team of experts, we simplify the complexities of immigration processes to ensure a smooth and successful journey for our clients.
+                </p>
+                <p className="text-sm sm:text-base text-slate-600">
+                  Our team of experienced professionals offers personalized services to ensure your travel documentation is handled efficiently and accurately. From visa assistance to flight bookings, accommodation arrangements, and more, we make your international travel experience stress-free and enjoyable.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                <div className="p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-white/60 shadow-lg transition-all hover:shadow-xl hover:border-blue-200">
+                  <h3 className="text-xl sm:text-2xl font-bold text-blue-600 mb-3">Our mission</h3>
+                  <p className="text-slate-700 leading-relaxed text-xs sm:text-sm">
+                    Providing tailored visa and immigration solutions to help people achieve their global aspirations.
+                  </p>
+                </div>
+
+                <div className="p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-white/60 shadow-lg transition-all hover:shadow-xl hover:border-blue-200">
+                  <h3 className="text-xl sm:text-2xl font-bold text-blue-600 mb-3">Our vision</h3>
+                  <p className="text-slate-700 leading-relaxed text-xs sm:text-sm">
+                    To be a trusted partner, guiding individuals and families toward a brighter future abroad.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
       
-      {/* Cloudinary Background Image */}
-      <img
-        src={IMAGES.bgImg}
-        alt="Who We Are Background"
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-32 "
-      />
-
-      {/* Dark/Light Gradient Overlay (Ensures text stays highly readable) */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/90 to-white/80 backdrop-blur-[2px] z-10" />
-
-      {/* CENTERED CONTENT (z-20 brings it above the background) */}
-      <div className="relative z-20 max-w-4xl mx-auto space-y-8">
-        
-        <div className="text-center space-y-4">
-          <h2 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight">
-            Who we are
-          </h2>
-          <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full" />
-        </div>
-
-        <div className="space-y-4 text-slate-700 text-base sm:text-lg leading-relaxed text-center sm:text-left">
-          <p className="font-medium">
-            We are a dedicated visa and immigration agency committed to helping individuals and families achieve their dreams of living, working, and studying abroad. With years of experience and a team of experts, we simplify the complexities of immigration processes to ensure a smooth and successful journey for our clients.
-          </p>
-          <p className="text-sm sm:text-base text-slate-600">
-            Our team of experienced professionals offers personalized services to ensure your travel documentation is handled efficiently and accurately. From visa assistance to flight bookings, accommodation arrangements, and more, we make your international travel experience stress-free and enjoyable.
-          </p>
-        </div>
-
-        {/* Mission & Vision Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-          <div className="p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-white/60 shadow-lg transition-all hover:shadow-xl hover:border-blue-200">
-            <h3 className="text-xl sm:text-2xl font-bold text-blue-600 mb-3">Our mission</h3>
-            <p className="text-slate-700 leading-relaxed text-xs sm:text-sm">
-              Providing tailored visa and immigration solutions to help people achieve their global aspirations.
-            </p>
-          </div>
-
-          <div className="p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-white/60 shadow-lg transition-all hover:shadow-xl hover:border-blue-200">
-            <h3 className="text-xl sm:text-2xl font-bold text-blue-600 mb-3">Our vision</h3>
-            <p className="text-slate-700 leading-relaxed text-xs sm:text-sm">
-              To be a trusted partner, guiding individuals and families toward a brighter future abroad.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-</section>
-      {/* ---------------------------------------------------- */}
-      {/* SECTION 3: WHY CHOOSE US                           */}
-      {/* ---------------------------------------------------- */}
       <section>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -295,7 +262,6 @@ export default function AboutPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1 */}
             <div className="p-8 sm:p-10 rounded-[2rem] bg-slate-50/70 border border-slate-100 hover:bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -308,7 +274,6 @@ export default function AboutPage() {
               </p>
             </div>
 
-            {/* Card 2 */}
             <div className="p-8 sm:p-10 rounded-[2rem] bg-slate-50/70 border border-slate-100 hover:bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -321,7 +286,6 @@ export default function AboutPage() {
               </p>
             </div>
 
-            {/* Card 3 */}
             <div className="p-8 sm:p-10 rounded-[2rem] bg-slate-50/70 border border-slate-100 hover:bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,9 +301,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ---------------------------------------------------- */}
-      {/* SECTION 4: OUR VISA EXPERTS                         */}
-      {/* ---------------------------------------------------- */}
       <section>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-16">
@@ -370,13 +331,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ---------------------------------------------------- */}
-      {/* SECTION 5: CTA BANNER                                */}
-      {/* ---------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-[2.5rem] bg-blue-600 text-white p-8 sm:p-14 lg:p-20 overflow-hidden shadow-2xl">
           
-          {/* Subtle World Map/Globe Vector Pattern */}
           <div className="absolute top-0 right-0 bottom-0 w-full lg:w-1/2 opacity-15 pointer-events-none flex items-center justify-center">
             <svg className="w-full h-full max-h-[400px]" viewBox="0 0 200 200" fill="none" stroke="currentColor">
               <circle cx="100" cy="100" r="80" strokeWidth="1" strokeDasharray="4 4" />
@@ -390,7 +347,6 @@ export default function AboutPage() {
               Ready to start your <span className="italic font-normal">immigration</span> journey?
             </h2>
 
-            {/* Checklist */}
             <div className="flex flex-wrap gap-y-3 gap-x-6 text-sm sm:text-base font-semibold">
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
@@ -420,7 +376,6 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* CTA Button */}
             <div className="pt-2">
               <a
                 href="#consultation"
@@ -432,9 +387,8 @@ export default function AboutPage() {
           </div>
 
         </div>
-      
       </section>
-     
+      
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import Blogs from "../Components/Blogs/Blogs"; // Adjust path if needed
+import Blogs from "../(Components)/blogs/Blogs"; 
 import Footer from "../../UiComponents/Footer/Footer";
 
 export default function BlogsPage() {

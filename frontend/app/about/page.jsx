@@ -1,5 +1,5 @@
 import Footer from "../../UiComponents/Footer/Footer";
-import About from "../Components/About/About";
+import About from "../(Components)/about/About";
 
 export default function AboutPage() {
   return (
