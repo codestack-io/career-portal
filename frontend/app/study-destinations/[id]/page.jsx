@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   Building2,
-  DollarSign,
   Calendar,
   GraduationCap,
   ChevronRight,
@@ -14,15 +13,27 @@ import {
   MapPin,
   Clock,
   Coins,
+  BadgeDollarSign,
+  FileCheck,
 } from 'lucide-react';
 import SidebarCTA from '../../(Components)/SidebarCTA/SidebarCTA';
+import ScrollAnimate from '../../(Components)/ScrollAnimate';
+import Counter from '../../(Components)/Counter';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+
+const iconMap = {
+  briefcase: Briefcase,
+  clock: Clock,
+  money: BadgeDollarSign,
+  visa: FileCheck,
+};
+
 
 async function fetchDestination(id) {
   try {
     const res = await fetch(`${API_BASE_URL}/api/study-destinations/${id}/`, {
-      next: { revalidate: 3600 }, // Cache and revalidate data periodically
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) return null;
@@ -33,7 +44,6 @@ async function fetchDestination(id) {
   }
 }
 
-// Generate dynamic SEO Metadata on the server
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const destination = await fetchDestination(resolvedParams.id);
@@ -115,237 +125,253 @@ export default async function StudyDestinationDetail({ params }) {
         </div>
 
         {/* Highlight Stats */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-slate-50 transition-all">
-            <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
-              <Building2 size={22} />
+        <ScrollAnimate direction="left">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-slate-50 transition-all">
+              <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                <Building2 size={22} />
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Top Universities</p>
+                <p className="text-lg sm:text-xl font-bold text-slate-900">
+                <Counter value={destination.universities_count ?? 0} />+
+              </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Top Universities</p>
-              <p className="text-lg sm:text-xl font-bold text-slate-900">{destination.universities_count ?? 0}+</p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-slate-50 transition-all">
-            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
-              <DollarSign size={22} />
-            </div>
-            <div>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Avg. Tuition</p>
-              <p className="text-lg sm:text-xl font-bold text-slate-900 truncate max-w-[150px]">{destination.average_tuition || 'N/A'}</p>
-            </div>
-          </div>
+            
 
-          <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-slate-50 transition-all">
-            <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
-              <Calendar size={22} />
+            <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-slate-50 transition-all">
+              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                <Calendar size={22} />
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Main Intakes</p>
+                <p className="text-lg sm:text-xl font-bold text-slate-900 truncate max-w-[150px]">{destination.intakes || 'Fall / Spring'}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Main Intakes</p>
-              <p className="text-lg sm:text-xl font-bold text-slate-900 truncate max-w-[150px]">{destination.intakes || 'Fall / Spring'}</p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-slate-50 transition-all">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
-              <Briefcase size={22} />
-            </div>
-            <div>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Post-Study Work</p>
-              <p className="text-lg sm:text-xl font-bold text-slate-900 truncate max-w-[150px]">{destination.post_study_work || '2 - 4 Years'}</p>
+            <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-slate-50 transition-all">
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                <Briefcase size={22} />
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Post-Study Work</p>
+                <p className="text-lg sm:text-xl font-bold text-slate-900 truncate max-w-[150px]">{destination.post_study_work || '2 - 4 Years'}</p>
+              </div>
             </div>
           </div>
-        </div>
+        </ScrollAnimate>
 
         {/* Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
           <div className="lg:col-span-2 space-y-10">
             {/* About */}
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2.5">
-                <Sparkles size={22} className="text-purple-600" />
-                About {destination.name}
-              </h2>
-              <p className="text-slate-600 leading-relaxed text-base whitespace-pre-line">
-                {destination.full_description || destination.short_description}
-              </p>
-            </div>
+            <ScrollAnimate direction="left">
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2.5">
+                  <Sparkles size={22} className="text-purple-600" />
+                  About {destination.name}
+                </h2>
+                <p className="text-slate-600 leading-relaxed text-base whitespace-pre-line">
+                  {destination.full_description || destination.short_description}
+                </p>
+              </div>
+            </ScrollAnimate>
 
             {/* Popular Courses */}
             {coursesList.length > 0 && (
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
-                  <GraduationCap size={22} className="text-purple-600" />
-                  Popular Fields of Study
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {coursesList.map((course, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-purple-200 transition-all duration-300 group"
-                    >
-                      <CheckCircle2 size={18} className="text-purple-600 shrink-0 group-hover:scale-110 transition-transform" />
-                      <span className="text-slate-800 font-medium text-sm">{course}</span>
-                    </div>
-                  ))}
+              <ScrollAnimate direction="right">
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <GraduationCap size={22} className="text-purple-600" />
+                    Popular Fields of Study
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {coursesList.map((course, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-purple-200 transition-all duration-300 group"
+                      >
+                        <CheckCircle2 size={18} className="text-purple-600 shrink-0 group-hover:scale-110 transition-transform" />
+                        <span className="text-slate-800 font-medium text-sm">{course}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </ScrollAnimate>
             )}
 
             {/* Academic Intakes Table */}
             {destination.intakes_list?.length > 0 && (
-              <section id="intake" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
-                  <Clock size={22} className="text-purple-600" />
-                  Academic Intakes
-                </h2>
-                <div className="overflow-x-auto rounded-xl border border-slate-200">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
-                        <th className="p-4">Intake Name</th>
-                        <th className="p-4">Months / Timing</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                      {destination.intakes_list.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="p-4 font-semibold text-slate-900">{item.intake_name}</td>
-                          <td className="p-4 text-purple-700 font-medium">{item.months}</td>
+              <ScrollAnimate direction="left">
+                <section id="intake" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <Clock size={22} className="text-purple-600" />
+                    Academic Intakes
+                  </h2>
+                  <div className="overflow-x-auto rounded-xl border border-slate-200">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                          <th className="p-4">Intake Name</th>
+                          <th className="p-4">Months / Timing</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                        {destination.intakes_list.map((item) => (
+                          <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="p-4 font-semibold text-slate-900">{item.intake_name}</td>
+                            <td className="p-4 text-purple-700 font-medium">{item.months}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </ScrollAnimate>
             )}
 
             {/* Program Durations Table */}
             {destination.program_durations?.length > 0 && (
-              <section id="programs" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
-                  <GraduationCap size={22} className="text-purple-600" />
-                  Program Durations
-                </h2>
-                <div className="overflow-x-auto rounded-xl border border-slate-200">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
-                        <th className="p-4">Degree Level</th>
-                        <th className="p-4">Typical Duration</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                      {destination.program_durations.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="p-4 font-semibold text-slate-900">{item.program_level}</td>
-                          <td className="p-4 text-slate-600">{item.duration}</td>
+              <ScrollAnimate direction="right">
+                <section id="programs" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <GraduationCap size={22} className="text-purple-600" />
+                    Program Durations
+                  </h2>
+                  <div className="overflow-x-auto rounded-xl border border-slate-200">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                          <th className="p-4">Degree Level</th>
+                          <th className="p-4">Typical Duration</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                        {destination.program_durations.map((item) => (
+                          <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="p-4 font-semibold text-slate-900">{item.program_level}</td>
+                            <td className="p-4 text-slate-600">{item.duration}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </ScrollAnimate>
             )}
 
             {/* Cost Breakdowns Table */}
             {destination.cost_breakdowns?.length > 0 && (
-              <section id="cost" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
-                  <Coins size={22} className="text-purple-600" />
-                  Cost of Studying
-                </h2>
-                <div className="overflow-x-auto rounded-xl border border-slate-200">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
-                        <th className="p-4">Program Level</th>
-                        <th className="p-4">Foreign Amount (Avg.)</th>
-                        <th className="p-4">BDT Equivalent (Approx.)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                      {destination.cost_breakdowns.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="p-4 font-semibold text-slate-900">{item.program_level}</td>
-                          <td className="p-4 text-emerald-600 font-semibold">{item.amount_foreign}</td>
-                          <td className="p-4 text-purple-700 font-medium">{item.amount_local}</td>
+              <ScrollAnimate direction="left">
+                <section id="cost" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <Coins size={22} className="text-purple-600" />
+                    Cost of Studying
+                  </h2>
+                  <div className="overflow-x-auto rounded-xl border border-slate-200">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                          <th className="p-4">Program Level</th>
+                          <th className="p-4">Foreign Amount (Avg.)</th>
+                          <th className="p-4">BDT Equivalent (Approx.)</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                        {destination.cost_breakdowns.map((item) => (
+                          <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="p-4 font-semibold text-slate-900">{item.program_level}</td>
+                            <td className="p-4 text-emerald-600 font-semibold">{item.amount_foreign}</td>
+                            <td className="p-4 text-purple-700 font-medium">{item.amount_local}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </ScrollAnimate>
             )}
 
             {/* Top Student Cities */}
             {destination.cities?.length > 0 && (
-              <section id="cities">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
-                  <MapPin size={22} className="text-purple-600" />
-                  Top Student Cities
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {destination.cities.map((city, idx) => (
-                    <div
-                      key={city.id}
-                      className="group bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:border-purple-300 transition-all duration-300 flex flex-col"
-                    >
-                      <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                        {city.image && (
-                          <img
-                            src={city.image}
-                            alt={city.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        )}
-                        <span className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-xs font-bold text-white px-3 py-1 rounded-full">
-                          #{idx + 1}
-                        </span>
-                      </div>
-                      <div className="p-5 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h3 className="font-bold text-lg text-slate-900 group-hover:text-purple-600 transition-colors">
-                            {city.name}
-                          </h3>
-                          <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-                            {city.tagline}
-                          </p>
+              <ScrollAnimate direction="right">
+                <section id="cities">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <MapPin size={22} className="text-purple-600" />
+                    Top Student Cities
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {destination.cities.map((city, idx) => (
+                      <div
+                        key={city.id}
+                        className="group bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:border-purple-300 transition-all duration-300 flex flex-col"
+                      >
+                        <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                          {city.image && (
+                            <img
+                              src={city.image}
+                              alt={city.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          )}
+                          <span className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-xs font-bold text-white px-3 py-1 rounded-full">
+                            #{idx + 1}
+                          </span>
+                        </div>
+                        <div className="p-5 flex-1 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-bold text-lg text-slate-900 group-hover:text-purple-600 transition-colors">
+                              {city.name}
+                            </h3>
+                            <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                              {city.tagline}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
+                    ))}
+                  </div>
+                </section>
+              </ScrollAnimate>
             )}
 
-            {/* Work Opportunities */}
-            {destination.work_opportunities?.length > 0 && (
-              <section id="work" className="space-y-4">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
-                  <Briefcase size={22} className="text-purple-600" />
-                  Work Opportunities
-                </h2>
-                {destination.work_opportunities.map((work) => (
-                  <div
-                    key={work.id}
-                    className="bg-purple-50/50 border border-purple-100 rounded-2xl p-6 flex flex-col sm:flex-row gap-5 items-start"
-                  >
-                    <div className="p-3.5 bg-purple-100 text-purple-700 rounded-xl shrink-0">
-                      <Briefcase size={22} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-900 mb-1.5">{work.title}</h3>
-                      <p className="text-sm text-slate-600 leading-relaxed">{work.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </section>
-            )}
+  {destination.work_opportunities?.length > 0 && (
+  <ScrollAnimate direction="left">
+    <section id="work" className="space-y-4">
+      <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+        <Briefcase size={22} className="text-purple-600" />
+        Work Opportunities
+      </h2>
+      {destination.work_opportunities.map((work) => {
+        // Find icon from map or default to Briefcase
+        const IconComponent = iconMap[work.icon?.toLowerCase()] || Briefcase;
+
+        return (
+          <div
+            key={work.id}
+            className="bg-purple-50/50 border border-purple-100 rounded-2xl p-6 flex flex-col sm:flex-row gap-5 items-start"
+          >
+            <div className="p-3.5 bg-purple-100 text-purple-700 rounded-xl shrink-0">
+              <IconComponent size={22} />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 mb-1.5">{work.title}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{work.description}</p>
+            </div>
+          </div>
+        );
+      })}
+    </section>
+  </ScrollAnimate>
+)}
           </div>
 
           {/* Sidebar CTA */}
-          <SidebarCTA destinationName={destination.name} apiBaseUrl={API_BASE_URL} />
+          <ScrollAnimate direction="right">
+            <SidebarCTA destinationName={destination.name} apiBaseUrl={API_BASE_URL} />
+          </ScrollAnimate>
         </div>
       </main>
     </div>

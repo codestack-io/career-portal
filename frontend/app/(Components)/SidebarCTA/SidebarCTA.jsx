@@ -1,9 +1,8 @@
-// components/SidebarCTA.jsx
 'use client';
 
 import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
-import CounselingModal from './CounselingModal';
+import CounselingModal from '../CounselingModal/CounselingModal';
 
 export default function SidebarCTA({ destinationName, apiBaseUrl }) {
   const [isModalOpen, setIsModalOpen] = useState(false);

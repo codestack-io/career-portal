@@ -8,7 +8,7 @@ import Link from "next/link";
 export default function DashboardLayout({ children }) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
-  const pathname = usePathname(); // Tracks current route for active styles
+  const pathname = usePathname(); 
 
   useEffect(() => {
     if (!loading && !user) {

@@ -1,54 +1,45 @@
-'use client';
-
-import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Clock, Calendar, ArrowLeft, User } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
-export default function BlogDetailPage({ params }) {
-  const { slug } = use(params);
-  const router = useRouter();
+// Fetch blog data directly on the server
+async function fetchBlog(slug) {
+  try {
+    const res = await fetch(`${API_URL}/api/blogs/${slug}/`, {
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
 
-  const [blog, setBlog] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (slug) {
-      axios.get(`${API_URL}/api/blogs/${slug}/`)
-        .then((res) => {
-          setBlog(res.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error('Error fetching blog details:', err);
-          setLoading(false);
-        });
-    }
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64 bg-white pt-20">
-        <p className="text-purple-600 font-medium animate-pulse">Loading article...</p>
-      </div>
-    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.error('Error fetching blog details:', err);
+    return null;
   }
+}
+
+// Generate dynamic SEO metadata
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const blog = await fetchBlog(slug);
 
   if (!blog) {
-    return (
-      <div className="bg-white max-w-3xl mx-auto px-4 pt-20 pb-10 text-center">
-        <p className="text-red-500 text-lg font-medium">Article not found.</p>
-        <button 
-          onClick={() => router.back()}
-          className="text-purple-600 hover:underline mt-4 inline-block font-medium cursor-pointer"
-        >
-          &larr; Go back to previous page
-        </button>
-      </div>
-    );
+    return { title: 'Article Not Found' };
+  }
+
+  return {
+    title: `${blog.title} | Career Hub`,
+    description: blog.short_description || blog.title,
+  };
+}
+
+export default async function BlogDetailPage({ params }) {
+  const { slug } = await params;
+  const blog = await fetchBlog(slug);
+
+  if (!blog) {
+    notFound();
   }
 
   const authorName = typeof blog.author === 'object' 
@@ -62,17 +53,16 @@ export default function BlogDetailPage({ params }) {
   const htmlContent = blog?.text || blog?.content || '';
 
   return (
-    /* Tighter page padding & auto height wrapper */
     <div className="h-auto bg-slate-50/50 pt-20 pb-8 px-4 sm:px-6">
       <main className="max-w-4xl mx-auto">
         
-        {/* Back Button */}
-        <button 
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-slate-700 hover:text-purple-600 font-semibold text-sm mb-4 transition cursor-pointer bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm hover:border-purple-300"
+        {/* Back Link (Replaced router.back button for server rendering) */}
+        <Link 
+          href="/blogs"
+          className="inline-flex items-center gap-2 text-slate-700 hover:text-purple-600 font-semibold text-sm mb-4 transition bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm hover:border-purple-300"
         >
-          <ArrowLeft size={16} /> Go Back
-        </button>
+          <ArrowLeft size={16} /> Go Back to Blogs
+        </Link>
 
         {/* Compact Article Container */}
         <article className="bg-white rounded-3xl p-5 sm:p-8 shadow-sm border border-slate-100 text-slate-900 h-auto overflow-hidden">
@@ -126,7 +116,7 @@ export default function BlogDetailPage({ params }) {
             </div>
           )}
 
-          {/* HTML Body Content - Only renders when text actually exists */}
+          {/* HTML Body Content */}
           {htmlContent && (
             <div 
               className="mt-4 text-slate-800 text-base sm:text-lg leading-relaxed space-y-4 break-words prose prose-slate prose-purple max-w-none
