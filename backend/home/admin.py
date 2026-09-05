@@ -228,6 +228,6 @@ class UserProfileAdmin(admin.ModelAdmin):
         "country_of_interest",
         "target_degree",
         "passport_status",
+        "created_at",
     )
     search_fields = ("user__username", "user__email", "phone", "country_of_interest")
-    readonly_fields = ("created_at", "updated_at")

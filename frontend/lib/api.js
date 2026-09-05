@@ -63,16 +63,21 @@ export async function fetchAPI(endpoint, queryParams = {}) {
 /**
  * Authenticated Request Helper with Auto Token Refresh
  */
-async function fetchWithAuth(url, options = {}) {
-  let token = getStorageItem("accessToken");
+async function fetchWithAuth(url, options = {}, overrideToken = null) {
+  // Use explicit token if passed, otherwise fall back to localStorage
+  let token = overrideToken || getStorageItem("accessToken");
 
   const headers = {
     ...options.headers,
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
-  // If payload is plain object (not FormData), serialize to JSON
-  if (options.body && !(options.body instanceof FormData) && typeof options.body === "object") {
+  // If payload is a plain object (not FormData), serialize to JSON
+  if (
+    options.body &&
+    !(options.body instanceof FormData) &&
+    typeof options.body === "object"
+  ) {
     headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(options.body);
   }
@@ -102,7 +107,9 @@ async function fetchWithAuth(url, options = {}) {
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.detail || errorData.message || `Request failed (${res.status})`);
+    throw new Error(
+      errorData.detail || errorData.message || `Request failed (${res.status})`
+    );
   }
 
   return res.json();
@@ -112,17 +119,32 @@ async function fetchWithAuth(url, options = {}) {
    AUTHENTICATED USER ENDPOINTS
    ========================================================================== */
 
-export async function getUserProfile() {
+// Accepts both (token, data) OR just (data) seamlessly
+export async function getUserProfile(token = null) {
   const url = `${BASE_URL}/api/profile/`;
-  return fetchWithAuth(url, { method: "GET" });
+  return fetchWithAuth(url, { method: "GET" }, token);
 }
 
-export async function updateUserProfile(data) {
+// Accepts both (token, payload) AND (payload) to match your ProfilePage implementation
+export async function updateUserProfile(arg1, arg2) {
   const url = `${BASE_URL}/api/profile/`;
-  return fetchWithAuth(url, {
-    method: "PATCH",
-    body: data,
-  });
+  let token = null;
+  let data = arg1;
+
+  // If two arguments are provided (e.g. updateUserProfile(token, payload))
+  if (arg2 !== undefined) {
+    token = arg1;
+    data = arg2;
+  }
+
+  return fetchWithAuth(
+    url,
+    {
+      method: "PATCH",
+      body: data,
+    },
+    token
+  );
 }
 
 /* ==========================================================================
@@ -137,16 +159,32 @@ export const getStatistics = () => fetchAPI("/statistics/");
 export const getWhyChooseUs = () => fetchAPI("/why-choose-us/");
 
 // Dynamic Modules with Search, Filtering & Custom Page Sizes
-export const getServices = (pageSize = 6) => fetchAPI("/services/", { page_size: pageSize });
+export const getServices = (pageSize = 6) =>
+  fetchAPI("/services/", { page_size: pageSize });
 
-export const getBlogs = ({ search = "", category = "", page = 1, pageSize = 6 } = {}) =>
-  fetchAPI("/blogs/", { search, category, page, page_size: pageSize });
+export const getBlogs = ({
+  search = "",
+  category = "",
+  page = 1,
+  pageSize = 6,
+} = {}) => fetchAPI("/blogs/", { search, category, page, page_size: pageSize });
 
-export const getStudyDestinations = ({ country = "", costRange = "", page = 1, pageSize = 6 } = {}) =>
-  fetchAPI("/study-destinations/", { country, cost_range: costRange, page, page_size: pageSize });
+export const getStudyDestinations = ({
+  country = "",
+  costRange = "",
+  page = 1,
+  pageSize = 6,
+} = {}) =>
+  fetchAPI(
+    "/study-destinations/",
+    { country, cost_range: costRange, page, page_size: pageSize }
+  );
 
 export const getFAQs = ({ page = 1, pageSize = 10 } = {}) =>
   fetchAPI("/faqs/", { page, page_size: pageSize });
 
-export const getUniversities = (pageSize = 6) => fetchAPI("/universities/", { page_size: pageSize });
-export const getTestimonials = (pageSize = 6) => fetchAPI("/testimonials/", { page_size: pageSize });
+export const getUniversities = (pageSize = 6) =>
+  fetchAPI("/universities/", { page_size: pageSize });
+
+export const getTestimonials = (pageSize = 6) =>
+  fetchAPI("/testimonials/", { page_size: pageSize });

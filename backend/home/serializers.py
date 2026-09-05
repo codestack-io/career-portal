@@ -89,6 +89,8 @@ class UniversitySerializer(serializers.ModelSerializer):
         model = University
         fields = "__all__"
 
+       
+
 
 class TestimonialSerializer(serializers.ModelSerializer):
     university = UniversitySerializer(read_only=True)
@@ -107,7 +109,7 @@ class TestimonialSerializer(serializers.ModelSerializer):
 class StatisticSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistic
-        fields = "__all__"
+        fields = ['id', 'title', 'value', 'suffix', 'icon', 'display_order'] 
 
 
 # Child serializers placed BEFORE parent StudyDestination serializers
@@ -252,18 +254,18 @@ class FooterSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    updated_at = serializers.DateTimeField(format="%d/%m/%Y %H:%M", read_only=True)
+    avatar = serializers.ImageField(source="profile_picture", required=False, allow_null=True)
 
     class Meta:
         model = UserProfile
         fields = [
             "id",
-            "user",
             "phone",
+            "address",
             "country_of_interest",
             "target_degree",
             "passport_status",
             "avatar",
+            "created_at",
             "updated_at",
         ]

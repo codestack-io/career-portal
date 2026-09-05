@@ -75,12 +75,7 @@ export default function HomeHero() {
               <ArrowRight size={16} />
             </span>
           </Link>
-          <Link
-            href="/contact"
-            className="rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-8 py-4 font-semibold text-white transition hover:bg-white/20"
-          >
-            Contact Us
-          </Link>
+          
         </div>
 
         {/* Feature Highlights Grid */}

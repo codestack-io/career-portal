@@ -302,10 +302,19 @@ class Testimonial(models.Model):
 
 class Statistic(models.Model):
     title = models.CharField(max_length=100, verbose_name="Statistic Title")
-    value = models.CharField(max_length=50, verbose_name="Statistic Value")
-    icon = models.URLField(blank=True, verbose_name="Icon URL")
+    
+    
+    value = models.PositiveIntegerField(verbose_name="Numeric Value", help_text="Raw number for count animations")
+    suffix = models.CharField(max_length=10, blank=True, default="+", verbose_name="Value Suffix", help_text="e.g. +, %, k")
+    
+    
+    icon = models.CharField(max_length=50, blank=True, verbose_name="Icon Name", help_text="Lucide icon name e.g. briefcase, users")
+    
     display_order = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["display_order"]
@@ -313,7 +322,7 @@ class Statistic(models.Model):
         verbose_name_plural = "Statistics"
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.value}{self.suffix})"
 
 class CounselingRequest(models.Model):
     DEGREE_CHOICES = [
@@ -595,22 +604,27 @@ class Footer(models.Model):
     def __str__(self):
         return self.company_name
 
-
 class UserProfile(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="profile",
     )
     phone = models.CharField(max_length=20, blank=True)
+    address = models.TextField(blank=True)
     country_of_interest = models.CharField(max_length=100, blank=True)
     target_degree = models.CharField(max_length=100, blank=True)
     passport_status = models.CharField(max_length=50, blank=True)
-    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    profile_picture = models.ImageField(
+        upload_to="profile_pics/",
+        blank=True,
+        null=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        user_identifier = getattr(self.user, "email", None) or self.user.username
-        return f"Profile of {user_identifier}"
+        return f"Profile of {self.user.username}"
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -618,4 +632,5 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
     else:
-        UserProfile.objects.get_or_create(user=instance)
+        if hasattr(instance, "profile"):
+            instance.profile.save()

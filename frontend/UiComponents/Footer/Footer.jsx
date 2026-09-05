@@ -65,9 +65,9 @@ export default function Footer({ footer, countries = [] }) {
 
   const faqLinks = [
     { name: "General FAQs", href: "/faqs" },
-    { name: "Admission Guidance", href: "/faqs#admissions" },
-    { name: "Scholarships", href: "/faqs#scholarships" },
-    { name: "Visa Process", href: "/faqs#visa" },
+    // { name: "Admission Guidance", href: "/faqs#admissions" },
+    // { name: "Scholarships", href: "/faqs#scholarships" },
+    // { name: "Visa Process", href: "/faqs#visa" },
   ];
 
   const defaultMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
