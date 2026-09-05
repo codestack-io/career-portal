@@ -1,104 +1,163 @@
 "use client";
 
+import React, { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../app/context/AuthContext";
+import { ArrowRight, Menu, X, LayoutDashboard, LogOut, User } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  
- 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Services", href: "/services" },
+    { name: "Destinations", href: "/study-destinations" },
+    { name: "Blogs", href: "/blogs" },
+  ];
 
   return (
-    <header className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl">
-      <div className="flex items-center justify-between rounded-2xl border border-white/20 bg-white/10 backdrop-blur-2xl shadow-[0_8px_32px_rgba(31,38,135,0.18)] px-8 py-4">
-
+    <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-6xl">
+      {/* Main Floating Glass Capsule Container */}
+      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-full px-5 py-2.5 shadow-xl shadow-slate-900/5 flex items-center justify-between transition-all duration-300">
+        
         {/* Logo */}
-        <Link href="/">
-          <h1 className="text-3xl font-black tracking-tight">
-            <span className="bg-gradient-to-r from-slate-900 via-violet-700 to-blue-600 bg-clip-text text-transparent">
-              CareerHub
-            </span>
-          </h1>
+        <Link href="/" onClick={closeMobileMenu} className="flex items-center gap-1 pl-2">
+          <span className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+            Career<span className="text-violet-600">Hub</span>
+          </span>
         </Link>
 
-        {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-3">
-
-          <Link
-            href="/"
-            className="rounded-full px-5 py-2.5 text-slate-800 font-semibold transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:text-violet-700"
-          >
-            Home
-          </Link>
-
-          <Link
-            href="/about"
-            className="rounded-full px-5 py-2.5 text-slate-800 font-semibold transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:text-violet-700"
-          >
-            About
-          </Link>
-
-          <Link
-            href="/services"
-            className="rounded-full px-5 py-2.5 text-slate-800 font-semibold transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:text-violet-700"
-          >
-            Services
-          </Link>
-
-          <Link
-            href="/study-destinations"
-            className="rounded-full px-5 py-2.5 text-slate-800 font-semibold transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:text-violet-700"
-          >
-            Destinations
-          </Link>
-
-          <Link
-            href="/blogs"
-            className="rounded-full px-5 py-2.5 text-slate-800 font-semibold transition-all duration-300 hover:bg-white/30 hover:backdrop-blur-md hover:text-violet-700"
-          >
-            Blogs
-          </Link>
-
+        {/* Desktop Navigation Links */}
+        <nav className="hidden md:flex items-center gap-1 bg-slate-100/80 p-1 rounded-full border border-slate-200/50">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="px-4 py-1.5 rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-white transition-all duration-200"
+            >
+              {link.name}
+            </Link>
+          ))}
         </nav>
 
-       
-       {/* Dynamic Auth Section */}
-        <div className="flex items-center gap-3">
+        {/* Desktop Dynamic Auth Buttons */}
+        <div className="hidden md:flex items-center gap-2">
           {user ? (
-            /* Show when LOGGED IN */
-            <>
+            <div className="flex items-center gap-2">
               <Link
                 href="/dashboard"
-                className="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition"
+                className="flex items-center gap-1.5 bg-violet-50 hover:bg-violet-100 text-violet-700 px-4 py-2 rounded-full text-xs font-bold transition border border-violet-200/60"
               >
-                Dashboard
+                <LayoutDashboard size={14} />
+                <span>Dashboard</span>
               </Link>
               <button
                 onClick={logout}
-                className="text-sm font-medium text-gray-500 hover:text-red-600 transition px-2 py-2"
+                className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-full transition"
+                title="Logout"
               >
-                Logout
+                <LogOut size={16} />
               </button>
-            </>
+            </div>
           ) : (
-            /* Show when LOGGED OUT */
-            <>
+            <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition px-3 py-2"
+                className="text-xs font-bold text-slate-700 hover:text-violet-600 transition px-4 py-2"
               >
                 Sign In
               </Link>
               <Link
                 href="/register"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+                className="group flex items-center gap-2 bg-slate-900 hover:bg-violet-600 text-white pl-4 pr-1.5 py-1.5 rounded-full text-xs font-bold shadow-md transition-all duration-300"
               >
-                Register
+                <span>Register</span>
+                <span className="bg-white/20 p-1.5 rounded-full group-hover:translate-x-0.5 transition-transform">
+                  <ArrowRight size={12} />
+                </span>
               </Link>
-            </>
+            </div>
           )}
         </div>
+
+        {/* Mobile Toggle Button */}
+        <button
+          onClick={toggleMobileMenu}
+          className="md:hidden p-2 text-slate-700 hover:text-violet-600 hover:bg-slate-100 rounded-full transition"
+          aria-label="Toggle Navigation Menu"
+        >
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
       </div>
+
+      {/* Mobile Drawer Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-5 shadow-2xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+          <nav className="flex flex-col gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={closeMobileMenu}
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-violet-50 hover:text-violet-700 transition"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+
+          <hr className="border-slate-100" />
+
+          {/* Mobile Auth Links */}
+          <div className="flex flex-col gap-2 pt-1">
+            {user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center gap-2 bg-violet-50 text-violet-700 py-3 rounded-full text-xs font-bold border border-violet-200/60"
+                >
+                  <LayoutDashboard size={16} />
+                  <span>Dashboard</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    closeMobileMenu();
+                  }}
+                  className="flex items-center justify-center gap-2 text-rose-600 bg-rose-50 hover:bg-rose-100 py-3 rounded-full text-xs font-bold transition"
+                >
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  href="/login"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center bg-slate-100 text-slate-800 py-3 rounded-full text-xs font-bold hover:bg-slate-200 transition"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-violet-600 to-blue-600 text-white py-3 rounded-full text-xs font-bold shadow-md shadow-violet-500/20"
+                >
+                  <span>Register</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

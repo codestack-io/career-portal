@@ -12,7 +12,7 @@ const fadeUp = {
 
 export default function Footer({ footer, countries = [] }) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
+  const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubscribe = async (e) => {

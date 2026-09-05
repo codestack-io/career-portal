@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 function stripHtml(value) {
   if (!value) return "";
@@ -18,18 +19,18 @@ const containerVariants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
     },
   },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
@@ -39,60 +40,50 @@ function ServiceCard({ service }) {
       ? service.category?.name
       : service.category;
 
-      const description = stripHtml(service.description);
+  const description = stripHtml(service.description);
 
   return (
-    <motion.div
-      variants={cardVariants}
-      whileHover={{
-        y: -14,
-        scale: 1.03,
-        rotateX: 4,
-        rotateY: -4,
-      }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="group relative h-full"
-    >
-      <div className="pointer-events-none absolute -inset-px rounded-[28px] bg-gradient-to-br from-violet-500/40 via-blue-500/20 to-transparent opacity-0 blur-[2px] transition-opacity duration-500 group-hover:opacity-100" />
+    <motion.div variants={cardVariants} className="group relative h-full">
+      {/* Light-slate tile card with clean hover states */}
+      <div className="relative flex h-full flex-col rounded-2xl border border-slate-200/70 bg-slate-50/80 p-7 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:border-violet-200 group-hover:bg-white group-hover:shadow-xl group-hover:shadow-violet-500/10">
+        
+        {/* Icon & Category Header */}
+        <div className="mb-5 flex items-center justify-between">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white p-2.5 shadow-sm border border-slate-100 group-hover:border-violet-100 group-hover:bg-violet-50/50 transition-colors">
+            {service.icon ? (
+              <img
+                src={service.icon}
+                alt={service.title}
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <Sparkles className="h-6 w-6 text-violet-600" />
+            )}
+          </div>
 
-      <div className="relative flex h-full flex-col rounded-[28px] border border-slate-200/70 bg-white/70 p-8 shadow-[0_2px_8px_rgba(15,23,42,0.04)] backdrop-blur-xl transition-all duration-500 group-hover:border-violet-200 group-hover:bg-white/90 group-hover:shadow-[0_30px_70px_rgba(99,102,241,.22)]">
-        <div className="mb-7">
-          <motion.div
-            whileHover={{
-              rotate: [0, -12, 10, -6, 0],
-              scale: 1.12,
-              x: [-4, 6, -3, 0],
-            }}
-            transition={{ duration: 0.8 }}
-            className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-xl"
-          >
-            <img
-              src={service.icon}
-              alt={service.title}
-              className="h-20 w-20 object-contain"
-            />
-          </motion.div>
+          {categoryName && (
+            <span className="rounded-full bg-violet-100/70 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-700">
+              {categoryName}
+            </span>
+          )}
         </div>
 
-        <h3 className="mb-3 text-xl font-semibold tracking-tight text-slate-900">
+        {/* Title */}
+        <h3 className="mb-2 text-xl font-bold tracking-tight text-slate-900 group-hover:text-violet-700 transition-colors">
           {service.title}
         </h3>
 
-        {categoryName && (
-          <span className="mb-4 inline-flex w-fit rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
-            {categoryName}
-          </span>
-        )}
+        {/* Description */}
+        <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-500 line-clamp-3">
+          {description}
+        </p>
 
-      <p className="mb-8 flex-1 text-[15px] leading-relaxed text-slate-500 line-clamp-3">
-         {description}
-      </p>
-
+        {/* Card CTA Link */}
         <Link
           href={`/services/${service.slug || service.id}`}
-          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-violet-600 transition-all duration-300 group-hover:gap-2.5 group-hover:text-violet-700"
+          className="inline-flex w-fit items-center gap-1.5 text-xs font-bold text-violet-600 transition-all duration-300 group-hover:gap-2.5 group-hover:text-violet-800"
         >
-          Learn More
+          <span>Learn More</span>
           <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </Link>
       </div>
@@ -101,7 +92,6 @@ function ServiceCard({ service }) {
 }
 
 export default function Services({ services = [] }) {
-  // Filter active, sort by order, and limit display to exactly 6 items
   const data =
     services
       ?.filter((s) => s.is_active)
@@ -112,34 +102,39 @@ export default function Services({ services = [] }) {
     "https://res.cloudinary.com/ciiop60x/image/upload/v1785944828/bg-2_rue33e.jpg";
 
   return (
-    <section className="relative overflow-hidden bg-[#F8FAFF] px-6 py-28 sm:px-10 lg:px-16">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-40 top-0 h-[420px] w-[420px] rounded-full bg-gradient-to-br from-violet-200/40 to-transparent blur-3xl" />
-        <div className="absolute -right-40 bottom-0 h-[420px] w-[420px] rounded-full bg-gradient-to-tr from-blue-200/40 to-transparent blur-3xl" />
-      </div>
-
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-15">
-        <img
+    <section className="relative py-20 px-4 md:px-8 bg-slate-50/50">
+      {/* Background Graphic */}
+      <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-5">
+        <Image
           src={cloudinaryBgUrl}
-          alt="Services background image"
-          className="h-full w-full max-w-5xl object-contain opacity-30"
+          alt="Services background graphic"
+          fill
+          unoptimized
+          className="object-contain mix-blend-multiply"
         />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl">
+      {/* Main Unified Floating Container Card */}
+      <div className="relative z-10 max-w-7xl mx-auto rounded-[36px] bg-white p-8 md:p-14 border border-slate-200/80 shadow-xl shadow-slate-900/5 overflow-hidden">
+        
+        {/* Glow Decorators inside Card */}
+        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-violet-200/30 blur-[100px] pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-blue-200/30 blur-[100px] pointer-events-none" />
+
+        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto mb-16 max-w-2xl text-center"
+          transition={{ duration: 0.6 }}
+          className="mx-auto mb-14 max-w-2xl text-center"
         >
-          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-4 py-1.5 text-xs font-medium tracking-wide text-violet-600">
-            <Sparkles className="h-3.5 w-3.5" />
-            Our Services
-          </span>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-4 py-1.5 text-xs font-bold text-violet-700">
+            <Sparkles className="h-3.5 w-3.5 text-violet-600" />
+            <span>Our Services</span>
+          </div>
 
-          <h2 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-5xl leading-tight">
             Everything you need for a{" "}
             <span className="bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
               successful
@@ -147,34 +142,38 @@ export default function Services({ services = [] }) {
             journey abroad
           </h2>
 
-          <p className="mt-5 text-lg leading-relaxed text-slate-500">
+          <p className="mt-4 text-base md:text-lg leading-relaxed text-slate-500">
             From your first application to settling in, our experts guide you
             through every step of studying and building a career overseas.
           </p>
         </motion.div>
 
+        {/* Services Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
         >
           {data.map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
         </motion.div>
 
-        {/* View All Button */}
-        <div className="mt-16 text-center">
+        {/* Section Action Button */}
+        <div className="mt-14 text-center">
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-violet-600 hover:shadow-violet-500/25 active:scale-95"
+            className="group inline-flex items-center gap-3 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 px-8 py-3.5 text-sm font-bold shadow-lg shadow-amber-400/20 transition-all duration-300 hover:scale-105"
           >
             <span>View All Services</span>
-            <ArrowRight className="h-4 w-4" />
+            <span className="bg-slate-950 text-white p-1.5 rounded-full group-hover:translate-x-1 transition-transform">
+              <ArrowRight className="h-3.5 w-3.5" />
+            </span>
           </Link>
         </div>
+
       </div>
     </section>
   );
