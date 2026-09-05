@@ -6,6 +6,7 @@ from .models import (
     Blog,
     BlogCategory,
     ContactInformation,
+    CounselingRequest,
     DestinationCity,
     DestinationCost,
     DestinationIntake,
@@ -208,6 +209,26 @@ class BlogSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.featured_image.url)
             return obj.featured_image.url
         return None
+
+
+class CounselingRequestSerializer(serializers.ModelSerializer):
+    # Mapping camelCase frontend fields to snake_case backend fields
+    fullName = serializers.CharField(source='full_name')
+    studyLevel = serializers.CharField(source='study_level', required=False)
+    preferredDestination = serializers.CharField(source='preferred_destination', required=False, allow_blank=True)
+
+    class Meta:
+        model = CounselingRequest
+        fields = [
+            'id',
+            'fullName',
+            'email',
+            'phone',
+            'studyLevel',
+            'preferredDestination',
+            'message',
+            'created_at',
+        ]    
 
 
 class FAQSerializer(serializers.ModelSerializer):

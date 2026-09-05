@@ -98,21 +98,11 @@ class WhyChooseUsAdmin(admin.ModelAdmin):
 
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
-    list_display = (
-        "name",
-        "country",
-        "is_featured",
-        "display_order",
-    )
-    list_filter = (
-        "country",
-        "is_featured",
-    )
-    search_fields = (
-        "name",
-        "country",
-    )
-    ordering = ("display_order",)
+    
+    list_display = ('name', 'destination', 'is_featured', 'is_active', 'display_order')
+    list_filter = ('destination', 'is_featured', 'is_active')
+    search_fields = ('name', 'destination__name')
+    prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(Testimonial)

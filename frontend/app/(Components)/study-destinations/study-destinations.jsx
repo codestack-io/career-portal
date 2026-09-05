@@ -29,6 +29,9 @@ const cardVariants = {
   },
 };
 
+// Fallback courses list if API returns empty array or null
+const DEFAULT_COURSES = ['General Studies', 'Business', 'Technology'];
+
 export default function StudyDestinations() {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +63,7 @@ export default function StudyDestinations() {
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 overflow-hidden">
+      {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -74,20 +78,23 @@ export default function StudyDestinations() {
         </p>
       </motion.div>
 
+      {/* Grid Layout */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-50px' }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch"
       >
         {destinations.map((dest, index) => {
-          const coursesList = typeof dest?.popular_courses === 'string'
+          // Parse courses or use default fallback array to maintain card visual height
+          const rawCourses = typeof dest?.popular_courses === 'string'
             ? dest.popular_courses.split(',').map((c) => c.trim())
-            : Array.isArray(dest?.popular_courses)
+            : Array.isArray(dest?.popular_courses) && dest.popular_courses.length > 0
             ? dest.popular_courses
-            : [];
+            : DEFAULT_COURSES;
 
+          const coursesList = rawCourses.filter(Boolean);
           const destinationIdentifier = dest.slug || dest.id;
 
           return (
@@ -97,9 +104,10 @@ export default function StudyDestinations() {
               variants={cardVariants}
               whileHover={{ y: -6 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col overflow-hidden group"
+              className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col h-full overflow-hidden group"
             >
-              <div className="relative h-56 w-full overflow-hidden">
+              {/* Image Banner */}
+              <div className="relative h-52 sm:h-56 w-full overflow-hidden shrink-0">
                 <img
                   src={dest.image || dest.country_image}
                   alt={dest.name || dest.country_name}
@@ -117,21 +125,29 @@ export default function StudyDestinations() {
                       className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-md"
                     />
                   )}
-                  <h3 className="text-2xl font-bold text-white drop-shadow-sm">{dest.name || dest.country_name}</h3>
+                  <h3 className="text-2xl font-bold text-white drop-shadow-sm">
+                    {dest.name || dest.country_name}
+                  </h3>
                 </div>
               </div>
 
+              {/* Card Body Structure */}
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
-                  <p className="text-slate-600 text-sm line-clamp-3 leading-relaxed mb-6">
-                    {dest.short_description || dest.description}
+                  {/* Fixed height description to preserve top card section balance */}
+                  <p className="text-slate-600 text-sm line-clamp-3 leading-relaxed mb-6 min-h-[4.25rem]">
+                    {dest.short_description || dest.description || 'Explore top universities, courses, and career paths available in this study destination.'}
                   </p>
+
+                  {/* Universities Metric Card */}
                   <div className="bg-slate-50/80 rounded-2xl p-4 space-y-3 mb-6 border border-slate-100">
                     <div className="flex items-center justify-between text-xs sm:text-sm">
                       <span className="text-slate-500 flex items-center gap-1.5 font-medium">
                         <Building2 size={16} className="text-purple-600" /> Universities
                       </span>
-                      <span className="font-bold text-slate-900">{dest.universities_count || dest.universities || 0}+</span>
+                      <span className="font-bold text-slate-900">
+                        {dest.universities_count || dest.universities || 0}+
+                      </span>
                     </div>
                     {dest.average_tuition && (
                       <div className="flex items-center justify-between text-xs sm:text-sm border-t border-slate-200/60 pt-2.5">
@@ -141,40 +157,42 @@ export default function StudyDestinations() {
                     )}
                   </div>
 
-                  {coursesList.length > 0 && (
-                    <div className="mb-6">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                        Popular Courses
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {coursesList.slice(0, 3).map((course, idx) => (
-                          <motion.span
-                            key={idx}
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            whileInView={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: 0.1 * idx }}
-                            className="text-xs bg-purple-50 text-purple-700 font-medium px-2.5 py-1 rounded-full border border-purple-100"
-                          >
-                            {course}
-                          </motion.span>
-                        ))}
-                      </div>
+                  {/* Popular Courses Pills */}
+                  <div className="mb-6 min-h-[4.5rem]">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                      Popular Courses
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {coursesList.slice(0, 3).map((course, idx) => (
+                        <motion.span
+                          key={idx}
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          whileInView={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.05 * idx }}
+                          className="text-xs bg-purple-50 text-purple-700 font-medium px-2.5 py-1 rounded-full border border-purple-100"
+                        >
+                          {course}
+                        </motion.span>
+                      ))}
                     </div>
-                  )}
+                  </div>
                 </div>
 
-                <Link href={`/study-destinations/${destinationIdentifier}`}>
-                  <motion.div
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-purple-600 text-white text-sm font-semibold py-3 px-4 rounded-xl transition-colors duration-300 shadow-sm group/btn"
-                  >
-                    <span>Explore Destination</span>
-                    <ArrowRight
-                      size={16}
-                      className="transition-transform duration-300 group-hover/btn:translate-x-1"
-                    />
-                  </motion.div>
-                </Link>
+                {/* Bottom Action CTA Button */}
+                <div className="pt-2">
+                  <Link href={`/study-destinations/${destinationIdentifier}`}>
+                    <motion.div
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-purple-600 text-white text-sm font-semibold py-3 px-4 rounded-xl transition-colors duration-300 shadow-sm group/btn cursor-pointer"
+                    >
+                      <span>Explore Destination</span>
+                      <ArrowRight
+                        size={16}
+                        className="transition-transform duration-300 group-hover/btn:translate-x-1"
+                      />
+                    </motion.div>
+                  </Link>
+                </div>
               </div>
             </motion.div>
           );

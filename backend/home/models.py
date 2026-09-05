@@ -18,7 +18,15 @@ class HeroBanner(models.Model):
     secondary_button_link = models.CharField(max_length=500, blank=True, null=True)
     badge_text = models.CharField(max_length=100, blank=True)
     badge_count = models.PositiveIntegerField(default=10000)
-    hero_image = models.URLField()
+    
+   
+    hero_image = models.ImageField(
+        upload_to="hero_banners/", 
+        blank=True, 
+        null=True, 
+        verbose_name="Hero Image"
+    )
+    
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -28,12 +36,19 @@ class HeroBanner(models.Model):
     def __str__(self):
         return self.title
 
-
 class AboutSection(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
     subtitle = models.CharField(max_length=255, blank=True, verbose_name="Subtitle")
     description = CKEditor5Field("Description", config_name="extends")
-    image = models.URLField(blank=True, verbose_name="Image URL")
+    
+    # FIX: Replaced URLField with ImageField
+    image = models.ImageField(
+        upload_to="about/", 
+        blank=True, 
+        null=True, 
+        verbose_name="About Image"
+    )
+    
     years_of_experience = models.PositiveIntegerField(default=0)
     university_partners = models.PositiveIntegerField(default=0)
     students_recruited = models.PositiveIntegerField(default=0)
@@ -188,18 +203,65 @@ class WhyChooseUs(models.Model):
 
 class University(models.Model):
     name = models.CharField(max_length=255, verbose_name="University Name")
-    country = models.CharField(max_length=100)
-    logo = models.URLField(blank=True, verbose_name="Logo URL")
-    website = models.URLField(blank=True)
-    short_description = models.TextField(blank=True)
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        blank=True,
+        help_text="Unique URL identifier (e.g., 'harvard-university')"
+    )
+    # Linked to StudyDestination for foreign key integrity & dynamic filtering
+    destination = models.ForeignKey(
+        'StudyDestination',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="universities",
+        verbose_name="Study Destination / Country"
+    )
+ 
+    logo = models.ImageField(
+        upload_to="universities/logos/", 
+        blank=True, 
+        null=True, 
+        verbose_name="University Logo"
+    )
+    website = models.URLField(blank=True, verbose_name="Official Website")
+    
+    
+    short_description = models.TextField(
+        blank=True, 
+        help_text="Brief summary for card views"
+    )
+    description = CKEditor5Field(
+        "Full Description", 
+        config_name="extends", 
+        blank=True
+    )
+    
+    
     is_featured = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     display_order = models.PositiveIntegerField(default=1)
+    
+    
+    meta_title = models.CharField(max_length=150, blank=True)
+    meta_description = models.TextField(blank=True)
 
     class Meta:
-        ordering = ["display_order"]
+        ordering = ["display_order", "name"]
         verbose_name = "University"
         verbose_name_plural = "Universities"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            count = 1
+            while University.objects.filter(slug=slug).exclude(id=self.id).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -253,6 +315,28 @@ class Statistic(models.Model):
     def __str__(self):
         return self.title
 
+class CounselingRequest(models.Model):
+    DEGREE_CHOICES = [
+        ('Bachelors', "Bachelor's Degree"),
+        ('Masters', "Master's Degree"),
+        ('PhD', 'Doctorate / PhD'),
+        ('Diploma', 'Diploma / Vocational'),
+    ]
+
+    full_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=50)
+    study_level = models.CharField(max_length=50, choices=DEGREE_CHOICES, default='Bachelors')
+    preferred_destination = models.CharField(max_length=255, blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.full_name} - {self.preferred_destination or 'General'}"
+
 
 class StudyDestination(models.Model):
     name = models.CharField(max_length=100, verbose_name="Country Name")
@@ -272,6 +356,10 @@ class StudyDestination(models.Model):
 
     class Meta:
         ordering = ["display_order"]
+
+
+    def __str__(self):
+        return self.name     
 
     def save(self, *args, **kwargs):
         if not self.slug and self.name:

@@ -18,6 +18,7 @@ from .models import (
     Blog,
     ContactInformation,
     FAQ,
+    CounselingRequest,
     Footer,
     HeroBanner,
     ServiceCategory,
@@ -34,6 +35,7 @@ from .serializers import (
     AboutSectionSerializer,
     BlogSerializer,
     ContactInformationSerializer,
+    CounselingRequestSerializer,
     FAQSerializer,
     FooterSerializer,
     HeroBannerSerializer,
@@ -171,6 +173,11 @@ class StudyDestinationDetailView(RetrieveAPIView):
         obj = get_object_or_404(queryset, **filter_kwargs)
         self.check_object_permissions(self.request, obj)
         return obj
+
+class CounselingRequestCreateView(generics.CreateAPIView):
+    queryset = CounselingRequest.objects.all()
+    serializer_class = CounselingRequestSerializer
+    permission_classes = [AllowAny]    
 
 
 class BlogCategoryListView(ListAPIView):

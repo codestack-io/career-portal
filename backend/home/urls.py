@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from .views import (
+    CounselingRequestCreateView,
     HeroBannerListView,
     AboutSectionListView,
     ServiceSectionListView,
@@ -24,6 +25,7 @@ from .views import (
     ServiceSectionViewSet,
     ServiceDetailView,
     BlogCategoryListView,
+    CounselingRequestCreateView
 )
 
 # Initialize DRF Router for ViewSets
@@ -43,6 +45,7 @@ urlpatterns = [
     path("universities/", UniversityListView.as_view(), name="universities"),
     path("testimonials/", TestimonialListView.as_view(), name="testimonials"),
     path("statistics/", StatisticListView.as_view(), name="statistics"),
+    path('counseling-requests/', CounselingRequestCreateView.as_view(), name='counseling-requests'),
     
     # Study Destinations
     path("study-destinations/", StudyDestinationListView.as_view(), name="study-destinations"),

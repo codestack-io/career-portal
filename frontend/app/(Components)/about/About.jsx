@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 
 const IMAGES = {
   heroMain: "https://res.cloudinary.com/ciiop60x/video/upload/v1786637507/video-2_qfuuky.mp4",
-  heroFounder:"https://res.cloudinary.com/ciiop60x/image/upload/v1786635680/im-1_txvfq8.jpg",
+  heroFounder: "https://res.cloudinary.com/ciiop60x/image/upload/v1786635680/im-1_txvfq8.jpg",
   bgImg: "https://res.cloudinary.com/ciiop60x/image/upload/v1785944827/bg-1_fpob5g.jpg",
   expert1: "https://res.cloudinary.com/ciiop60x/image/upload/v1786635680/im-1_txvfq8.jpg",
   expert2: "https://res.cloudinary.com/ciiop60x/image/upload/v1786635680/im-2_rgfi62.jpg",
@@ -40,7 +40,6 @@ function CountUp({ end, duration = 2000, prefix = "", suffix = "", decimals = 0 
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
       
-      // Smooth easeOutQuad function
       const easeProgress = 1 - (1 - progress) * (1 - progress);
       setCount(easeProgress * end);
 
@@ -62,10 +61,23 @@ function CountUp({ end, duration = 2000, prefix = "", suffix = "", decimals = 0 
 }
 
 export default function AboutPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleModalSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitted(true);
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setIsModalOpen(false);
+    }, 2000);
+  };
+
   return (
-    <div className="space-y-24 sm:space-y-32 pb-20 ">
+    <div className="space-y-24 sm:space-y-32 pb-20 relative">
       
-      <section className="text-slate-900 overflow-hidden">
+      {/* SECTION 1: HERO / ABOUT */}
+      <section className="text-slate-900 overflow-hidden pt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
@@ -85,8 +97,9 @@ export default function AboutPage() {
                   </video>
                 </div>
 
+                {/* Badge 1 */}
                 <div className="absolute -top-6 -right-4 sm:right-2 bg-white rounded-3xl p-4 sm:p-5 shadow-xl border border-slate-100 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-300">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -99,6 +112,7 @@ export default function AboutPage() {
                   </div>
                 </div>
 
+                {/* Badge 2 */}
                 <div className="absolute -bottom-6 -left-4 sm:left-2 bg-[#111827] text-white rounded-3xl p-5 shadow-2xl border border-slate-800 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-300">
                   <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
                     <svg className="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -118,12 +132,12 @@ export default function AboutPage() {
 
             <div className="lg:col-span-6 space-y-6 sm:space-y-8">
               <div>
-                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold tracking-wide uppercase">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold tracking-wide uppercase">
+                  <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
                   About Our Consultancy
                 </span>
                 <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mt-4 leading-tight">
-                  Accurate Guidance for Your Overseas Journey.
+                  Accurate Guidance for Your <span className="italic font-normal text-slate-700">Overseas</span> Journey.
                 </h1>
               </div>
 
@@ -151,7 +165,6 @@ export default function AboutPage() {
 
               <hr className="border-slate-100" />
 
-              {/* Dynamic Counters Row */}
               <div className="grid grid-cols-3 gap-4 text-left">
                 <div>
                   <p className="text-2xl sm:text-4xl font-black text-slate-900">
@@ -173,15 +186,7 @@ export default function AboutPage() {
                 </div>
               </div>
 
-              {/* Callout Row */}
               <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-5">
-                <a
-                  href="#consultation"
-                  className="inline-flex justify-center items-center px-8 py-4 rounded-full bg-[#111827] hover:bg-black text-white font-semibold text-sm transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5"
-                >
-                  Book Free Consultation
-                </a>
-                
                 <div className="flex items-center gap-3 px-2">
                   <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
                     <img
@@ -204,27 +209,29 @@ export default function AboutPage() {
       </section>
 
       {/* SECTION 2: WHO WE ARE (MISSION & VISION) */}
-      <section className="relative overflow-hidden py-12">
+      <section className="relative overflow-hidden py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="relative rounded-[2.5rem] overflow-hidden p-8 sm:p-12 lg:p-16 ">
+          <div className="relative rounded-[2.5rem] overflow-hidden p-8 sm:p-12 lg:p-16 border border-slate-100 shadow-sm">
             <img
               src={IMAGES.bgImg}
               alt="Who We Are Background"
-              className="absolute inset-0 w-full h-full object-cover z-0 opacity-32 "
+              className="absolute inset-0 w-full h-full object-cover z-0 opacity-30"
             />
 
             <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/90 to-white/80 backdrop-blur-[2px] z-10" />
 
             <div className="relative z-20 max-w-4xl mx-auto space-y-8">
-              <div className="text-center space-y-4">
-                <h2 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight">
-                  Who we are
+              <div className="text-center space-y-3">
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold tracking-wide uppercase">
+                  Our Identity
+                </span>
+                <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+                  Who <span className="italic font-normal text-slate-700">we</span> are
                 </h2>
-                <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full" />
               </div>
 
               <div className="space-y-4 text-slate-700 text-base sm:text-lg leading-relaxed text-center sm:text-left">
-                <p className="font-medium">
+                <p className="font-medium text-slate-800">
                   We are a dedicated visa and immigration agency committed to helping individuals and families achieve their dreams of living, working, and studying abroad. With years of experience and a team of experts, we simplify the complexities of immigration processes to ensure a smooth and successful journey for our clients.
                 </p>
                 <p className="text-sm sm:text-base text-slate-600">
@@ -233,16 +240,16 @@ export default function AboutPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                <div className="p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-white/60 shadow-lg transition-all hover:shadow-xl hover:border-blue-200">
+                <div className="p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-slate-100 shadow-md transition-all hover:shadow-xl hover:border-blue-200">
                   <h3 className="text-xl sm:text-2xl font-bold text-blue-600 mb-3">Our mission</h3>
-                  <p className="text-slate-700 leading-relaxed text-xs sm:text-sm">
+                  <p className="text-slate-600 leading-relaxed text-xs sm:text-sm">
                     Providing tailored visa and immigration solutions to help people achieve their global aspirations.
                   </p>
                 </div>
 
-                <div className="p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-white/60 shadow-lg transition-all hover:shadow-xl hover:border-blue-200">
+                <div className="p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-slate-100 shadow-md transition-all hover:shadow-xl hover:border-blue-200">
                   <h3 className="text-xl sm:text-2xl font-bold text-blue-600 mb-3">Our vision</h3>
-                  <p className="text-slate-700 leading-relaxed text-xs sm:text-sm">
+                  <p className="text-slate-600 leading-relaxed text-xs sm:text-sm">
                     To be a trusted partner, guiding individuals and families toward a brighter future abroad.
                   </p>
                 </div>
@@ -253,9 +260,13 @@ export default function AboutPage() {
         </div>
       </section>
       
+      {/* SECTION 3: WHY CHOOSE US */}
       <section>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold tracking-wide uppercase">
+              Key Advantages
+            </span>
             <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
               Why <span className="italic font-normal text-slate-700">choose</span> us
             </h2>
@@ -301,11 +312,17 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* SECTION 4: OUR VISA EXPERTS */}
       <section>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-16">
-            Our <span className="italic font-normal text-slate-700">visa</span> experts
-          </h2>
+          <div className="max-w-3xl mx-auto mb-16 space-y-3">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold tracking-wide uppercase">
+              Meet The Team
+            </span>
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+              Our <span className="italic font-normal text-slate-700">visa</span> experts
+            </h2>
+          </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
             {[
@@ -331,6 +348,7 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* SECTION 5: CALL TO ACTION BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-[2.5rem] bg-blue-600 text-white p-8 sm:p-14 lg:p-20 overflow-hidden shadow-2xl">
           
@@ -377,18 +395,153 @@ export default function AboutPage() {
             </div>
 
             <div className="pt-2">
-              <a
-                href="#consultation"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-slate-900 hover:bg-black text-white font-bold text-sm transition-all shadow-lg hover:shadow-2xl hover:-translate-y-0.5"
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-slate-900 hover:bg-black text-white font-bold text-sm transition-all shadow-lg hover:shadow-2xl hover:-translate-y-0.5 cursor-pointer"
               >
                 Schedule a free call
-              </a>
+              </button>
             </div>
           </div>
 
         </div>
       </section>
+
+      {/* SCHEDULE A CALL MODAL */}
+     {/* SCHEDULE A CALL MODAL */}
+{isModalOpen && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm transition-opacity">
+    <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
       
+      {/* Decorative Background Glows */}
+      <div className="absolute -top-12 -right-12 w-40 h-40 bg-blue-100/60 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-indigo-100/60 rounded-full blur-2xl pointer-events-none" />
+
+      {/* Close Button */}
+      <button
+        onClick={() => setIsModalOpen(false)}
+        className="absolute top-5 right-5 z-10 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-all hover:rotate-90 duration-300"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      {isSubmitted ? (
+        <div className="py-12 text-center space-y-4 relative z-10">
+          {/* Animated Success Checkmark Graphic */}
+          <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-blue-100 animate-ping opacity-75" />
+            <div className="relative w-20 h-20 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <svg className="w-10 h-10 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          </div>
+          <h3 className="text-2xl font-bold text-slate-900">Call Scheduled!</h3>
+          <p className="text-slate-600 text-sm max-w-xs mx-auto">
+            Thank you! One of our visa experts will get in touch with you at the selected time.
+          </p>
+        </div>
+      ) : (
+        <div className="relative z-10">
+          
+          {/* Header Graphic & Avatar Stack */}
+          <div className="flex items-start justify-between gap-4 mb-6 pr-8">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-2">
+                <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                Free Consultation
+              </span>
+              <h3 className="text-2xl font-extrabold text-slate-900">Schedule a Free Call</h3>
+              <p className="text-slate-500 text-xs sm:text-sm mt-1">
+                Select a convenient date and time to speak with our specialists.
+              </p>
+            </div>
+
+            {/* Overlapping Team Avatars with Live Online Indicator */}
+            <div className="hidden sm:flex -space-x-2 shrink-0 pt-1">
+              <div className="relative">
+                <img className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-sm" src={IMAGES.expert1} alt="Expert 1" />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
+              </div>
+              <img className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-sm" src={IMAGES.expert2} alt="Expert 2" />
+              <img className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-sm" src={IMAGES.expert3} alt="Expert 3" />
+            </div>
+          </div>
+
+          <form onSubmit={handleModalSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+              <input
+                type="text"
+                required
+                placeholder="John Doe"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+              <input
+                type="email"
+                required
+                placeholder="john@example.com"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Preferred Date</label>
+                <input
+                  type="date"
+                  required
+                  className="w-full px-3 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Preferred Time</label>
+                <input
+                  type="time"
+                  required
+                  className="w-full px-3 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Visa Type / Consultation Topic</label>
+              <select
+                required
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+              >
+                <option value="">Select Option</option>
+                <option value="student">Student Visa</option>
+                <option value="work">Work Visa</option>
+                <option value="family">Family / Permanent Residency</option>
+                <option value="general">General Guidance</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 group cursor-pointer"
+            >
+              <span>Confirm Booking</span>
+              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </form>
+
+        </div>
+      )}
+
+    </div>
+  </div>
+)}
     </div>
   );
 }
