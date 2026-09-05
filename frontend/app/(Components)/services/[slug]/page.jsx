@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Sparkles } from "lucide-react";
 
 async function getService(slug) {
@@ -12,7 +13,9 @@ async function getService(slug) {
     });
 
     if (!res.ok) {
-      console.error(`[Server Fetch Failed] Status: ${res.status} for slug:${cleanSlug}`);
+      // Clean 404 handling without cluttering console logs on standard missing resources
+      if (res.status === 404) return null;
+      console.error(`[Server Fetch Failed] Status: ${res.status} for slug: ${cleanSlug}`);
       return null;
     }
     return await res.json();
@@ -27,7 +30,7 @@ export async function generateMetadata({ params }) {
   const service = await getService(resolvedParams.slug);
 
   if (!service) {
-    return { title: "Service Not Found" };
+    return { title: "Service Not Found | CareerHub" };
   }
 
   return {
@@ -42,6 +45,7 @@ export default async function ServiceDetailPage({ params }) {
   const resolvedParams = await params;
   const service = await getService(resolvedParams.slug);
 
+  // Immediately trigger 404 page if service is null
   if (!service) {
     notFound();
   }
@@ -51,11 +55,20 @@ export default async function ServiceDetailPage({ params }) {
       ? service.category?.name
       : service.category;
 
+  // Build full media URL if Django returns a relative path
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  const iconUrl = service.icon?.startsWith("http")
+    ? service.icon
+    : service.icon
+    ? `${baseUrl}${service.icon}`
+    : null;
+
   return (
     <main className="min-h-screen bg-[#F8FAFF] px-6 py-16 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-4xl">
+        {/* Fixed Route Group Link */}
         <Link
-          href="/Components/Services"
+          href="/services"
           className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-violet-600"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -64,12 +77,15 @@ export default async function ServiceDetailPage({ params }) {
 
         <div className="rounded-3xl border border-slate-200/80 bg-white p-8 shadow-sm sm:p-12">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-md">
-              {service.icon ? (
-                <img
-                  src={service.icon}
-                  alt={service.title}
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-md overflow-hidden">
+              {iconUrl ? (
+                <Image
+                  src={iconUrl}
+                  alt={service.title || "Service Icon"}
+                  width={56}
+                  height={56}
                   className="h-14 w-14 object-contain"
+                  unoptimized
                 />
               ) : (
                 <Sparkles className="h-8 w-8 text-violet-600" />

@@ -1,11 +1,13 @@
+"use client";
+
 import React from 'react';
-import { Home, ArrowLeft, Search, Compass } from 'lucide-react';
+import { Home, ArrowLeft, Compass } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NotFoundPage() {
+export default function NotFound() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-hidden">
-      {/* Background Decor - Subtle Grid Grid Overlay */}
+      {/* Background Decor - Subtle Grid Overlay */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
@@ -71,21 +73,15 @@ export default function NotFoundPage() {
             <p className="text-xs text-slate-500 mt-1">Explore university admissions and guidance.</p>
           </Link>
 
-          <a 
-            href="/destinations" 
+          <Link 
+            href="/study-destinations" 
             className="p-4 rounded-lg bg-slate-900/50 border border-slate-800/60 hover:border-slate-700 transition-all group"
           >
             <h3 className="text-sm font-semibold text-slate-200 group-hover:text-amber-400 transition-colors">Study Destinations</h3>
             <p className="text-xs text-slate-500 mt-1">Discover universities by location.</p>
-          </a>
+          </Link>
 
-          <a 
-            href="/contact" 
-            className="p-4 rounded-lg bg-slate-900/50 border border-slate-800/60 hover:border-slate-700 transition-all group"
-          >
-            <h3 className="text-sm font-semibold text-slate-200 group-hover:text-amber-400 transition-colors">Contact Support</h3>
-            <p className="text-xs text-slate-500 mt-1">Get directly in touch with our team.</p>
-          </a>
+          
         </div>
       </main>
 
