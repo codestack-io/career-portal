@@ -11,6 +11,10 @@ from .views import (
     WhyChooseUsViewSet,
     UniversityListView,
     TestimonialListView,
+    CourseViewSet,
+    ScholarshipViewSet,
+    VisaRequirementViewSet,
+    ApplicationStepViewSet,
     StatisticListView,
     StudyDestinationListView,
     StudyDestinationDetailView,
@@ -33,8 +37,12 @@ router = DefaultRouter()
 router.register(r"service-categories", ServiceCategoryViewSet, basename="service-category")
 router.register(r"services-v2", ServiceSectionViewSet, basename="service-section-v2")
 router.register(r"why-choose-us", WhyChooseUsViewSet, basename="why-choose-us") 
-
+router.register(r"courses", CourseViewSet, basename="course")
+router.register(r"scholarships", ScholarshipViewSet, basename="scholarship")
+router.register(r"visa-requirements", VisaRequirementViewSet, basename="visa-requirement")
+router.register(r"application-steps", ApplicationStepViewSet, basename="application-step")
 urlpatterns = [
+   
     # Services Routes
     path("services/", ServiceSectionListView.as_view(), name="services"),
     path("services/<slug:slug>/", ServiceDetailView.as_view(), name="service-detail"),  # Fixed prefix
@@ -64,5 +72,5 @@ urlpatterns = [
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     
     # Include router URLs for ViewSets
-    path("", include(router.urls)),
+    path("api/", include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

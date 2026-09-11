@@ -13,6 +13,11 @@ from .models import (
     DestinationIntake,
     DestinationProgramDuration,
     DestinationWorkOpportunity,
+    Course,
+    Scholarship,
+    AdmissionRequirement,
+    VisaRequirement,
+    ApplicationStep,
     FAQ,
     Footer,
     HeroBanner,
@@ -103,6 +108,35 @@ class UniversityAdmin(admin.ModelAdmin):
     list_filter = ('destination', 'is_featured', 'is_active')
     search_fields = ('name', 'destination__name')
     prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ("title", "university", "degree_level", "tuition_fee", "currency", "is_active")
+    list_filter = ("degree_level", "is_active", "university")
+    search_fields = ("title", "university__name")
+    prepopulated_fields = {"slug": ("title",)}
+
+@admin.register(Scholarship)
+class ScholarshipAdmin(admin.ModelAdmin):
+    list_display = ("title", "destination", "offered_by", "coverage", "is_active")
+    list_filter = ("destination", "is_active")
+    search_fields = ("title", "offered_by")
+
+@admin.register(AdmissionRequirement)
+class AdmissionRequirementAdmin(admin.ModelAdmin):
+    list_display = ("destination", "program_level")
+    list_filter = ("destination", "program_level")
+
+@admin.register(VisaRequirement)
+class VisaRequirementAdmin(admin.ModelAdmin):
+    list_display = ("destination", "visa_type", "processing_time")
+
+@admin.register(ApplicationStep)
+class ApplicationStepAdmin(admin.ModelAdmin):
+    list_display = ("destination", "step_number", "title")
+    list_filter = ("destination",)
+    ordering = ("destination", "step_number")                    
 
 
 @admin.register(Testimonial)

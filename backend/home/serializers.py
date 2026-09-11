@@ -12,6 +12,11 @@ from .models import (
     DestinationIntake,
     DestinationProgramDuration,
     DestinationWorkOpportunity,
+    Course,
+    Scholarship,
+    AdmissionRequirement,
+    VisaRequirement,
+    ApplicationStep,
     FAQ,
     Footer,
     HeroBanner,
@@ -87,6 +92,36 @@ class WhyChooseUsSerializer(serializers.ModelSerializer):
 class UniversitySerializer(serializers.ModelSerializer):
     class Meta:
         model = University
+        fields = "__all__"
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    university_name = serializers.CharField(source="university.name", read_only=True)
+
+    class Meta:
+        model = Course
+        fields = "__all__"
+
+class ScholarshipSerializer(serializers.ModelSerializer):
+    destination_name = serializers.CharField(source="destination.name", read_only=True)
+
+    class Meta:
+        model = Scholarship
+        fields = "__all__"
+
+class AdmissionRequirementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdmissionRequirement
+        fields = "__all__"
+
+class VisaRequirementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VisaRequirement
+        fields = "__all__"
+
+class ApplicationStepSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplicationStep
         fields = "__all__"
 
        

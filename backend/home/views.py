@@ -26,6 +26,11 @@ from .models import (
     ServiceSection,
     Statistic,
     StudyDestination,
+    Course,
+    Scholarship,
+    AdmissionRequirement,
+    VisaRequirement,
+    ApplicationStep,
     Testimonial,
     University,
     UserProfile,
@@ -45,6 +50,11 @@ from .serializers import (
     StatisticSerializer,
     StudyDestinationDetailSerializer,
     StudyDestinationSerializer,
+    CourseSerializer,
+    ScholarshipSerializer,
+    AdmissionRequirementSerializer,
+    VisaRequirementSerializer,
+    ApplicationStepSerializer,
     TestimonialSerializer,
     UniversitySerializer,
     UserProfileSerializer,
@@ -138,6 +148,26 @@ class UniversityListView(ListAPIView):
     queryset = University.objects.filter(is_active=True, is_featured=True).order_by("id")
     serializer_class = UniversitySerializer
     permission_classes = [AllowAny]
+
+
+class CourseViewSet(viewsets.ReadOnlyModelViewSet):  # ReadOnly if publicly accessible
+    queryset = Course.objects.filter(is_active=True)
+    serializer_class = CourseSerializer
+    filterset_fields = ["degree_level", "university"]
+    search_fields = ["title"]
+
+class ScholarshipViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Scholarship.objects.filter(is_active=True)
+    serializer_class = ScholarshipSerializer
+    filterset_fields = ["destination"]
+
+class VisaRequirementViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = VisaRequirement.objects.all()
+    serializer_class = VisaRequirementSerializer
+
+class ApplicationStepViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ApplicationStep.objects.all()
+    serializer_class = ApplicationStepSerializer
 
 
 class TestimonialListView(ListAPIView):

@@ -267,37 +267,7 @@ class University(models.Model):
         return self.name
 
 
-class Testimonial(models.Model):
-    name = models.CharField(max_length=150)
-    designation = models.CharField(max_length=150, blank=True)
-    university = models.ForeignKey(
-        "University",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="testimonials",
-    )
-    
-    image = models.ImageField(
-        upload_to="testimonials/", blank=True, null=True, verbose_name="Student Image"
-    )
-    feedback = models.TextField()
-    rating = models.PositiveSmallIntegerField(
-        default=5, validators=[MinValueValidator(1), MaxValueValidator(5)]
-    )
-    is_active = models.BooleanField(default=True)
-    display_order = models.PositiveIntegerField(default=1)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["display_order", "-created_at"]
-        verbose_name = "Testimonial"
-        verbose_name_plural = "Testimonials"
-
-    def __str__(self):
-        return f"{self.name} - {self.university or 'General'}"
 
 
 class Statistic(models.Model):
@@ -392,28 +362,63 @@ class DestinationIntake(models.Model):
         return f"{self.destination.name} - {self.intake_name}"
 
 
-class DestinationProgramDuration(models.Model):
-    destination = models.ForeignKey(
-        StudyDestination, on_delete=models.CASCADE, related_name="program_durations"
-    )
-    
-    PROGRAM_LEVEL_CHOICES = [
+class Course(models.Model):
+    DEGREE_CHOICES = [
         ('bachelors', "Bachelor's Degree"),
         ('masters', "Master's Degree"),
         ('phd', "Doctorate / PhD"),
-        ('diploma', "Diploma"),
+        ('diploma', "Diploma / Vocational"),
     ]
-    program_level = models.CharField(max_length=50, choices=PROGRAM_LEVEL_CHOICES)
-    duration = models.CharField(max_length=100, help_text="e.g., '3-4 Years'")
-    display_order = models.PositiveIntegerField(default=1)
+
+    university = models.ForeignKey(
+        University, 
+        on_delete=models.CASCADE, 
+        related_name="courses"
+    )
+    title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    degree_level = models.CharField(max_length=50, choices=DEGREE_CHOICES)
+    duration = models.CharField(max_length=100, help_text="e.g., 3 Years, 18 Months")
+    tuition_fee = models.DecimalField(max_digits=10, decimal_places=2, help_text="Annual fee in local currency")
+    currency = models.CharField(max_length=10, default="USD")
+    
+    # Specific admission requirements for this course
+    entry_requirements = CKEditor5Field("Entry Requirements", config_name="extends", blank=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ["display_order"]
+        ordering = ["title"]
+        verbose_name_plural = "Courses"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.university.name}-{self.title}")
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.destination.name} - {self.get_program_level_display()}"
+        return f"{self.title} - {self.university.name}"
 
+class DestinationProgramDuration(models.Model):
+    PROGRAM_LEVEL_CHOICES = (
+        ("undergraduate", "Undergraduate"),
+        ("postgraduate", "Postgraduate"),
+        ("doctorate", "Doctorate"),
+    )
 
+    destination = models.ForeignKey(
+        "StudyDestination", 
+        on_delete=models.CASCADE, 
+        related_name="program_durations"
+    )
+    program_level = models.CharField(
+        max_length=50, 
+        choices=PROGRAM_LEVEL_CHOICES
+    )
+    duration = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.destination} - {self.program_level}"
+    
 class DestinationCost(models.Model):
     destination = models.ForeignKey(
         StudyDestination, on_delete=models.CASCADE, related_name="cost_breakdowns"
@@ -434,7 +439,64 @@ class DestinationCost(models.Model):
     def __str__(self):
         return f"{self.destination.name} - {self.get_program_level_display()}"
 
+class Testimonial(models.Model):
+    name = models.CharField(max_length=150)
+    designation = models.CharField(max_length=150, blank=True)
+    university = models.ForeignKey(
+        "University",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="testimonials",
+    )
+    destination = models.ForeignKey(
+    StudyDestination,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name="success_stories",
+    verbose_name="Study Destination"
+)
+    
+    image = models.ImageField(
+        upload_to="testimonials/", blank=True, null=True, verbose_name="Student Image"
+    )
+    feedback = models.TextField()
+    rating = models.PositiveSmallIntegerField(
+        default=5, validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    is_active = models.BooleanField(default=True)
+    display_order = models.PositiveIntegerField(default=1)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["display_order", "-created_at"]
+        verbose_name = "Testimonial"
+        verbose_name_plural = "Testimonials"
+
+    def __str__(self):
+        return f"{self.name} - {self.university or 'General'}"
+
+
+class Scholarship(models.Model):
+    destination = models.ForeignKey(
+        StudyDestination, 
+        on_delete=models.CASCADE, 
+        related_name="scholarships"
+    )
+    title = models.CharField(max_length=255)
+    offered_by = models.CharField(max_length=255, help_text="Government, University, or Private Body")
+    coverage = models.CharField(max_length=255, help_text="e.g., Full Tuition, $5000/year, Living Allowance")
+    eligibility = CKEditor5Field("Eligibility Criteria", config_name="extends")
+    application_deadline = models.CharField(max_length=100, blank=True, help_text="e.g., Rolling, Oct 31")
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.destination.name})"
+
+    
 class DestinationCity(models.Model):
     destination = models.ForeignKey(
         StudyDestination, on_delete=models.CASCADE, related_name="cities"
@@ -451,6 +513,41 @@ class DestinationCity(models.Model):
         return f"{self.destination.name} - {self.name}"
 
 
+class AdmissionRequirement(models.Model):
+    destination = models.ForeignKey(
+        StudyDestination, 
+        on_delete=models.CASCADE, 
+        related_name="admission_requirements"
+    )
+    program_level = models.CharField(
+        max_length=50, 
+        choices=DestinationProgramDuration.PROGRAM_LEVEL_CHOICES
+    )
+    academic_requirement = models.TextField(help_text="e.g., GPA 3.0/4.0 or 60% in High School")
+    english_requirement = models.TextField(help_text="e.g., IELTS 6.5 (no band below 6.0), TOEFL 80")
+    documents_required = CKEditor5Field("Required Documents", config_name="extends")
+
+    def __str__(self):
+        return f"{self.destination.name} - {self.get_program_level_display()} Requirements"    
+
+
+
+class VisaRequirement(models.Model):
+    destination = models.OneToOneField(
+        StudyDestination, 
+        on_delete=models.CASCADE, 
+        related_name="visa_info"
+    )
+    visa_type = models.CharField(max_length=100, help_text="e.g., Subclass 500, F-1 Visa")
+    processing_time = models.CharField(max_length=100, help_text="e.g., 4 to 8 Weeks")
+    proof_of_funds = models.TextField(help_text="Financial evidence required")
+    work_rights = models.CharField(max_length=255, help_text="e.g., 20 hours/week during terms")
+    details = CKEditor5Field("Detailed Visa Process & Guidelines", config_name="extends")
+
+    def __str__(self):
+        return f"{self.destination.name} Visa Info"
+
+    
 class DestinationWorkOpportunity(models.Model):
     destination = models.ForeignKey(
         StudyDestination, on_delete=models.CASCADE, related_name="work_opportunities"
@@ -485,6 +582,22 @@ class BlogCategory(models.Model):
 
     def __str__(self):
         return self.name
+
+class ApplicationStep(models.Model):
+    destination = models.ForeignKey(
+        StudyDestination, 
+        on_delete=models.CASCADE, 
+        related_name="application_process"
+    )
+    step_number = models.PositiveIntegerField(default=1)
+    title = models.CharField(max_length=255, help_text="e.g., Step 1: Offer Letter Request")
+    description = models.TextField()
+
+    class Meta:
+        ordering = ["step_number"]
+
+    def __str__(self):
+        return f"{self.destination.name} - Step {self.step_number}: {self.title}"    
 
 
 class Blog(models.Model):
