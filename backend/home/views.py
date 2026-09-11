@@ -150,11 +150,43 @@ class UniversityListView(ListAPIView):
     permission_classes = [AllowAny]
 
 
-class CourseViewSet(viewsets.ReadOnlyModelViewSet):  # ReadOnly if publicly accessible
-    queryset = Course.objects.filter(is_active=True)
+class UniversityViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = University.objects.all()
+    serializer_class = UniversitySerializer
+    lookup_field = "slug"
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # DRF DefaultRouter names the URL kwargs 'pk' regardless of lookup_field
+        lookup_val = self.kwargs.get("pk") or self.kwargs.get("slug")
+
+        # Check if the parameter passed in URL is numeric ID or string slug
+        if str(lookup_val).isdigit():
+            filter_kwargs = {"pk": lookup_val}
+        else:
+            filter_kwargs = {"slug": lookup_val}
+
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSerializer
-    filterset_fields = ["degree_level", "university"]
-    search_fields = ["title"]
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = Course.objects.filter(is_active=True)
+        university = self.request.query_params.get("university")
+        
+        if university:
+           
+            if str(university).isdigit():
+                queryset = queryset.filter(university_id=university)
+            else:
+                queryset = queryset.filter(university__slug=university)
+            
+        return queryset
 
 class ScholarshipViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Scholarship.objects.filter(is_active=True)

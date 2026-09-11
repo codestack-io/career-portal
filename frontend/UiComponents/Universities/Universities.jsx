@@ -2,18 +2,17 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Universities({ universities = [] }) {
   const [isPaused, setIsPaused] = useState(false);
 
-  // Fallback check to ensure 'universities' is an array
   const list = Array.isArray(universities) ? universities : [];
 
   if (list.length === 0) {
     return null;
   }
 
-  // Duplicate list with explicit unique keys
   const duplicatedList = [
     ...list.map((item) => ({ ...item, uniqueKey: `original-${item.id}` })),
     ...list.map((item) => ({ ...item, uniqueKey: `loop-${item.id}` })),
@@ -65,44 +64,45 @@ export default function Universities({ universities = [] }) {
             className="flex w-max gap-8 py-4"
           >
             {duplicatedList.map((item) => (
-              <motion.div
-                key={item.uniqueKey}
-                whileHover={{
-                  y: -12,
-                  scale: 1.03,
-                }}
-                className="group relative w-[320px] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-xl"
-              >
-                {/* Glow Effects */}
-                <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-violet-500/20 blur-3xl opacity-0 transition duration-500 group-hover:opacity-100" />
-                <div className="absolute -left-16 -bottom-16 h-44 w-44 rounded-full bg-blue-500/20 blur-3xl opacity-0 transition duration-500 group-hover:opacity-100" />
+              <Link key={item.uniqueKey} href={`/universities/${item.slug}`}>
+                <motion.div
+                  whileHover={{
+                    y: -12,
+                    scale: 1.03,
+                  }}
+                  className="group relative w-[320px] cursor-pointer overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-xl"
+                >
+                  {/* Glow Effects */}
+                  <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-violet-500/20 blur-3xl opacity-0 transition duration-500 group-hover:opacity-100" />
+                  <div className="absolute -left-16 -bottom-16 h-44 w-44 rounded-full bg-blue-500/20 blur-3xl opacity-0 transition duration-500 group-hover:opacity-100" />
 
-                {/* Logo Section */}
-                <div className="flex h-36 items-center justify-center bg-gradient-to-br from-slate-50 to-violet-50 p-4">
-                  <motion.img
-                    src={item.logo}
-                    alt={item.name}
-                    whileHover={{
-                      rotate: [0, -10, 8, -5, 0],
-                      scale: 1.15,
-                      y: -8,
-                    }}
-                    transition={{ duration: 0.8 }}
-                    className="h-20 w-32 object-contain"
-                  />
-                </div>
+                  {/* Logo Section */}
+                  <div className="flex h-36 items-center justify-center bg-gradient-to-br from-slate-50 to-violet-50 p-4">
+                    <motion.img
+                      src={item.logo}
+                      alt={item.name}
+                      whileHover={{
+                        rotate: [0, -10, 8, -5, 0],
+                        scale: 1.15,
+                        y: -8,
+                      }}
+                      transition={{ duration: 0.8 }}
+                      className="h-20 w-32 object-contain"
+                    />
+                  </div>
 
-                {/* Content - Removed the badge markup entirely */}
-                <div className="p-7">
-                  <h3 className="text-2xl font-bold text-slate-900">
-                    {item.name}
-                  </h3>
+                  {/* Content */}
+                  <div className="p-7">
+                    <h3 className="text-2xl font-bold text-slate-900 group-hover:text-violet-600 transition">
+                      {item.name}
+                    </h3>
 
-                  <p className="mt-3 line-clamp-3 leading-7 text-slate-600">
-                    {item.short_description}
-                  </p>
-                </div>
-              </motion.div>
+                    <p className="mt-3 line-clamp-3 leading-7 text-slate-600">
+                      {item.short_description}
+                    </p>
+                  </div>
+                </motion.div>
+              </Link>
             ))}
           </motion.div>
         </div>

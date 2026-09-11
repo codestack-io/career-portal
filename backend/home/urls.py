@@ -9,7 +9,7 @@ from .views import (
     AboutSectionListView,
     ServiceSectionListView,
     WhyChooseUsViewSet,
-    UniversityListView,
+    UniversityViewSet,  
     TestimonialListView,
     CourseViewSet,
     ScholarshipViewSet,
@@ -29,7 +29,6 @@ from .views import (
     ServiceSectionViewSet,
     ServiceDetailView,
     BlogCategoryListView,
-    CounselingRequestCreateView
 )
 
 # Initialize DRF Router for ViewSets
@@ -41,16 +40,17 @@ router.register(r"courses", CourseViewSet, basename="course")
 router.register(r"scholarships", ScholarshipViewSet, basename="scholarship")
 router.register(r"visa-requirements", VisaRequirementViewSet, basename="visa-requirement")
 router.register(r"application-steps", ApplicationStepViewSet, basename="application-step")
+router.register(r"universities", UniversityViewSet, basename="university") # <-- 2. Register UniversityViewSet here!
+
 urlpatterns = [
-   
     # Services Routes
     path("services/", ServiceSectionListView.as_view(), name="services"),
-    path("services/<slug:slug>/", ServiceDetailView.as_view(), name="service-detail"),  # Fixed prefix
+    path("services/<slug:slug>/", ServiceDetailView.as_view(), name="service-detail"),
 
     # Public Sections
     path("hero/", HeroBannerListView.as_view(), name="hero"),
     path("about/", AboutSectionListView.as_view(), name="about"),
-    path("universities/", UniversityListView.as_view(), name="universities"),
+    # REMOVED path("universities/", ...): The router now handles both /api/universities/ and /api/universities/<slug>/
     path("testimonials/", TestimonialListView.as_view(), name="testimonials"),
     path("statistics/", StatisticListView.as_view(), name="statistics"),
     path('counseling-requests/', CounselingRequestCreateView.as_view(), name='counseling-requests'),
@@ -58,6 +58,7 @@ urlpatterns = [
     # Study Destinations
     path("study-destinations/", StudyDestinationListView.as_view(), name="study-destinations"),
     path("study-destinations/<str:pk>/", StudyDestinationDetailView.as_view(), name="destination-detail"),
+    
     # Blogs
     path("blogs/", BlogListView.as_view(), name="blog-list"),
     path("blogs/categories/", BlogCategoryListView.as_view(), name="blog-category-list"),
@@ -72,5 +73,5 @@ urlpatterns = [
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     
     # Include router URLs for ViewSets
-    path("api/", include(router.urls)),
+    path("", include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

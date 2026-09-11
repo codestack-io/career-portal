@@ -100,7 +100,19 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = "__all__"
+        fields = [
+            "id",
+            "title",
+            "slug",
+            "degree_level",
+            "duration",
+            "tuition_fee",
+            "currency",
+            "entry_requirements",
+            "is_active",
+            "university",
+            "university_name",
+        ]
 
 class ScholarshipSerializer(serializers.ModelSerializer):
     destination_name = serializers.CharField(source="destination.name", read_only=True)
