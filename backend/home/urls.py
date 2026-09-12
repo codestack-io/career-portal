@@ -57,7 +57,7 @@ urlpatterns = [
     
     # Study Destinations
     path("study-destinations/", StudyDestinationListView.as_view(), name="study-destinations"),
-    path("study-destinations/<str:pk>/", StudyDestinationDetailView.as_view(), name="destination-detail"),
+    path("api/study-destinations/<slug:slug>/", StudyDestinationDetailView.as_view(), name="destination-detail"),
     
     # Blogs
     path("blogs/", BlogListView.as_view(), name="blog-list"),

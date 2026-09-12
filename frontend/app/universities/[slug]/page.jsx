@@ -11,16 +11,20 @@ import {
   SparklesIcon,
   MagnifyingGlassIcon,
   CheckCircleIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  CalendarIcon,
+  XMarkIcon
 } from "@heroicons/react/24/outline";
 
 export default function UniversityDetailsPage({ params }) {
   const [university, setUniversity] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [scholarships, setScholarships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedScholarship, setSelectedScholarship] = useState(null);
 
   const { slug } = use(params);
 
@@ -29,9 +33,10 @@ export default function UniversityDetailsPage({ params }) {
       try {
         setLoading(true);
 
+        // 1. Fetch University Details
         const url = `http://127.0.0.1:8000/api/universities/${slug}/`;
         const uniRes = await fetch(url);
-        
+
         if (!uniRes.ok) {
           console.error(`Failed to load university details. URL: ${url} | Status: ${uniRes.status}`);
           return;
@@ -40,20 +45,30 @@ export default function UniversityDetailsPage({ params }) {
         const uniData = await uniRes.json();
         setUniversity(uniData);
 
-        // Fetch courses for this specific university ID
+        // 2. Fetch Courses for this specific university ID
         const coursesRes = await fetch(
           `http://127.0.0.1:8000/api/courses/?university=${uniData.id}`
         );
 
         if (coursesRes.ok) {
           const coursesData = await coursesRes.json();
-          
-          // FIX: Handle both DRF paginated object ({ results: [...] }) and flat array ([...])
           const courseList = Array.isArray(coursesData)
             ? coursesData
             : coursesData.results || [];
-
           setCourses(courseList);
+        }
+
+        // 3. Fetch Institutional Scholarships Specific to this University ID
+        const scholarshipRes = await fetch(
+          `http://127.0.0.1:8000/api/scholarships/?university=${uniData.id}`
+        );
+
+        if (scholarshipRes.ok) {
+          const scholarshipData = await scholarshipRes.json();
+          const scholarshipList = Array.isArray(scholarshipData)
+            ? scholarshipData
+            : scholarshipData.results || [];
+          setScholarships(scholarshipList);
         }
       } catch (error) {
         console.error("API Error:", error);
@@ -67,7 +82,6 @@ export default function UniversityDetailsPage({ params }) {
     }
   }, [slug]);
 
-  // FIX: Safely guard array filtering with Array.isArray
   const safeCourses = Array.isArray(courses) ? courses : [];
   const filteredCourses = safeCourses.filter((course) => {
     const matchesLevel = selectedLevel === "all" || course.degree_level === selectedLevel;
@@ -78,19 +92,68 @@ export default function UniversityDetailsPage({ params }) {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <p className="text-lg font-medium text-slate-500">Loading university courses...</p>
+        <p className="text-lg font-medium text-slate-500">Loading university details...</p>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-7xl px-6 py-12">
+      <div className="mx-auto max-w-7xl px-6 py-12 space-y-12">
+        
+        {/* Institutional Scholarships Section */}
+        {scholarships.length > 0 && (
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <SparklesIcon className="h-6 w-6 text-violet-600" />
+                University Scholarships & Grants
+              </h2>
+              <p className="text-slate-500 text-sm">
+                Institutional financial aid and awards provided directly by {university?.name || "this university"}.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {scholarships.map((scholarship) => (
+                <div
+                  key={scholarship.id}
+                  className="flex flex-col justify-between rounded-2xl border border-violet-100 bg-violet-50/50 p-5 shadow-sm transition hover:border-violet-300 hover:shadow-md"
+                >
+                  <div className="space-y-3">
+                    <span className="inline-block rounded-md bg-violet-200/60 px-2.5 py-1 text-xs font-bold text-violet-800">
+                      Institutional Award
+                    </span>
+                    <h3 className="text-base font-bold text-slate-900">{scholarship.title}</h3>
+                    <p className="text-xs text-slate-600">
+                      <strong>Coverage:</strong> {scholarship.coverage}
+                    </p>
+                    {scholarship.application_deadline && (
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                        <CalendarIcon className="h-4 w-4 text-slate-400" />
+                        <span><strong>Deadline:</strong> {scholarship.application_deadline}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedScholarship(scholarship)}
+                    className="mt-4 w-full rounded-xl bg-violet-600 py-2 text-xs font-semibold text-white transition hover:bg-violet-700"
+                  >
+                    View Eligibility
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Offered Programs / Courses Section */}
         <div className="space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="mt-10">
+            <div className="mt-4">
               <h2 className="text-2xl font-bold text-slate-900">Offered Programs</h2>
-              <p className="text-slate-500 text-sm">Explore courses synced from your database</p>
+              <p className="text-slate-500 text-sm">Explore courses offered at {university?.name || "this institution"}</p>
             </div>
 
             {/* Search Input */}
@@ -147,7 +210,7 @@ export default function UniversityDetailsPage({ params }) {
                         {course.title}
                       </h3>
                       <p className="text-xs font-medium text-slate-500">
-                        {course.university_name}
+                        {course.university_name || university?.name}
                       </p>
 
                       <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500 pt-2">
@@ -201,7 +264,7 @@ export default function UniversityDetailsPage({ params }) {
                   onClick={() => setSelectedCourse(null)}
                   className="rounded-full bg-slate-100 p-2 text-slate-400 hover:text-slate-600"
                 >
-                  ✕
+                  <XMarkIcon className="h-5 w-5" />
                 </button>
               </div>
 
@@ -216,6 +279,63 @@ export default function UniversityDetailsPage({ params }) {
               <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
                 <button
                   onClick={() => setSelectedCourse(null)}
+                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Scholarship Eligibility Modal */}
+      <AnimatePresence>
+        {selectedScholarship && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-xl rounded-3xl bg-white p-8 shadow-2xl space-y-6"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className="text-xs font-bold uppercase text-violet-600">
+                    Institutional Scholarship Details
+                  </span>
+                  <h3 className="text-xl font-bold text-slate-900">{selectedScholarship.title}</h3>
+                </div>
+                <button
+                  onClick={() => setSelectedScholarship(null)}
+                  className="rounded-full bg-slate-100 p-2 text-slate-400 hover:text-slate-600"
+                >
+                  <XMarkIcon className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="border-t border-slate-100 pt-4 space-y-3">
+                <p className="text-sm text-slate-600">
+                  <strong>Offered By:</strong> {selectedScholarship.offered_by || university?.name}
+                </p>
+                <p className="text-sm text-slate-600">
+                  <strong>Coverage:</strong> {selectedScholarship.coverage}
+                </p>
+                {selectedScholarship.application_deadline && (
+                  <p className="text-sm text-slate-600">
+                    <strong>Application Deadline:</strong> {selectedScholarship.application_deadline}
+                  </p>
+                )}
+                <h4 className="text-sm font-semibold text-slate-800 pt-2">Eligibility Criteria</h4>
+                <div 
+                  className="text-sm leading-relaxed text-slate-600 prose prose-violet"
+                  dangerouslySetInnerHTML={{ __html: selectedScholarship.eligibility_criteria }}
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <button
+                  onClick={() => setSelectedScholarship(null)}
                   className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Close

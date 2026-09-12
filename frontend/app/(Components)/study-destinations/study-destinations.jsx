@@ -29,7 +29,6 @@ const cardVariants = {
   },
 };
 
-// Fallback courses list if API returns empty array or null
 const DEFAULT_COURSES = ['General Studies', 'Business', 'Technology'];
 
 export default function StudyDestinations() {
@@ -52,6 +51,12 @@ export default function StudyDestinations() {
       });
   }, [API_BASE_URL]);
 
+  const formatMediaUrl = (path) => {
+    if (!path) return '/placeholder.jpg';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+
   if (loading) {
     return (
       <div className="w-full flex flex-col justify-center items-center py-24 gap-3">
@@ -63,7 +68,6 @@ export default function StudyDestinations() {
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 overflow-hidden">
-      {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -78,7 +82,6 @@ export default function StudyDestinations() {
         </p>
       </motion.div>
 
-      {/* Grid Layout */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -87,7 +90,6 @@ export default function StudyDestinations() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch"
       >
         {destinations.map((dest, index) => {
-          // Parse courses or use default fallback array to maintain card visual height
           const rawCourses = typeof dest?.popular_courses === 'string'
             ? dest.popular_courses.split(',').map((c) => c.trim())
             : Array.isArray(dest?.popular_courses) && dest.popular_courses.length > 0
@@ -96,6 +98,8 @@ export default function StudyDestinations() {
 
           const coursesList = rawCourses.filter(Boolean);
           const destinationIdentifier = dest.slug || dest.id;
+          const bannerImage = formatMediaUrl(dest.image || dest.country_image);
+          const flagImage = dest.flag || dest.flag_image ? formatMediaUrl(dest.flag || dest.flag_image) : null;
 
           return (
             <motion.div
@@ -106,21 +110,20 @@ export default function StudyDestinations() {
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col h-full overflow-hidden group"
             >
-              {/* Image Banner */}
               <div className="relative h-52 sm:h-56 w-full overflow-hidden shrink-0">
                 <img
-                  src={dest.image || dest.country_image}
-                  alt={dest.name || dest.country_name}
+                  src={bannerImage}
+                  alt={dest.name || dest.country_name || 'Study Destination'}
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
                 <div className="absolute bottom-4 left-4 flex items-center gap-3">
-                  {(dest.flag || dest.flag_image) && (
+                  {flagImage && (
                     <motion.img
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.2 }}
-                      src={dest.flag || dest.flag_image}
+                      src={flagImage}
                       alt={`${dest.name} flag`}
                       className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-md"
                     />
@@ -131,15 +134,12 @@ export default function StudyDestinations() {
                 </div>
               </div>
 
-              {/* Card Body Structure */}
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
-                  {/* Fixed height description to preserve top card section balance */}
                   <p className="text-slate-600 text-sm line-clamp-3 leading-relaxed mb-6 min-h-[4.25rem]">
                     {dest.short_description || dest.description || 'Explore top universities, courses, and career paths available in this study destination.'}
                   </p>
 
-                  {/* Universities Metric Card */}
                   <div className="bg-slate-50/80 rounded-2xl p-4 space-y-3 mb-6 border border-slate-100">
                     <div className="flex items-center justify-between text-xs sm:text-sm">
                       <span className="text-slate-500 flex items-center gap-1.5 font-medium">
@@ -157,7 +157,6 @@ export default function StudyDestinations() {
                     )}
                   </div>
 
-                  {/* Popular Courses Pills */}
                   <div className="mb-6 min-h-[4.5rem]">
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
                       Popular Courses
@@ -178,7 +177,6 @@ export default function StudyDestinations() {
                   </div>
                 </div>
 
-                {/* Bottom Action CTA Button */}
                 <div className="pt-2">
                   <Link href={`/study-destinations/${destinationIdentifier}`}>
                     <motion.div

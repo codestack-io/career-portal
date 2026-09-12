@@ -115,12 +115,22 @@ class CourseSerializer(serializers.ModelSerializer):
         ]
 
 class ScholarshipSerializer(serializers.ModelSerializer):
+    # Updated to source="destination.name" to match your StudyDestination model
     destination_name = serializers.CharField(source="destination.name", read_only=True)
 
     class Meta:
         model = Scholarship
-        fields = "__all__"
-
+        fields = [
+            "id",
+            "destination",
+            "destination_name",
+            "title",
+            "offered_by",
+            "coverage",
+            "eligibility",
+            "application_deadline",
+            "is_active",
+        ]
 class AdmissionRequirementSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdmissionRequirement
@@ -158,7 +168,6 @@ class StatisticSerializer(serializers.ModelSerializer):
         model = Statistic
         fields = ['id', 'title', 'value', 'suffix', 'icon', 'display_order'] 
 
-
 # Child serializers placed BEFORE parent StudyDestination serializers
 class DestinationIntakeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -191,27 +200,43 @@ class DestinationWorkOpportunitySerializer(serializers.ModelSerializer):
 
 
 class StudyDestinationSerializer(serializers.ModelSerializer):
+    # REMOVE source='program_durations' here:
+    program_durations = DestinationProgramDurationSerializer(many=True, read_only=True)
+    
+    # Do the same for all other nested fields whose variable names match their related_names:
     intakes_list = DestinationIntakeSerializer(many=True, read_only=True)
     cost_breakdowns = DestinationCostSerializer(many=True, read_only=True)
+    scholarships = ScholarshipSerializer(many=True, read_only=True)
     cities = DestinationCitySerializer(many=True, read_only=True)
+    admission_requirements = AdmissionRequirementSerializer(many=True, read_only=True)
+    visa_info = VisaRequirementSerializer(read_only=True)
     work_opportunities = DestinationWorkOpportunitySerializer(many=True, read_only=True)
+    application_process = ApplicationStepSerializer(many=True, read_only=True)
 
     class Meta:
         model = StudyDestination
-        fields = "__all__"
+        fields = '__all__'
 
 
 class StudyDestinationDetailSerializer(serializers.ModelSerializer):
-    intakes_list = DestinationIntakeSerializer(many=True, read_only=True)
+    scholarships = ScholarshipSerializer(many=True, read_only=True)
+    intakes_list = DestinationIntakeSerializer(
+        many=True, read_only=True, source="intakes", default=[]
+    )
     program_durations = DestinationProgramDurationSerializer(
-        many=True, read_only=True
+        many=True, read_only=True, source="program_durations", default=[]
     )
-    cost_breakdowns = DestinationCostSerializer(many=True, read_only=True)
-    cities = DestinationCitySerializer(many=True, read_only=True)
+    cost_breakdowns = DestinationCostSerializer(
+        many=True, read_only=True, source="cost_breakdowns", default=[]
+    )
+    cities = DestinationCitySerializer(
+        many=True, read_only=True, source="cities", default=[]
+    )
+    visa_info = VisaRequirementSerializer(read_only=True)
     work_opportunities = DestinationWorkOpportunitySerializer(
-        many=True, read_only=True
+        many=True, read_only=True, source="work_opportunities", default=[]
     )
-
+    application_process = ApplicationStepSerializer(many=True, read_only=True)
     class Meta:
         model = StudyDestination
         fields = "__all__"
@@ -231,20 +256,17 @@ class BlogSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False,
     )
-    
-    # Category handling: nested dictionary for GET, ID input for POST/PUT
+
     category = BlogCategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=BlogCategory.objects.all(),
         source="category",
         write_only=True,
         required=False,
-        allow_null=True
+        allow_null=True,
     )
 
-    # Ensures absolute media URL (e.g., http://127.0.0.1:8000/media/blogs/image.jpg)
     featured_image = serializers.SerializerMethodField()
-    
     published_date = serializers.DateField(format="%d/%m/%Y")
 
     class Meta:
@@ -261,31 +283,42 @@ class BlogSerializer(serializers.ModelSerializer):
 
 
 class CounselingRequestSerializer(serializers.ModelSerializer):
-    # Mapping camelCase frontend fields to snake_case backend fields
-    fullName = serializers.CharField(source='full_name')
-    studyLevel = serializers.CharField(source='study_level', required=False)
-    preferredDestination = serializers.CharField(source='preferred_destination', required=False, allow_blank=True)
+    fullName = serializers.CharField(source="full_name")
+    studyLevel = serializers.CharField(source="study_level", required=False)
+    preferredDestination = serializers.CharField(
+        source="preferred_destination", required=False, allow_blank=True
+    )
 
     class Meta:
         model = CounselingRequest
         fields = [
-            'id',
-            'fullName',
-            'email',
-            'phone',
-            'studyLevel',
-            'preferredDestination',
-            'message',
-            'created_at',
-        ]    
+            "id",
+            "fullName",
+            "email",
+            "phone",
+            "studyLevel",
+            "preferredDestination",
+            "message",
+            "created_at",
+        ]
 
 
 class FAQSerializer(serializers.ModelSerializer):
-    category_display = serializers.CharField(source='get_category_display', read_only=True)
+    category_display = serializers.CharField(
+        source="get_category_display", read_only=True
+    )
 
     class Meta:
         model = FAQ
-        fields = ['id', 'question', 'answer', 'category', 'category_display', 'display_order', 'is_active']
+        fields = [
+            "id",
+            "question",
+            "answer",
+            "category",
+            "category_display",
+            "display_order",
+            "is_active",
+        ]
 
 
 class ContactInformationSerializer(serializers.ModelSerializer):
@@ -301,7 +334,9 @@ class FooterSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField(source="profile_picture", required=False, allow_null=True)
+    avatar = serializers.ImageField(
+        source="profile_picture", required=False, allow_null=True
+    )
 
     class Meta:
         model = UserProfile

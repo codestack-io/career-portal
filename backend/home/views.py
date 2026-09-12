@@ -189,9 +189,22 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
 class ScholarshipViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Scholarship.objects.filter(is_active=True)
     serializer_class = ScholarshipSerializer
-    filterset_fields = ["destination"]
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        # Optimization: select_related fetches destination in 1 SQL query
+        queryset = Scholarship.objects.filter(is_active=True).select_related('destination')
+        destination_param = self.request.query_params.get('destination')
+
+        if destination_param:
+            try:
+                # Safely parse integer parameter to prevent 500 errors on invalid query params
+                queryset = queryset.filter(destination_id=int(destination_param))
+            except (ValueError, TypeError):
+                return Scholarship.objects.none()
+
+        return queryset
 
 class VisaRequirementViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = VisaRequirement.objects.all()
@@ -221,13 +234,13 @@ class StudyDestinationDetailView(RetrieveAPIView):
     queryset = StudyDestination.objects.filter(is_active=True)
     serializer_class = StudyDestinationDetailSerializer
     permission_classes = [AllowAny]
+    lookup_field = 'slug'
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
-        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        lookup_val = self.kwargs.get(lookup_url_kwarg or 'id') or self.kwargs.get('pk')
+        lookup_val = self.kwargs.get('slug')
 
-        # Check if the parameter passed in URL is numeric ID or string slug
+        # If passed value is numeric (e.g. 1), lookup by PK; otherwise by SLUG
         if str(lookup_val).isdigit():
             filter_kwargs = {'pk': lookup_val}
         else:
@@ -236,7 +249,6 @@ class StudyDestinationDetailView(RetrieveAPIView):
         obj = get_object_or_404(queryset, **filter_kwargs)
         self.check_object_permissions(self.request, obj)
         return obj
-
 
 class CounselingRequestCreateView(generics.CreateAPIView):
     queryset = CounselingRequest.objects.all()

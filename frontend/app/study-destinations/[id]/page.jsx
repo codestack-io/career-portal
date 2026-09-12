@@ -15,6 +15,7 @@ import {
   Coins,
   BadgeDollarSign,
   FileCheck,
+  Award,
 } from 'lucide-react';
 import SidebarCTA from '../../(Components)/SidebarCTA/SidebarCTA';
 import ScrollAnimate from '../../(Components)/ScrollAnimate';
@@ -29,15 +30,25 @@ const iconMap = {
   visa: FileCheck,
 };
 
-
-async function fetchDestination(id) {
+async function fetchDestination(slug) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/study-destinations/${id}/`, {
+    const res = await fetch(`${API_BASE_URL}/api/study-destinations/${slug}/`, {
       next: { revalidate: 3600 },
     });
 
     if (!res.ok) return null;
-    return await res.json();
+    const data = await res.json();
+    
+    // Handle DRF pagination response structure if returned
+    if (data.results && Array.isArray(data.results)) {
+      return (
+        data.results.find(
+          (item) => item.slug === slug || String(item.id) === String(slug)
+        ) || data.results[0]
+      );
+    }
+
+    return data;
   } catch (err) {
     console.error('Error fetching destination details:', err);
     return null;
@@ -66,12 +77,51 @@ export default async function StudyDestinationDetail({ params }) {
     notFound();
   }
 
+  // Parse Popular Courses
   const coursesList =
     typeof destination.popular_courses === 'string'
       ? destination.popular_courses.split(',').map((c) => c.trim()).filter(Boolean)
       : Array.isArray(destination.popular_courses)
       ? destination.popular_courses
       : [];
+
+  // Safely extract scholarships based on Django related_name="scholarships"
+  const scholarshipsList =
+    destination.scholarships ||
+    destination.scholarship_list ||
+    destination.scholarships_list ||
+    destination.scholarship_set ||
+    [];
+
+  const intakesList =
+    destination.intakes_list ||
+    destination.intake_list ||
+    destination.intakes ||
+    [];
+
+  const programDurations =
+    destination.program_durations ||
+    destination.program_duration_list ||
+    destination.durations ||
+    [];
+
+  const costBreakdowns =
+    destination.cost_breakdowns ||
+    destination.cost_breakdown_list ||
+    destination.costs ||
+    [];
+
+  const citiesList =
+    destination.cities ||
+    destination.city_list ||
+    destination.top_cities ||
+    [];
+
+  const workOpportunities =
+    destination.work_opportunities ||
+    destination.work_opportunity_list ||
+    destination.work_list ||
+    [];
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 font-sans selection:bg-purple-500 selection:text-white pb-24 overflow-x-hidden">
@@ -134,12 +184,10 @@ export default async function StudyDestinationDetail({ params }) {
               <div>
                 <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Top Universities</p>
                 <p className="text-lg sm:text-xl font-bold text-slate-900">
-                <Counter value={destination.universities_count ?? 0} />+
-              </p>
+                  <Counter value={destination.universities_count ?? 0} />+
+                </p>
               </div>
             </div>
-
-            
 
             <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-slate-50 transition-all">
               <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
@@ -203,7 +251,7 @@ export default async function StudyDestinationDetail({ params }) {
             )}
 
             {/* Academic Intakes Table */}
-            {destination.intakes_list?.length > 0 && (
+            {Array.isArray(intakesList) && intakesList.length > 0 && (
               <ScrollAnimate direction="left">
                 <section id="intake" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
                   <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
@@ -219,10 +267,10 @@ export default async function StudyDestinationDetail({ params }) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                        {destination.intakes_list.map((item) => (
-                          <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="p-4 font-semibold text-slate-900">{item.intake_name}</td>
-                            <td className="p-4 text-purple-700 font-medium">{item.months}</td>
+                        {intakesList.map((item, idx) => (
+                          <tr key={item.id || idx} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="p-4 font-semibold text-slate-900">{item.intake_name || item.name}</td>
+                            <td className="p-4 text-purple-700 font-medium">{item.months || item.timing}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -233,7 +281,7 @@ export default async function StudyDestinationDetail({ params }) {
             )}
 
             {/* Program Durations Table */}
-            {destination.program_durations?.length > 0 && (
+            {programDurations.length > 0 && (
               <ScrollAnimate direction="right">
                 <section id="programs" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
                   <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
@@ -249,9 +297,9 @@ export default async function StudyDestinationDetail({ params }) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                        {destination.program_durations.map((item) => (
-                          <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="p-4 font-semibold text-slate-900">{item.program_level}</td>
+                        {programDurations.map((item, idx) => (
+                          <tr key={item.id || idx} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="p-4 font-semibold text-slate-900">{item.program_level || item.level}</td>
                             <td className="p-4 text-slate-600">{item.duration}</td>
                           </tr>
                         ))}
@@ -263,7 +311,7 @@ export default async function StudyDestinationDetail({ params }) {
             )}
 
             {/* Cost Breakdowns Table */}
-            {destination.cost_breakdowns?.length > 0 && (
+            {costBreakdowns.length > 0 && (
               <ScrollAnimate direction="left">
                 <section id="cost" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
                   <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
@@ -280,9 +328,9 @@ export default async function StudyDestinationDetail({ params }) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                        {destination.cost_breakdowns.map((item) => (
-                          <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="p-4 font-semibold text-slate-900">{item.program_level}</td>
+                        {costBreakdowns.map((item, idx) => (
+                          <tr key={item.id || idx} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="p-4 font-semibold text-slate-900">{item.program_level || item.level}</td>
                             <td className="p-4 text-emerald-600 font-semibold">{item.amount_foreign}</td>
                             <td className="p-4 text-purple-700 font-medium">{item.amount_local}</td>
                           </tr>
@@ -294,8 +342,63 @@ export default async function StudyDestinationDetail({ params }) {
               </ScrollAnimate>
             )}
 
+            {/* Scholarships Section */}
+            {scholarshipsList.length > 0 && (
+              <ScrollAnimate direction="right">
+                <section id="scholarships" className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm overflow-hidden">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <Award size={22} className="text-purple-600" />
+                    Scholarships & Financial Aid
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {scholarshipsList
+                      .filter((sch) => sch.is_active !== false)
+                      .map((sch, idx) => (
+                        <div
+                          key={sch.id || idx}
+                          className="p-5 border border-slate-200/90 rounded-xl hover:border-purple-300 hover:shadow-sm transition-all bg-slate-50/40 flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              <span className="text-[11px] font-semibold uppercase tracking-wider bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full">
+                                {sch.offered_by || 'National Scholarship'}
+                              </span>
+                              {sch.application_deadline && (
+                                <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
+                                  <Clock size={12} className="text-slate-400" />
+                                  {sch.application_deadline}
+                                </span>
+                              )}
+                            </div>
+
+                            <h3 className="font-bold text-slate-900 text-base mb-2">{sch.title}</h3>
+
+                            {sch.coverage && (
+                              <p className="text-xs text-slate-600 leading-relaxed mb-2">
+                                <span className="font-semibold text-slate-700">Coverage: </span>
+                                {sch.coverage}
+                              </p>
+                            )}
+
+                            {sch.eligibility && (
+                              <div className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-slate-100 mt-2">
+                                <span className="font-semibold text-slate-700 block mb-1">Eligibility:</span>
+                                <div
+                                  className="prose prose-xs max-w-none text-slate-600"
+                                  dangerouslySetInnerHTML={{ __html: sch.eligibility }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </section>
+              </ScrollAnimate>
+            )}
+
             {/* Top Student Cities */}
-            {destination.cities?.length > 0 && (
+            {citiesList.length > 0 && (
               <ScrollAnimate direction="right">
                 <section id="cities">
                   <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
@@ -303,9 +406,9 @@ export default async function StudyDestinationDetail({ params }) {
                     Top Student Cities
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {destination.cities.map((city, idx) => (
+                    {citiesList.map((city, idx) => (
                       <div
-                        key={city.id}
+                        key={city.id || idx}
                         className="group bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:border-purple-300 transition-all duration-300 flex flex-col"
                       >
                         <div className="relative h-48 w-full overflow-hidden bg-slate-100">
@@ -326,7 +429,7 @@ export default async function StudyDestinationDetail({ params }) {
                               {city.name}
                             </h3>
                             <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-                              {city.tagline}
+                              {city.tagline || city.description}
                             </p>
                           </div>
                         </div>
@@ -337,35 +440,35 @@ export default async function StudyDestinationDetail({ params }) {
               </ScrollAnimate>
             )}
 
-  {destination.work_opportunities?.length > 0 && (
-  <ScrollAnimate direction="left">
-    <section id="work" className="space-y-4">
-      <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
-        <Briefcase size={22} className="text-purple-600" />
-        Work Opportunities
-      </h2>
-      {destination.work_opportunities.map((work) => {
-        // Find icon from map or default to Briefcase
-        const IconComponent = iconMap[work.icon?.toLowerCase()] || Briefcase;
+            {/* Work Opportunities */}
+            {workOpportunities.length > 0 && (
+              <ScrollAnimate direction="left">
+                <section id="work" className="space-y-4">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <Briefcase size={22} className="text-purple-600" />
+                    Work Opportunities
+                  </h2>
+                  {workOpportunities.map((work, idx) => {
+                    const IconComponent = iconMap[work.icon?.toLowerCase()] || Briefcase;
 
-        return (
-          <div
-            key={work.id}
-            className="bg-purple-50/50 border border-purple-100 rounded-2xl p-6 flex flex-col sm:flex-row gap-5 items-start"
-          >
-            <div className="p-3.5 bg-purple-100 text-purple-700 rounded-xl shrink-0">
-              <IconComponent size={22} />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-1.5">{work.title}</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">{work.description}</p>
-            </div>
-          </div>
-        );
-      })}
-    </section>
-  </ScrollAnimate>
-)}
+                    return (
+                      <div
+                        key={work.id || idx}
+                        className="bg-purple-50/50 border border-purple-100 rounded-2xl p-6 flex flex-col sm:flex-row gap-5 items-start"
+                      >
+                        <div className="p-3.5 bg-purple-100 text-purple-700 rounded-xl shrink-0">
+                          <IconComponent size={22} />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-900 mb-1.5">{work.title || work.name}</h3>
+                          <p className="text-sm text-slate-600 leading-relaxed">{work.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </section>
+              </ScrollAnimate>
+            )}
           </div>
 
           {/* Sidebar CTA */}
