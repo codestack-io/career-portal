@@ -1,91 +1,94 @@
 "use client";
 
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function CallbackContent() {
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const ranRef = useRef(false);
   const [error, setError] = useState("");
-  const processingRef = useRef(false);
 
   useEffect(() => {
-    const state = searchParams.get("state");
-    const code = searchParams.get("code");
+    // Prevent double execution in React Strict Mode
+    if (ranRef.current) return;
+    ranRef.current = true;
 
-    // Prevent React double-invocation in dev mode
-    if (processingRef.current) return;
+    const exchangeCodeForTokens = async () => {
+      const code = searchParams.get("code");
+      const state = searchParams.get("state");
 
-    if (!state || !code) {
-      setError("Missing state or authorization code from Google.");
-      return;
-    }
+      if (!code) {
+        setError("Authorization code is missing.");
+        return;
+      }
 
-    async function exchangeCodeForTokens() {
-      processingRef.current = true; // Lock execution
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
       try {
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-        // Djoser expects x-www-form-urlencoded format
-        const bodyParams = new URLSearchParams();
-        bodyParams.append("state", state);
-        bodyParams.append("code", code);
-        bodyParams.append("redirect_uri", "http://localhost:3000/oauth/callback");
-
-        const res = await fetch(`${backendUrl}/auth/o/google-oauth2/`, {
+        const response = await fetch(`${backendUrl}/auth/o/google-oauth2/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: bodyParams.toString(),
+          body: new URLSearchParams({
+            code: code,
+            state: state || "",
+          }),
         });
 
-        const data = await res.json().catch(() => ({}));
+        const text = await response.text();
 
-        if (res.ok) {
-          localStorage.setItem("access_token", data.access);
-          localStorage.setItem("refresh_token", data.refresh);
+        if (response.ok) {
+          const data = JSON.parse(text);
+          // Store tokens returned by Djoser / SimpleJWT
+          if (data.access) localStorage.setItem("access_token", data.access);
+          if (data.refresh) localStorage.setItem("refresh_token", data.refresh);
+
+          // Redirect user to their dashboard or home page
           router.push("/dashboard");
         } else {
-          console.error(`Backend Error (${res.status}):`, data);
-          const message =
-            data.non_field_errors?.[0] ||
-            data.detail ||
-            data.state?.[0] ||
-            data.code?.[0] ||
-            "Google authentication failed.";
-          setError(message);
+          console.error(`Backend Token Exchange Error (${response.status}):`, text);
+          setError("Failed to complete Google login. Please try again.");
         }
       } catch (err) {
-        console.error("Network error:", err);
-        setError("An error occurred during authentication.");
+        console.error("OAuth Error:", err);
+        setError("Network error during Google authentication.");
       }
-    }
+    };
 
     exchangeCodeForTokens();
   }, [searchParams, router]);
 
+  if (error) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6">
+        <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-sm border border-slate-100">
+          <p className="text-red-600 text-sm font-semibold mb-4">{error}</p>
+          <a
+            href="/register"
+            className="inline-block px-4 py-2 bg-violet-600 text-white text-xs font-bold rounded-xl hover:bg-violet-700 transition-colors"
+          >
+            Back to Register
+          </a>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50">
-      {error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600 shadow-sm">
-          <p className="font-semibold mb-1">Authentication Error</p>
-          <p className="text-sm">{error}</p>
-        </div>
-      ) : (
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-600 border-t-transparent" />
-          <p className="font-medium text-slate-600">Completing Google Sign-In...</p>
-        </div>
-      )}
-    </div>
+    <main className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="flex items-center gap-3 text-slate-600 font-medium text-sm">
+        <div className="w-5 h-5 border-2 border-violet-600 border-t-transparent rounded-full animate-spin" />
+        Authenticating with Google...
+      </div>
+    </main>
   );
 }
 
 export default function OAuthCallback() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<div>Loading...</div>}>
       <CallbackContent />
     </Suspense>
   );

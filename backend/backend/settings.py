@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-p1787bj#!)*^y_9)3^ety)&ip5)f5oi)za4^=xplo(l0nv++3_
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
-
+SITE_ID = 1 # Required for django-allauth
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,6 +46,11 @@ INSTALLED_APPS = [
     'social_django', 
      
     'home',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'corsheaders',
     'django_ckeditor_5'
 ]
@@ -57,7 +62,29 @@ TAILWIND_APP_NAME = 'theme'
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2', # ADDED: Google OAuth backend
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',  # ADDED: Django Allauth backend
 )
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development, prints emails to console
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': GOOGLE_CLIENT_ID,
+            'client_secret': GOOGLE_CLIENT_SECRET,
+            'key': ''
+        }
+    }
+}
+
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = 'home'  # Redirect to home after login
+ACCOUNT_LOGOUT_REDIRECT_URL = 'login'  # Redirect to home after logout
+
+
+
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
@@ -98,7 +125,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 # Disables session-state verification for REST API / Single Page App OAuth setups
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = []
-SOCIAL_AUTH_GOOGLE_OAUTH2_STATE_PARAMETER = True
+SOCIAL_AUTH_STATE_PARAMETER = False
+SOCIAL_AUTH_GOOGLE_OAUTH2_STATE_PARAMETER = False
 SOCIAL_AUTH_STRATEGY = 'social_django.strategy.DjangoStrategy'
 SOCIAL_AUTH_STORAGE = 'social_django.models.DjangoStorage'
 
@@ -111,6 +139,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware', 
+
 ]
 
 ROOT_URLCONF = 'backend.urls'

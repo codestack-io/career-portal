@@ -73,15 +73,15 @@ export default function Register() {
  async function handleGoogleLogin() {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+    const redirectUri = "http://localhost:3000/oauth/callback";
     
-    // Ask Djoser for the Google authorization URL
+    // Request Google Auth URL from Djoser endpoint
     const res = await fetch(
-      `${backendUrl}/auth/o/google-oauth2/?redirect_uri=http://localhost:3000/oauth/callback`
+      `${backendUrl}/auth/o/google-oauth2/?redirect_uri=${encodeURIComponent(redirectUri)}`
     );
     const data = await res.json();
 
     if (data.authorization_url) {
-      // Redirect user to Google's sign-in page
       window.location.href = data.authorization_url;
     } else {
       setError("Failed to initiate Google login.");
