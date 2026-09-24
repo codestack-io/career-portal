@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "./context/AuthContext"; // Adjust path if needed
 import Navbar from "@/UiComponents/Navbar/Navbar"; // Adjust path if needed
 import Script from "next/script";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://127.0.0.1:8000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"),
   title: {
     default: "Global Education & Career Consultancy",
     template: "%s | Global Education Consultancy",
@@ -44,40 +45,48 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+    console.log(
+    "GOOGLE CLIENT ID:",
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+  );
   const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
 
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full "scroll-smooth" data-scroll-behavior="smooth" antialiased`}>
-      <body className="flex min-h-full flex-col bg-slate-950 font-sans text-slate-100 selection:bg-violet-500 selection:text-white ">
-        
-        {/* Wrap everything that needs state in AuthProvider */}
-        <AuthProvider>
-          <Navbar />
-          
-          {/* Main content area */}
-          <main className="flex-1">
-            {children}
-          </main>
-        </AuthProvider>
+<body className="flex min-h-full flex-col bg-slate-950 font-sans text-slate-100 selection:bg-violet-500 selection:text-white">
 
-        {/* Google Analytics Implementation */}
-        {GA_TRACKING_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${GA_TRACKING_ID}');
-              `}
-            </Script>
-          </>
-        )}
-      </body>
+  <GoogleOAuthProvider
+    clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+  >
+    <AuthProvider>
+      <Navbar />
+
+      <main className="flex-1">
+        {children}
+      </main>
+    </AuthProvider>
+  </GoogleOAuthProvider>
+
+  {/* Google Analytics */}
+  {GA_TRACKING_ID && (
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+        strategy="afterInteractive"
+      />
+
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_TRACKING_ID}');
+        `}
+      </Script>
+    </>
+  )}
+
+</body>
     </html>
   );
 }
