@@ -24,7 +24,12 @@ print("DEBUG GOOGLE CLIENT ID:", GOOGLE_CLIENT_ID)
 # Quick-start development settings - unsuitable for production
 SECRET_KEY = 'django-insecure-p1787bj#!)*^y_9)3^ety)&ip5)f5oi)za4^=xplo(l0nv++3_'
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    "*",
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",  # Allows any Render subdomain
+]
 
 SITE_ID = 1 # Required for django-allauth
 # Application definition
@@ -133,6 +138,7 @@ SOCIAL_AUTH_STORAGE = 'social_django.models.DjangoStorage'
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -191,12 +197,18 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # CORS & Credentials configuration
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://career-portal.vercel.app"
 
 ]
 
